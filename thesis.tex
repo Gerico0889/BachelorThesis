@@ -1,4 +1,4 @@
-% Created 2019-02-12 mar 19:14
+% Created 2019-02-12 mar 20:05
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{minted}
@@ -36,10 +36,10 @@
 
 
 \chapter{Introduzione}
-\label{sec:org45b7018}
+\label{sec:org469c996}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:org58561d7}
+\label{sec:org11f4d75}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
@@ -49,7 +49,7 @@ richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
 invece ne sono necessari solo \(2n\).
 
 \section{Blocchi e fattori}
-\label{sec:org12aecf9}
+\label{sec:orgd7ec7a4}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -97,9 +97,17 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 \((\sqcup)\) e \emph{greatest upper bound} \((\sqcap)\). È da notare che nel reticolo della
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
-
+\section{Partizione ammissibile}
+\label{sec:orge001a19}
+Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
+variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
+P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
+sottoinsieme chiuso superiormente del reticolo, chiameremo questo sottoinsieme
+\(\mathcal{B}\). Se \(\overline{\pi} \in \mathcal{B}\) allora lo saranno anche tutte
+le \(\overline{\pi}'\) tali che \(\overline{\pi}, \overline{\pi}' \in \mathcal{L}\) e
+\(\overline{\pi} \sqsubseteq \overline{\pi}'\).
 \chapter{Implementazione}
-\label{sec:org52cf1ba}
+\label{sec:orgff5a2ee}
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
 sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
@@ -107,7 +115,7 @@ della \emph{PPLite}. L'implementazione data è quindi da vedere come un \textbf{
 quest'ultima.
 
 \section{\texttt{F\_Poly}}
-\label{sec:orgfd81074}
+\label{sec:org9f19af6}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati. I più significativi sono:
@@ -140,7 +148,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv()}}
-\label{sec:orgde65a73}
+\label{sec:org452eef3}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -244,7 +252,7 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:org1c97c28}
+\label{sec:org6d8e57e}
 Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
 livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
 Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
@@ -259,7 +267,7 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{minted}
 
 \subsection{Refactoring}
-\label{sec:org8fbea17}
+\label{sec:org441159c}
 
 
 \begin{algorithm}[H]
@@ -280,5 +288,5 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{algorithm}
 
 \chapter{Conclusione}
-\label{sec:org2361de5}
+\label{sec:org3922835}
 \end{document}

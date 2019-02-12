@@ -69,7 +69,14 @@ $\pi'$. Questo reticolo contiene anche i soliti operatori di /least upper bound/
 $(\sqcup)$ e /greatest upper bound/ $(\sqcap)$. È da notare che nel reticolo della
 partizione $\top = \{\mathcal{X}\}$ e $\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}$.
 
-
+** Partizione ammissibile
+Una partizione /ammissibile/ $\overline{\pi}$ è tale se, dato un poliedro P, non esistono
+variabili $x_i$ e $x_j$ in diversi blocchi di $\pi$ relazionati da un vincolo di
+P, ovvero $\pi \sqsupseteq \pi_P$. Le partizioni ammissibili sono un
+sottoinsieme chiuso superiormente del reticolo, chiameremo questo sottoinsieme
+$\mathcal{B}$. Se $\overline{\pi} \in \mathcal{B}$ allora lo saranno anche tutte
+le $\overline{\pi}'$ tali che $\overline{\pi}, \overline{\pi}' \in \mathcal{L}$ e
+$\overline{\pi} \sqsubseteq \overline{\pi}'$.
 * Implementazione
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
