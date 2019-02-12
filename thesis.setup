@@ -1,4 +1,4 @@
-#+LATEX_HEADER: \addto\captionsenglish{\renewcommand\contentsname{Indice}}
+#+LATEX_HEADER: \addto\captionsenglish{\renewcommand\contentsname{Indice}} 
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \usepackage{amsmath}
 #+LATEX_HEADER: \usepackage{algorithm}
