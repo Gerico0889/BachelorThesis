@@ -1,0 +1,284 @@
+% Created 2019-02-12 mar 19:14
+% Intended LaTeX compiler: pdflatex
+\documentclass{mimosis}
+ \usepackage{minted}
+ \addto\captionsenglish{\renewcommand\contentsname{Indice}}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{float}
+\usepackage[noend]{algpseudocode}
+\KOMAoptions{fontsize=12pt,headings=small}
+\makeglossaries
+\theoremstyle{definition}
+\newtheorem{exmp}{Esempio}[section]
+\usepackage{amsmath}
+
+\newcommand{\mboxparagraph}[1]{\paragraph{#1}\mbox{}\\}
+\newcommand{\mboxsubparagraph}[1]{\subparagraph{#1}\mbox{}\\}
+\author{Luigi Zaccone}
+\date{\today}
+\title{La fattorizzazione cartesiana nella libreria PPLite}
+\hypersetup{
+ pdfauthor={Luigi Zaccone},
+ pdftitle={La fattorizzazione cartesiana nella libreria PPLite},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 26.1 (Org mode 9.2)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+
+\chapter{Introduzione}
+\label{sec:org45b7018}
+
+\chapter{Fattorizzazione cartesiana}
+\label{sec:org58561d7}
+La fattorizzazione cartesiana permette di avere una complessità di esecuzione
+minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
+utilizzati nell'analisi dei programmi non mettono in relazione tutte le
+variabili del programma in un solo vincolo. Per esempio: un ipercubo \\
+\(H_n = \{0 \le x_i \le 1 \; | \; i = 1,...,n\}\)
+richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
+invece ne sono necessari solo \(2n\).
+
+\section{Blocchi e fattori}
+\label{sec:org12aecf9}
+Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
+può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
+che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
+Quindi, ogni variabile priva di vincoli risiede in un singoletto. Ci riferiamo a
+questo insieme come \(\pi = \pi_P = \{\mathcal{X}_1, \mathcal{X}_2,..., \mathcal{X}_t\}\).
+
+\begin{exmp}
+Consideriamo
+\begin{align*}
+  &\mathcal{X} = \{x_1, x_2, x_3\} ~{}e \\
+  &P = \{x_1 + 2x_2 \le 3\}.
+\end{align*}
+
+In questo caso $\mathcal{X}$ viene partizionato in due blocchi: $\mathcal{X}_1 = \{x_1, x_2\}$ e
+$\mathcal{X}_2 = \{x_3\}$.
+\end{exmp}
+
+Per ogni blocco, quindi, sarà presente un \emph{fattore} \(P_k\) che sarà composto solo
+dalle variabili presenti nel suo blocco. In qualsiasi momento il poliedro
+originale può essere recuperato applicando l'unione dei vincoli
+\(\mathcal{C}_{P_k}\) e il prodotto cartesiano dei generatori \(\mathcal{G}_{P_k}\).
+
+\begin{exmp}
+  Consideriamo un poliedro $\mathcal{P}$ con i seguenti vincoli e generatori:
+  \begin{align*}
+    &\mathcal{C} = \{-x_{1} \le -1, x_{1} \le 4, -x_{2} \le -2, x_{2} \le 4\} \\
+    &\mathcal{G} = \{\{(1),(2)\}, \{(1),(4)\}, \{(4),(2)\}, \{(4),(4)\}\}
+  \end{align*}
+  Il poliedro non ha vincoli tra le variabili $x_1$ e $x_2$. Quindi, $\mathcal{X} = \{x_1,x_2\}$
+  può essere partizionato nei blocchi: $\pi_P = \{\{x_1\}, \{x_2\}\}$ con i risultanti fattori
+  $P_1 = (\mathcal{C}_{P_1}, \mathcal{G}_{P_1})$ e $P_2 = (\mathcal{C}_{P_2}, \mathcal{G}_{P_2})$ dove:
+  \begin{align*}
+      &\mathcal{C}_{P_{1}} = \{-x_{1} \le -1, x_{1} \le 4\}  &&\mathcal{C}_{P_{2}} = \{ -x_{2} \le -2, x_{2} \le 4\} \\
+      &\mathcal{G}_{P_{1}} = \{\{(1),(4)\}, \emptyset, \emptyset \} &&\mathcal{G}_{P_{2}} = \{\{(2),(4)\}, \emptyset, \emptyset \}
+  \end{align*}
+  Il poliedro originale può essere ricavato da $P_{1}$ e $P_{2}$ come
+  P = $P_{1} \bowtie P_{2} = (\mathcal{C}_{P_{1}} \cup \mathcal{C}_{P_{2}}, \mathcal{G}_{P_{1}} \times \mathcal{G}_{P_{2}})$
+\end{exmp}
+
+L'insieme \(\mathcal{L}\) che consiste in tutte le partizioni di \(\mathcal{X}\)
+forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqcap,
+\bot, \top)\). Gli elementi \(\pi\) del reticolo sono ordinati come segue: \(\pi
+\sqsubseteq \pi'\), se ogni blocco di \(\pi\) è incluso in qualche blocco di
+\(\pi'\). Questo reticolo contiene anche i soliti operatori di \emph{least upper bound}
+\((\sqcup)\) e \emph{greatest upper bound} \((\sqcap)\). È da notare che nel reticolo della
+partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
+
+
+\chapter{Implementazione}
+\label{sec:org52cf1ba}
+Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
+delle loro operazioni. In particolare, i metodi che modificano il poliedro
+sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
+della \emph{PPLite}. L'implementazione data è quindi da vedere come un \textbf{wrapper} di
+quest'ultima.
+
+\section{\texttt{F\_Poly}}
+\label{sec:orgfd81074}
+La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
+definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
+privati. I più significativi sono:
+
+\begin{itemize}
+\item Un costruttore esplicito, un costruttore per copia, un costruttore per spostamento
+\item Operazioni di assegnamento per copia e per spostamento
+\item Un metodo \texttt{check\_inv()} per controllare che le invarianti di classe non siano
+state violate
+\item ??
+\item Funzioni di appoggio per gestire il poliedro
+\end{itemize}
+
+Sono inoltre presenti delle stutture dati per la gestione dei fattori:
+
+\begin{itemize}
+\item \texttt{Block}: un \texttt{std::vector} di \texttt{dim\_type} che rappresenta un blocco \(X_i\) che
+contiene alcune dimensioni del poliedro
+\item \texttt{Blocks}: un \texttt{std::vector} di \texttt{Block} che esprimono le partizioni del poliedro
+\item \texttt{Factor}: un fattore è un poliedro, \texttt{Factor} è un alias per oggetti di tipo \texttt{Poly}
+\item \texttt{Factors}: un \texttt{std::vector} di \texttt{Factor}
+\end{itemize}
+
+Sono inoltre presenti tre variabili:
+
+\begin{itemize}
+\item \texttt{dim\_type dim}: indicante le dimensioni del poliedro
+\item \texttt{Topol topol}: indicante la topologia del poliedro
+\item \texttt{bool is\_empty}: indicante se il poliedro è o meno vuoto
+\end{itemize}
+
+\subsection{\texttt{check\_inv()}}
+\label{sec:orgde65a73}
+Il metodo menzionato contiene tutti i controlli necessari per verificare che
+l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
+sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
+essere rispettate sono le seguenti:
+
+\begin{itemize}
+\item La dimensione minima del poliedro deve essere \(\ge 0\)
+\begin{minted}[]{c++}
+if (dim < 0) {
+  reason = "F_Poly broken: invalid space dimension";
+  maybe_dump();
+  return false;
+}
+\end{minted}
+\item Se il poliedro è vuoto, i fattori e i blocchi devono essere anch'essi vuoti
+\begin{minted}[]{c++}
+if (is_empty()) {
+  if (!(factors.empty() && blocks.empty())) {
+    reason = "F_Poly broken: empty polyhedron has factors";
+    maybe_dump();
+    return false;
+  }
+  // No other check for an empty polyhedron.
+  return true;
+}
+\end{minted}
+\item Il numero di blocchi deve essere uguale al numero di fattori
+\begin{minted}[]{c++}
+if (factors.size() != blocks.size()) {
+  reason = "F_Poly broken: #factors != #blocks";
+  maybe_dump();
+  return false;
+}
+\end{minted}
+\item La cardinalità dei blocchi deve essere uguale a \texttt{dim}
+\begin{minted}[]{c++}
+dim_type dim_ = 0;
+for (const auto& block : blocks)
+  dim_ += block.size();
+if (dim != dim_) {
+  reason = "F_Poly broken: space dimension mismatch";
+  maybe_dump();
+  return false;
+}
+\end{minted}
+\item Le dimensioni di un fattore devono essere uguali alle dimensioni del blocco
+che lo rappresenta
+\begin{minted}[]{c++}
+// Each factor space dim should match its block.
+for (dim_type i = 0; i < num_rows(factors); ++i) {
+  if (factors[i].space_dim() != num_rows(blocks[i])) {
+    reason = "F_Poly broken: factor vs block space dim mismatch";
+    maybe_dump();
+    return false;
+  }
+}
+\end{minted}
+\item Nessun fattore deve essere vuoto
+\begin{minted}[]{c++}
+if (std::any_of(factors.begin(), factors.end(),
+                std::mem_fn(&Poly::is_empty))) {
+  reason = "F_Poly broken: empty factor";
+  maybe_dump();
+  return false;
+}
+\end{minted}
+\item Ogni dimensione dello spazio deve apparire una e una volta soltanto nei
+blocchi e non devono esserci blocchi vuoti
+\begin{minted}[]{c++}
+std::vector<bool> dims(dim, false);
+for (const auto& block : blocks) {
+  if (block.size() == 0) {
+    reason = "F_Poly broken: found empty block";
+    maybe_dump();
+    return false;
+  }
+  for (const auto d : block) {
+    if (d < 0 || d >= dim) {
+      reason = "F_Poly broken: block contains an illegal
+                space dim";
+      maybe_dump();
+      return false;
+    }
+    if (dims[d]) {
+      reason = "F_Poly broken: repeated space dim in blocks";
+      maybe_dump();
+      return false;
+    }
+    dims[d] = true;
+  }
+}
+\end{minted}
+\item Ogni dimensione dello spazio deve essere presente in un blocco
+\begin{minted}[]{c++}
+if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
+  reason = "F_Poly broken: a space dim is missing from blocks";
+  maybe_dump();
+  return false;
+}
+\end{minted}
+\end{itemize}
+
+\section{Operazione di base}
+\label{sec:org1c97c28}
+Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
+livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
+Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
+testing meno problematica. Le funzioni principali, in parte discusse nel
+capitolo uno, sono:
+
+\begin{minted}[]{c++}
+static Factors refactor(const Factors& f,
+                        const Blocks& b1, const Blocks& b2);
+static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
+static Blocks merge(const Blocks& b, const Block& added);
+\end{minted}
+
+\subsection{Refactoring}
+\label{sec:org8fbea17}
+
+
+\begin{algorithm}[H]
+\caption{Algoritmo di prova}
+\label{prova}
+\begin{algorithmic}[1]
+\Function{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+\State $r\gets a\bmod b$
+\While{$r\not=0$}
+\Comment{We have the answer if r is 0}
+\State $a\gets b$
+\State $b\gets r$
+\State $r\gets a\bmod b$
+\EndWhile\label{euclidendwhile}
+\State \textbf{return} $b$\Comment{The gcd is b}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\chapter{Conclusione}
+\label{sec:org2361de5}
+\end{document}

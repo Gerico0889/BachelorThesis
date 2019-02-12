@@ -1,0 +1,243 @@
+#+TITLE: La fattorizzazione cartesiana nella libreria PPLite
+#+AUTHOR: Luigi Zaccone
+
+#+LATEX_CLASS: mimosis
+
+#+SETUPFILE: thesis.setup
+
+
+* Introduzione
+
+* Fattorizzazione cartesiana
+La fattorizzazione cartesiana permette di avere una complessità di esecuzione
+minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
+utilizzati nell'analisi dei programmi non mettono in relazione tutte le
+variabili del programma in un solo vincolo. Per esempio: un ipercubo \\
+$H_n = \{0 \le x_i \le 1 \; | \; i = 1,...,n\}$
+richiede $2^n$ generatori per essere rappresentato, tramite la decomposizione
+invece ne sono necessari solo $2n$.
+
+** Blocchi e fattori
+Sia $\mathcal{X} = \{x_1, x_2,..., x_n\}$ un insieme di $n$ variabili. Dato un poliedro, $\mathcal{X}$
+può essere partizionato in un sottoinsieme $\mathcal{X}_k$ che chiamiamo /blocchi/ tale
+che i vincoli esistono solo tra variabili presenti nello stesso /blocco/.
+Quindi, ogni variabile priva di vincoli risiede in un singoletto. Ci riferiamo a
+questo insieme come $\pi = \pi_P = \{\mathcal{X}_1, \mathcal{X}_2,..., \mathcal{X}_t\}$.
+
+#+BEGIN_EXPORT latex
+\begin{exmp}
+Consideriamo
+\begin{align*}
+  &\mathcal{X} = \{x_1, x_2, x_3\} ~{}e \\
+  &P = \{x_1 + 2x_2 \le 3\}.
+\end{align*}
+
+In questo caso $\mathcal{X}$ viene partizionato in due blocchi: $\mathcal{X}_1 = \{x_1, x_2\}$ e
+$\mathcal{X}_2 = \{x_3\}$.
+\end{exmp}
+#+END_EXPORT
+
+Per ogni blocco, quindi, sarà presente un /fattore/ $P_k$ che sarà composto solo
+dalle variabili presenti nel suo blocco. In qualsiasi momento il poliedro
+originale può essere recuperato applicando l'unione dei vincoli
+$\mathcal{C}_{P_k}$ e il prodotto cartesiano dei generatori $\mathcal{G}_{P_k}$.
+
+#+BEGIN_EXPORT latex
+\begin{exmp}
+  Consideriamo un poliedro $\mathcal{P}$ con i seguenti vincoli e generatori:
+  \begin{align*}
+    &\mathcal{C} = \{-x_{1} \le -1, x_{1} \le 4, -x_{2} \le -2, x_{2} \le 4\} \\
+    &\mathcal{G} = \{\{(1),(2)\}, \{(1),(4)\}, \{(4),(2)\}, \{(4),(4)\}\}
+  \end{align*}
+  Il poliedro non ha vincoli tra le variabili $x_1$ e $x_2$. Quindi, $\mathcal{X} = \{x_1,x_2\}$
+  può essere partizionato nei blocchi: $\pi_P = \{\{x_1\}, \{x_2\}\}$ con i risultanti fattori
+  $P_1 = (\mathcal{C}_{P_1}, \mathcal{G}_{P_1})$ e $P_2 = (\mathcal{C}_{P_2}, \mathcal{G}_{P_2})$ dove:
+  \begin{align*}
+      &\mathcal{C}_{P_{1}} = \{-x_{1} \le -1, x_{1} \le 4\}  &&\mathcal{C}_{P_{2}} = \{ -x_{2} \le -2, x_{2} \le 4\} \\
+      &\mathcal{G}_{P_{1}} = \{\{(1),(4)\}, \emptyset, \emptyset \} &&\mathcal{G}_{P_{2}} = \{\{(2),(4)\}, \emptyset, \emptyset \}
+  \end{align*}
+  Il poliedro originale può essere ricavato da $P_{1}$ e $P_{2}$ come
+  P = $P_{1} \bowtie P_{2} = (\mathcal{C}_{P_{1}} \cup \mathcal{C}_{P_{2}}, \mathcal{G}_{P_{1}} \times \mathcal{G}_{P_{2}})$
+\end{exmp}
+#+END_EXPORT
+
+L'insieme $\mathcal{L}$ che consiste in tutte le partizioni di $\mathcal{X}$
+forma un /reticolo di partizioni/ $(\mathcal{L}, \sqsubseteq, \sqcup, \sqcap,
+\bot, \top)$. Gli elementi $\pi$ del reticolo sono ordinati come segue: $\pi
+\sqsubseteq \pi'$, se ogni blocco di $\pi$ è incluso in qualche blocco di
+$\pi'$. Questo reticolo contiene anche i soliti operatori di /least upper bound/
+$(\sqcup)$ e /greatest upper bound/ $(\sqcap)$. È da notare che nel reticolo della
+partizione $\top = \{\mathcal{X}\}$ e $\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}$.
+
+
+* Implementazione
+Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
+delle loro operazioni. In particolare, i metodi che modificano il poliedro
+sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
+della /PPLite/. L'implementazione data è quindi da vedere come un *wrapper* di
+quest'ultima.
+
+** ~F_Poly~
+La classe dove sono compresi gran parte dei medoti è ~F_Poly~. È stata
+definita nel file ~F_Poly.hh~ dove sono presenti 92 metodi pubblici e 14 metodi
+privati. I più significativi sono:
+
++ Un costruttore esplicito, un costruttore per copia, un costruttore per spostamento
++ Operazioni di assegnamento per copia e per spostamento
++ Un metodo ~check_inv()~ per controllare che le invarianti di classe non siano
+  state violate
++ ??
++ Funzioni di appoggio per gestire il poliedro
+
+Sono inoltre presenti delle stutture dati per la gestione dei fattori:
+
++ ~Block~: un ~std::vector~ di ~dim_type~ che rappresenta un blocco $X_i$ che
+  contiene alcune dimensioni del poliedro
++ ~Blocks~: un ~std::vector~ di ~Block~ che esprimono le partizioni del poliedro
++ ~Factor~: un fattore è un poliedro, ~Factor~ è un alias per oggetti di tipo ~Poly~
++ ~Factors~: un ~std::vector~ di ~Factor~
+
+Sono inoltre presenti tre variabili:
+
++ ~dim_type dim~: indicante le dimensioni del poliedro
++ ~Topol topol~: indicante la topologia del poliedro
++ ~bool is_empty~: indicante se il poliedro è o meno vuoto
+
+*** ~check_inv()~
+Il metodo menzionato contiene tutti i controlli necessari per verificare che
+l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
+sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
+essere rispettate sono le seguenti:
+
++ La dimensione minima del poliedro deve essere $\ge 0$
+  #+BEGIN_SRC C++
+if (dim < 0) {
+  reason = "F_Poly broken: invalid space dimension";
+  maybe_dump();
+  return false;
+}
+  #+END_SRC
++ Se il poliedro è vuoto, i fattori e i blocchi devono essere anch'essi vuoti
+  #+BEGIN_SRC C++
+if (is_empty()) {
+  if (!(factors.empty() && blocks.empty())) {
+    reason = "F_Poly broken: empty polyhedron has factors";
+    maybe_dump();
+    return false;
+  }
+  // No other check for an empty polyhedron.
+  return true;
+}
+  #+END_SRC
++ Il numero di blocchi deve essere uguale al numero di fattori
+  #+BEGIN_SRC C++
+if (factors.size() != blocks.size()) {
+  reason = "F_Poly broken: #factors != #blocks";
+  maybe_dump();
+  return false;
+}
+  #+END_SRC
++ La cardinalità dei blocchi deve essere uguale a ~dim~
+  #+BEGIN_SRC C++
+dim_type dim_ = 0;
+for (const auto& block : blocks)
+  dim_ += block.size();
+if (dim != dim_) {
+  reason = "F_Poly broken: space dimension mismatch";
+  maybe_dump();
+  return false;
+}
+  #+END_SRC
++ Le dimensioni di un fattore devono essere uguali alle dimensioni del blocco
+  che lo rappresenta
+  #+BEGIN_SRC C++
+// Each factor space dim should match its block.
+for (dim_type i = 0; i < num_rows(factors); ++i) {
+  if (factors[i].space_dim() != num_rows(blocks[i])) {
+    reason = "F_Poly broken: factor vs block space dim mismatch";
+    maybe_dump();
+    return false;
+  }
+}
+  #+END_SRC
++ Nessun fattore deve essere vuoto
+  #+BEGIN_SRC C++
+if (std::any_of(factors.begin(), factors.end(),
+                std::mem_fn(&Poly::is_empty))) {
+  reason = "F_Poly broken: empty factor";
+  maybe_dump();
+  return false;
+}
+  #+END_SRC
++ Ogni dimensione dello spazio deve apparire una e una volta soltanto nei
+  blocchi e non devono esserci blocchi vuoti
+  #+BEGIN_SRC C++
+std::vector<bool> dims(dim, false);
+for (const auto& block : blocks) {
+  if (block.size() == 0) {
+    reason = "F_Poly broken: found empty block";
+    maybe_dump();
+    return false;
+  }
+  for (const auto d : block) {
+    if (d < 0 || d >= dim) {
+      reason = "F_Poly broken: block contains an illegal
+                space dim";
+      maybe_dump();
+      return false;
+    }
+    if (dims[d]) {
+      reason = "F_Poly broken: repeated space dim in blocks";
+      maybe_dump();
+      return false;
+    }
+    dims[d] = true;
+  }
+}
+  #+END_SRC
++ Ogni dimensione dello spazio deve essere presente in un blocco
+  #+BEGIN_SRC C++
+if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
+  reason = "F_Poly broken: a space dim is missing from blocks";
+  maybe_dump();
+  return false;
+}
+  #+END_SRC
+
+** Operazione di base
+Le funzioni più significative di ~F_Poly~ sono state implementate più ad alto
+livello, sfruttando le funzioni già implementate e funzionanti della /PPLite/.
+Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
+testing meno problematica. Le funzioni principali, in parte discusse nel
+capitolo uno, sono:
+
+#+BEGIN_SRC C++
+static Factors refactor(const Factors& f,
+                        const Blocks& b1, const Blocks& b2);
+static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
+static Blocks merge(const Blocks& b, const Block& added);
+#+END_SRC
+
+*** Refactoring
+
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Algoritmo di prova}
+\label{prova}
+\begin{algorithmic}[1]
+\Function{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+\State $r\gets a\bmod b$
+\While{$r\not=0$}
+\Comment{We have the answer if r is 0}
+\State $a\gets b$
+\State $b\gets r$
+\State $r\gets a\bmod b$
+\EndWhile\label{euclidendwhile}
+\State \textbf{return} $b$\Comment{The gcd is b}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
+* Conclusione
