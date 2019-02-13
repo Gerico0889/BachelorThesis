@@ -61,7 +61,7 @@ $\mathcal{C}_{P_k}$ e il prodotto cartesiano dei generatori $\mathcal{G}_{P_k}$.
 \end{exmp}
 #+END_EXPORT
 
-L'insieme $\mathcal{L}$ che consiste in tutte le partizioni di $\mathcal{X}$
+L'insieme $\mathcal{L}$ che consiste in tutte le partizioni possibili di $\mathcal{X}$
 forma un /reticolo di partizioni/ $(\mathcal{L}, \sqsubseteq, \sqcup, \sqcap,
 \bot, \top)$. Gli elementi $\pi$ del reticolo sono ordinati come segue: $\pi
 \sqsubseteq \pi'$, se ogni blocco di $\pi$ è incluso in qualche blocco di
@@ -76,7 +76,58 @@ P, ovvero $\pi \sqsupseteq \pi_P$. Le partizioni ammissibili sono un
 sottoinsieme chiuso superiormente del reticolo, chiameremo questo sottoinsieme
 $\mathcal{B}$. Se $\overline{\pi} \in \mathcal{B}$ allora lo saranno anche tutte
 le $\overline{\pi}'$ tali che $\overline{\pi}, \overline{\pi}' \in \mathcal{L}$ e
-$\overline{\pi} \sqsubseteq \overline{\pi}'$.
+$\overline{\pi} \sqsubseteq \overline{\pi}'$. Le partizioni ammissibili sono
+dotate di elemento minimo ovvero la più fine partizione appartenente a
+$\mathcal{B}$, partizione che verrà anche considerata come la migliore. Questa
+partizione minima viene calcolata come spiegato nell'*esempio 2.1.1*.
+
+Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
+ammissibile minima.
+** Operazioni
+In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
+generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
+binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
+meglio queste operazioni, è necessario prima dare una specifica di alcune
+funzioni utilizzate all'interno delle prime.
+$\\$
+$\\$
+\-\hspace{0.1cm} *Convert Constraint.* Funzione che mappa le dimensioni di un vincolo o
+generatore all'interno di un fattore. La PPLite utilizza dimensioni nel range
+$[0, ..., n]$ per i poliedri. Tramite la fattorizzazione è quindi necessario
+tradurre gli indici esterni a quelli interni dei vari blocchi.
+$\\$
+$\\$
+\-\hspace{0.1cm} *Least Upper Bound.* Questa funzione estrae il /lub/ di due partizioni.
+Dall'Algoritmo 1 si può notare come sia necessario generare l'insieme delle
+unioni dei due blocchi $\pi_{\mathcal{P}}$ e $\pi_{\mathcal{Q}}$ in
+$\overline{\pi}$. Successivamente si uniscono tra loro tutti i blocchi di
+$\overline{\pi}$ che hanno un'intersezione non vuota, calcolando
+successivamente la partizione corretta.
+  #+BEGIN_EXPORT latex
+  \begin{algorithm}[H]
+    \caption{Least-Upper-Bound}\label{prova}
+    \begin{algorithmic}[1]
+      \Function{Least-Upper-Bound}{$\pi_{\mathcal{P}}, \pi_{\mathcal{Q}}$}
+      \State $\overline{\pi} := \emptyset$
+      \For{\textbf{each} $\mathcal{X}_{\mathcal{P}_{i}}$ \textbf{in} $\pi_{\mathcal{P}}$}
+      \State$\mathcal{A}$:= $\emptyset$
+      \For{\textbf{each} $\mathcal{X}_{\mathcal{Q}k} in \pi_{\mathcal{Q}}$}
+      \If{$\mathcal{X}_{\mathcal{P}i} \cap\mathcal{X}_{\mathcal{Q}k} \ne \emptyset$}
+      \State$\mathcal{A}:=\mathcal{B} \cup\mathcal{X}_{\mathcal{Q}k}$
+      \EndIf
+      \EndFor
+      \State $\overline{pi}$.add($\mathcal{A}$)
+      \EndFor
+      \While{$\exists$ coppie ($\overline{\pi}_i, \overline{\pi}_j$), $i \ne j$ \textbf{t.c.} $\overline{\pi}_i \cap \overline{\pi}_j \ne \emptyset$}
+      \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
+      \EndWhile
+      \Return $\overline{\pi}$
+      \EndFunction
+    \end{algorithmic}
+  \end{algorithm}
+  #+END_EXPORT
+
+
 * Implementazione
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
@@ -227,24 +278,5 @@ static Blocks merge(const Blocks& b, const Block& added);
 
 *** Refactoring
 
-
-#+BEGIN_EXPORT latex
-\begin{algorithm}[H]
-\caption{Algoritmo di prova}
-\label{prova}
-\begin{algorithmic}[1]
-\Function{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
-\State $r\gets a\bmod b$
-\While{$r\not=0$}
-\Comment{We have the answer if r is 0}
-\State $a\gets b$
-\State $b\gets r$
-\State $r\gets a\bmod b$
-\EndWhile\label{euclidendwhile}
-\State \textbf{return} $b$\Comment{The gcd is b}
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-#+END_EXPORT
 
 * Conclusione

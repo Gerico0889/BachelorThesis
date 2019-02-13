@@ -1,4 +1,4 @@
-% Created 2019-02-12 mar 20:05
+% Created 2019-02-13 mer 13:00
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{minted}
@@ -36,10 +36,10 @@
 
 
 \chapter{Introduzione}
-\label{sec:org469c996}
+\label{sec:org876138c}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:org11f4d75}
+\label{sec:orgdffccf4}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
@@ -49,7 +49,7 @@ richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
 invece ne sono necessari solo \(2n\).
 
 \section{Blocchi e fattori}
-\label{sec:orgd7ec7a4}
+\label{sec:orga93957e}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -89,7 +89,7 @@ originale può essere recuperato applicando l'unione dei vincoli
   P = $P_{1} \bowtie P_{2} = (\mathcal{C}_{P_{1}} \cup \mathcal{C}_{P_{2}}, \mathcal{G}_{P_{1}} \times \mathcal{G}_{P_{2}})$
 \end{exmp}
 
-L'insieme \(\mathcal{L}\) che consiste in tutte le partizioni di \(\mathcal{X}\)
+L'insieme \(\mathcal{L}\) che consiste in tutte le partizioni possibili di \(\mathcal{X}\)
 forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqcap,
 \bot, \top)\). Gli elementi \(\pi\) del reticolo sono ordinati come segue: \(\pi
 \sqsubseteq \pi'\), se ogni blocco di \(\pi\) è incluso in qualche blocco di
@@ -98,16 +98,66 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:orge001a19}
+\label{sec:org054c985}
 Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
 sottoinsieme chiuso superiormente del reticolo, chiameremo questo sottoinsieme
 \(\mathcal{B}\). Se \(\overline{\pi} \in \mathcal{B}\) allora lo saranno anche tutte
 le \(\overline{\pi}'\) tali che \(\overline{\pi}, \overline{\pi}' \in \mathcal{L}\) e
-\(\overline{\pi} \sqsubseteq \overline{\pi}'\).
+\(\overline{\pi} \sqsubseteq \overline{\pi}'\). Le partizioni ammissibili sono
+dotate di elemento minimo ovvero la più fine partizione appartenente a
+\(\mathcal{B}\), partizione che verrà anche considerata come la migliore. Questa
+partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
+
+Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
+ammissibile minima.
+\section{Operazioni}
+\label{sec:org513364b}
+In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
+generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
+binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
+meglio queste operazioni, è necessario prima dare una specifica di alcune
+funzioni utilizzate all'interno delle prime.
+\(\\\)
+\(\\\)
+\-\hspace{0.1cm} \textbf{Convert Constraint.} Funzione che mappa le dimensioni di un vincolo o
+generatore all'interno di un fattore. La PPLite utilizza dimensioni nel range
+\([0, ..., n]\) per i poliedri. Tramite la fattorizzazione è quindi necessario
+tradurre gli indici esterni a quelli interni dei vari blocchi.
+\(\\\)
+\(\\\)
+\-\hspace{0.1cm} \textbf{Least Upper Bound.} Questa funzione estrae il \emph{lub} di due partizioni.
+Dall'Algoritmo 1 si può notare come sia necessario generare l'insieme delle
+unioni dei due blocchi \(\pi_{\mathcal{P}}\) e \(\pi_{\mathcal{Q}}\) in
+\(\overline{\pi}\). Successivamente si uniscono tra loro tutti i blocchi di
+\(\overline{\pi}\) che hanno un'intersezione non vuota, calcolando
+successivamente la partizione corretta.
+\begin{algorithm}[H]
+  \caption{Least-Upper-Bound}\label{prova}
+  \begin{algorithmic}[1]
+    \Function{Least-Upper-Bound}{$\pi_{\mathcal{P}}, \pi_{\mathcal{Q}}$}
+    \State $\overline{\pi} := \emptyset$
+    \For{\textbf{each} $\mathcal{X}_{\mathcal{P}_{i}}$ \textbf{in} $\pi_{\mathcal{P}}$}
+    \State$\mathcal{A}$:= $\emptyset$
+    \For{\textbf{each} $\mathcal{X}_{\mathcal{Q}k} in \pi_{\mathcal{Q}}$}
+    \If{$\mathcal{X}_{\mathcal{P}i} \cap\mathcal{X}_{\mathcal{Q}k} \ne \emptyset$}
+    \State$\mathcal{A}:=\mathcal{B} \cup\mathcal{X}_{\mathcal{Q}k}$
+    \EndIf
+    \EndFor
+    \State $\overline{\pi}$.add($\mathcal{A}$)
+    \EndFor
+    \While{$\exists$ coppie ($\overline{\pi}_i, \overline{\pi}_j$), $i \ne j$ \textbf{t.c.} $\overline{\pi}_i \cap \overline{\pi}_j \ne \emptyset$}
+    \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
+    \EndWhile
+    \Return $\overline{\pi}$
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+
+
 \chapter{Implementazione}
-\label{sec:orgff5a2ee}
+\label{sec:org41af5dc}
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
 sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
@@ -115,7 +165,7 @@ della \emph{PPLite}. L'implementazione data è quindi da vedere come un \textbf{
 quest'ultima.
 
 \section{\texttt{F\_Poly}}
-\label{sec:org9f19af6}
+\label{sec:orgbb55b04}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati. I più significativi sono:
@@ -148,7 +198,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv()}}
-\label{sec:org452eef3}
+\label{sec:org5166ace}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -252,7 +302,7 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:org6d8e57e}
+\label{sec:org268894b}
 Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
 livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
 Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
@@ -267,26 +317,9 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{minted}
 
 \subsection{Refactoring}
-\label{sec:org441159c}
+\label{sec:org7330d19}
 
-
-\begin{algorithm}[H]
-\caption{Algoritmo di prova}
-\label{prova}
-\begin{algorithmic}[1]
-\Function{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
-\State $r\gets a\bmod b$
-\While{$r\not=0$}
-\Comment{We have the answer if r is 0}
-\State $a\gets b$
-\State $b\gets r$
-\State $r\gets a\bmod b$
-\EndWhile\label{euclidendwhile}
-\State \textbf{return} $b$\Comment{The gcd is b}
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
 
 \chapter{Conclusione}
-\label{sec:org3922835}
+\label{sec:org41327a6}
 \end{document}
