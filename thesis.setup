@@ -1,4 +1,4 @@
-#+LATEX_HEADER: \addto\captionsenglish{\renewcommand\contentsname{Indice}} 
+#+LATEX_HEADER: \addto\captionsenglish{\renewcommand\contentsname{Indice}}
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \usepackage{amsmath}
 #+LATEX_HEADER: \usepackage{algorithm}
@@ -6,8 +6,9 @@
 #+LATEX_HEADER: \usepackage{amsthm}
 #+LATEX_HEADER: \usepackage{float}
 #+LATEX_HEADER: \usepackage[noend]{algpseudocode}
-#+LATEX_HEADER: \KOMAoptions{fontsize=12pt,headings=small}
+#+LATEX_HEADER: \KOMAoptions{fontsize=12pt,headings=normal}
 #+LATEX_HEADER: \makeglossaries
 #+LATEX_HEADER: \theoremstyle{definition}
 #+LATEX_HEADER: \newtheorem{exmp}{Esempio}[section]
 #+LATEX_HEADER: \usepackage{amsmath}
+#+LATEX_HEADER: \floatname{algorithm}{Algoritmo}

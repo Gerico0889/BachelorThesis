@@ -105,18 +105,18 @@ $\overline{\pi}$ che hanno un'intersezione non vuota, calcolando
 successivamente la partizione corretta.
   #+BEGIN_EXPORT latex
   \begin{algorithm}[H]
-    \caption{Least-Upper-Bound}\label{prova}
+    \caption{Least-Upper-Bound}\label{lub}
     \begin{algorithmic}[1]
       \Function{Least-Upper-Bound}{$\pi_{\mathcal{P}}, \pi_{\mathcal{Q}}$}
       \State $\overline{\pi} := \emptyset$
-      \For{\textbf{each} $\mathcal{X}_{\mathcal{P}_{i}}$ \textbf{in} $\pi_{\mathcal{P}}$}
+      \For{\textbf{each} $\mathcal{X}_{\mathcal{P}i}$ \textbf{in} $\pi_{\mathcal{P}}$}
       \State$\mathcal{A}$:= $\emptyset$
       \For{\textbf{each} $\mathcal{X}_{\mathcal{Q}k} in \pi_{\mathcal{Q}}$}
       \If{$\mathcal{X}_{\mathcal{P}i} \cap\mathcal{X}_{\mathcal{Q}k} \ne \emptyset$}
       \State$\mathcal{A}:=\mathcal{B} \cup\mathcal{X}_{\mathcal{Q}k}$
       \EndIf
       \EndFor
-      \State $\overline{pi}$.add($\mathcal{A}$)
+      \State $\overline{\pi}$.add($\mathcal{A}$)
       \EndFor
       \While{$\exists$ coppie ($\overline{\pi}_i, \overline{\pi}_j$), $i \ne j$ \textbf{t.c.} $\overline{\pi}_i \cap \overline{\pi}_j \ne \emptyset$}
       \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
@@ -126,6 +126,36 @@ successivamente la partizione corretta.
     \end{algorithmic}
   \end{algorithm}
   #+END_EXPORT
+$\\$
+$\\$
+\-\hspace{0.1cm} *Merge.* Definito come $\uparrow$, quando si ha l'operazione
+$\pi \uparrow \mathcal{A}$, dove $\pi$ è una partizione di un poliedro e
+$\mathcal{A}$ è un sottoindieme delle sue variabili (non per forza connesse da
+vincoli), genera una partizione $\pi_{merge}$ tale che:
+
++ $\exists$ $\mathcal{X}_i \in \pi_{merge} : \mathcal{A} \subseteq \mathcal{X}_i$
++ $\pi \sqsubseteq \pi_{merge}$
+
+Viene quindi generata una nuova fattorizzazione unendo i blocchi del poliedro
+che hanno variabili in comune con $\mathcal{A}$. Questa unione genera un blocco
+unico $\mathcal{D}$, tale che $\mathcal{A} \subseteq \mathcal{B}$.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Merge}\label{merge}
+\begin{algorithmic}[1]
+\Function{Merge}{$\pi, \mathcal{A}$}
+\State$\pi_{\mathcal{O}} := \emptyset$
+\State$\mathcal{D} := \emptyset$
+\For{$\textbf{each} \mathcal{X}_{i} \textbf{in} \pi$}
+\If{$\mathcal{X}_{i} \cap \mathcal{A} \ne \emptyset$}
+\State$\mathcal{D} := \mathcal{D} \cup \mathcal{X}_{i}$
+\State$\pi$
+\EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
 
 
 * Implementazione

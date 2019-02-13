@@ -1,4 +1,4 @@
-% Created 2019-02-13 mer 13:00
+% Created 2019-02-13 mer 14:01
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{minted}
@@ -10,11 +10,12 @@
 \usepackage{amsthm}
 \usepackage{float}
 \usepackage[noend]{algpseudocode}
-\KOMAoptions{fontsize=12pt,headings=small}
+\KOMAoptions{fontsize=12pt,headings=normal}
 \makeglossaries
 \theoremstyle{definition}
 \newtheorem{exmp}{Esempio}[section]
 \usepackage{amsmath}
+\floatname{algorithm}{Algoritmo}
 
 \newcommand{\mboxparagraph}[1]{\paragraph{#1}\mbox{}\\}
 \newcommand{\mboxsubparagraph}[1]{\subparagraph{#1}\mbox{}\\}
@@ -36,10 +37,10 @@
 
 
 \chapter{Introduzione}
-\label{sec:org876138c}
+\label{sec:org0dfc5a2}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:orgdffccf4}
+\label{sec:org5d268a3}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
@@ -49,7 +50,7 @@ richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
 invece ne sono necessari solo \(2n\).
 
 \section{Blocchi e fattori}
-\label{sec:orga93957e}
+\label{sec:orgc939243}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -98,7 +99,7 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:org054c985}
+\label{sec:org8b546c6}
 Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
@@ -113,7 +114,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org513364b}
+\label{sec:org1c6df53}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
 binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
@@ -134,11 +135,11 @@ unioni dei due blocchi \(\pi_{\mathcal{P}}\) e \(\pi_{\mathcal{Q}}\) in
 \(\overline{\pi}\) che hanno un'intersezione non vuota, calcolando
 successivamente la partizione corretta.
 \begin{algorithm}[H]
-  \caption{Least-Upper-Bound}\label{prova}
+  \caption{Least-Upper-Bound}\label{lub}
   \begin{algorithmic}[1]
     \Function{Least-Upper-Bound}{$\pi_{\mathcal{P}}, \pi_{\mathcal{Q}}$}
     \State $\overline{\pi} := \emptyset$
-    \For{\textbf{each} $\mathcal{X}_{\mathcal{P}_{i}}$ \textbf{in} $\pi_{\mathcal{P}}$}
+    \For{\textbf{each} $\mathcal{X}_{\mathcal{P}i}$ \textbf{in} $\pi_{\mathcal{P}}$}
     \State$\mathcal{A}$:= $\emptyset$
     \For{\textbf{each} $\mathcal{X}_{\mathcal{Q}k} in \pi_{\mathcal{Q}}$}
     \If{$\mathcal{X}_{\mathcal{P}i} \cap\mathcal{X}_{\mathcal{Q}k} \ne \emptyset$}
@@ -154,10 +155,58 @@ successivamente la partizione corretta.
     \EndFunction
   \end{algorithmic}
 \end{algorithm}
+\(\\\)
+\(\\\)
+\-\hspace{0.1cm} \textbf{Merge.} Definito come \(\uparrow\), quando si ha l'operazione
+\(\pi \uparrow \mathcal{A}\), dove \(\pi\) è una partizione di un poliedro e
+\(\mathcal{A}\) è un sottoindieme delle sue variabili (non per forza connesse da
+vincoli), genera una partizione \(\pi_{merge}\) tale che:
 
+\begin{itemize}
+\item \(\exists\) \(\mathcal{X}_i \in \pi_{merge} : \mathcal{A} \subseteq \mathcal{X}_i\)
+\item \(\pi \sqsubseteq \pi_{merge}\)
+\end{itemize}
 
+Viene quindi generata una nuova fattorizzazione unendo i blocchi del poliedro
+che hanno variabili in comune con \(\mathcal{A}\). Questa unione genera un blocco
+unico \(\mathcal{D}\), tale che \(\mathcal{A} \subseteq \mathcal{B}\).
+
+\begin{algorithm}[H]
+\caption{Merge}\label{merge}
+\begin{algorithmic}[1]
+\Function{Merge}{$\pi, \mathcal{A}$}
+\State$\pi_{\mathcal{O}} := \emptyset$
+\State$\mathcal{D} := \emptyset$
+\For{\textbf{each} $\mathcal{X}_{i}$ \textbf{in} $\pi$}
+\If{$\mathcal{X}_{i} \cap \mathcal{A} \ne \emptyset$}
+\State$\mathcal{D} := \mathcal{D} \cup \mathcal{X}_{i}$
+\Else
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{X}_{i})$
+\EndIf
+\EndFor
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{D})$
+\State\textbf{return} $\pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\-\hspace{0.1cm} \textbf{Refactor.} Questa operazione ha come argomenti un poliedro
+fattorizzato e una fattorizzazione ammissibile \(\overline{\pi}\) per questo
+poliedro. Non fa altro che convertire i fattori rispetto alla seconda
+fattorizzazione. È importante notare che la partizione ammissibile non sarà più
+fine di \(\pi_{\mathcal{P}}\), visto che i blocchi non vengono divisi bensì solo
+uniti.
+
+La refactor è un'operazione necessaria in quanto, avendo due poliedri
+\(\mathcal{P}\) e \(\mathcal{Q}\) definiti sullo stesso insieme di variabili \(X =
+\{x_1, x_2, ..., x_n\}\) e presi \(\overline{\pi}_{\mathcal{P}} =
+\{X_{\mathcal{P}_1}, X_{\mathcal{P}_2}, ..., X_{\mathcal{P}_r}\}\),
+\(\overline{\pi}_{\mathcal{Q}} = \{X_{\mathcal{Q}_1}, X_{\mathcal{Q}_2}, ...,
+X_{\mathcal{Q}_s}\}\)
+partizioni corrette di \(\mathcal{P}\) e \(\mathcal{Q}\) in genere abbiamo che
+\(\overline{\pi}_{\mathcal{P}} \ne \overline{\pi}_{\mathcal{Q}}\).
 \chapter{Implementazione}
-\label{sec:org41af5dc}
+\label{sec:orga7122d4}
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
 sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
@@ -165,7 +214,7 @@ della \emph{PPLite}. L'implementazione data è quindi da vedere come un \textbf{
 quest'ultima.
 
 \section{\texttt{F\_Poly}}
-\label{sec:orgbb55b04}
+\label{sec:org21350fd}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati. I più significativi sono:
@@ -198,7 +247,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv()}}
-\label{sec:org5166ace}
+\label{sec:orgfff8b8b}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -302,7 +351,7 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:org268894b}
+\label{sec:orga595378}
 Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
 livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
 Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
@@ -317,9 +366,9 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{minted}
 
 \subsection{Refactoring}
-\label{sec:org7330d19}
+\label{sec:org51befd7}
 
 
 \chapter{Conclusione}
-\label{sec:org41327a6}
+\label{sec:org752ba44}
 \end{document}
