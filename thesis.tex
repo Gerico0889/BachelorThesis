@@ -1,4 +1,4 @@
-% Created 2019-02-13 mer 14:01
+% Created 2019-02-13 mer 16:29
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{minted}
@@ -37,10 +37,10 @@
 
 
 \chapter{Introduzione}
-\label{sec:org0dfc5a2}
+\label{sec:orgf0c2b59}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:org5d268a3}
+\label{sec:org1fb8d64}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
@@ -50,7 +50,7 @@ richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
 invece ne sono necessari solo \(2n\).
 
 \section{Blocchi e fattori}
-\label{sec:orgc939243}
+\label{sec:org132ab6d}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -99,7 +99,7 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:org8b546c6}
+\label{sec:orgbe46045}
 Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
@@ -114,7 +114,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org1c6df53}
+\label{sec:org31f32c0}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
 binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
@@ -149,7 +149,7 @@ successivamente la partizione corretta.
     \State $\overline{\pi}$.add($\mathcal{A}$)
     \EndFor
     \While{$\exists$ coppie ($\overline{\pi}_i, \overline{\pi}_j$), $i \ne j$ \textbf{t.c.} $\overline{\pi}_i \cap \overline{\pi}_j \ne \emptyset$}
-    \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
+    \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{\pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
     \EndWhile
     \Return $\overline{\pi}$
     \EndFunction
@@ -204,9 +204,150 @@ La refactor è un'operazione necessaria in quanto, avendo due poliedri
 \(\overline{\pi}_{\mathcal{Q}} = \{X_{\mathcal{Q}_1}, X_{\mathcal{Q}_2}, ...,
 X_{\mathcal{Q}_s}\}\)
 partizioni corrette di \(\mathcal{P}\) e \(\mathcal{Q}\) in genere abbiamo che
-\(\overline{\pi}_{\mathcal{P}} \ne \overline{\pi}_{\mathcal{Q}}\).
+\(\overline{\pi}_{\mathcal{P}} \ne \overline{\pi}_{\mathcal{Q}}\). È necessario
+che, come in molte operazioni comuni nell'analisi e manipolazione dei poliedri,
+le dimensioni delle partizioni utilizzate siano uguali in quantità e valori. Se
+si applica la fattorizzazione su poliedri aventi gli stessi blocchi non si fa
+altro che calcolare il \emph{lub} (\(\overline{\pi} = \overline{\pi}_{\mathcal{P}}
+\; \sqcup \; \overline{\pi}_{\mathcal{Q}}\)).
+
+\begin{algorithm}[H]
+\caption{Refactor}\label{refactor}
+\begin{algorithmic}[1]
+\Function{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\State$\mathcal{O}, \pi_{\mathcal{O}} := \emptyset$
+\For{\textbf{each} $i$ \textbf{in} $\{1,..., r\}$} \Comment{r = numero blocchi di $\pi_{\mathcal{P}}$}
+\State$\mathcal{O}_{i}, \pi_{\mathcal{O}i} := \emptyset$
+\For{\textbf{each} $j$ \textbf{in} $\{1,...,m\}$} \Comment{m = numero blocchi di $\overline{\pi}$}
+\If{$\pi_{\mathcal{P}i} \cap \overline{\pi}_{i} \ne \emptyset$}
+\State$\mathcal{O}_{i}$ := $\mathcal{O}_{j} \bowtie \mathcal{P}_{i}$
+\State$\pi_{\mathcal{O}i}$ := $\pi_{\mathcal{O}i} \bowtie \pi_{\mathcal{P}i}$
+\EndIf
+\EndFor
+\State$\mathcal{O}$.add$(\mathcal{O}_{i})$
+\State$\pi_{\mathcal{O}}$.add$(\pi_{\mathcal{O}i})$
+\EndFor
+\State\Call{Remap-Dimensions}{$\mathcal{O}, \pi_{\mathcal{O}}, \overline{\pi}$}
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Come spiegato precedentemente, la refactor prende in input un poliedro
+fattorizzato \(\mathcal{P}\) e la sua partizione \(\pi_{\mathcal{P}}\) per
+rifattorizzarlo in base al terzo parametro \(\overline{\pi}\). Non fa altro che
+unire i fattori che hanno intersezione dei relativi blocchi non vuota tra
+\(\pi_{\mathcal{P}}\) e \(\overline{\pi}\) e generare il blocco finale. È importante
+ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
+blocco di \(\overline{\pi}\).
+
+\subsection{Inclusion Test (\(\sqsubseteq\))}
+\label{sec:org6537ad5}
+Operazione necessaria per controllare se un poliedro è incluso in un altro,
+disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
+poliedri \(\mathcal{P}\) e \(\mathcal{Q}\) tutti i generatori in
+\(\mathcal{G}_{\mathcal{P}}\) soddisfano tutti i vincoli in
+\(\mathcal{C}_{\mathcal{Q}}\).
+
+Nel nostro caso e, come mostrato nell'Algoritmo 4, è stata implementata tramite
+wrapper. In particolare vengono rifattorizzati i poliedri con il \emph{lub}
+\(\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}\) e successivamente viene applicata
+l'\emph{inclusion} in ordine su ogni coppia di fattori: il test avrà successo se
+tutti i test ritornano \emph{True}.
+
+\begin{algorithm}[H]
+\caption{Inclusion Test}\label{inclusion test}
+\begin{algorithmic}[1]
+\Function{Inclusion}{$\mathcal{P},\pi_{\mathcal{P}},\mathcal{Q},\pi_{\mathcal{Q}}$}
+\State$\overline{\pi}$ := \Call{Leas-Upper-Bound}{$\pi_{\mathcal{P}},\pi_{\mathcal{Q}}$}
+\State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\State$\mathcal{Q}'$ := \Call{Refactor}{$\mathcal{Q}, \pi_{\mathcal{Q}}, \overline{\pi}$}
+\For{\textbf{each} $k$ \textbf{in} $\{1,...,r\}$} \Comment{r = numero di blocchi in $\overline{\pi}$}
+\If{$\mathcal{P}'_{k}$ non include $\mathcal{Q}'_{k}$ }
+\State\Return\textit{False}
+\EndIf
+\EndFor
+\State\Return\textit{True}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Join (\(\sqcup\))}
+\label{sec:orgfa1274c}
+Tramite la doppia reppresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
+dove \(\mathcal{O}\) è il risultato del \emph{join}, sono semplicemente l'unione dei
+generatori dei poliedri presi in input dalla funzione, ovvero
+\(\mathcal{G}_{\mathcal{O}}\) = \(\mathcal{G}_{\mathcal{P}} \cup
+\mathcal{G}_{\mathcal{Q}}\). I vincoli \(\mathcal{C}_{\mathcal{O}}\) sono ottenuti
+aggiungendo incrementalmente i generatori di \(\mathcal{G}_{\mathcal{Q}}\) al
+poliedro definito da \(\mathcal{C}_{\mathcal{P}}\).
+
+\begin{algorithm}[H]
+\caption{Join}\label{join}
+\begin{algorithmic}[1]
+\Function{Join}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{O}, \pi_{\mathcal{O}}$}
+\If{\Call{is\_empty}{$\mathcal{P}$}}
+\State$\mathcal{O}, \pi_{\mathcal{O}}$ := $\mathcal{Q}, \pi_{\mathcal{Q}}$
+\ElsIf{\Call{is\_empty}{$\mathcal{Q}$}}
+\State$\mathcal{O}, \pi_{\mathcal{O}}$ := $\mathcal{P}, \pi_{\mathcal{P}}$
+\Else
+\State$\mathcal{O}, \pi_{\mathcal{O}}$ := \Call{Join-Poly}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{O}, \pi_{\mathcal{O}}$}
+\EndIf
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+Avendo un sistema di poliedri fattorizzati, è necessario per prima cosa
+rifattorizzare \(\mathcal{P}\) e \(\mathcal{Q}\) utilizzando il loro \emph{lub}. Per ogni
+coppia di fattori \((\mathcal{P}'_{i}, \mathcal{Q}'_{i})\) uguali, se ne aggiunge
+uno con il rispettivo blocco \(\overline{\pi}_i\) al risultato. Se invece i due
+fattori risultano diversi, ognuno viene unito a un fattore comune
+\((\mathcal{P}'_{i}, \mathcal{Q}'_{i})\) e successivamente si calcola la \emph{join} di
+questi due fattori e si inserisce insieme al rispettivo blocco nel poliedro di
+output.
+
+Un caso speciale è stato assegnato ai poliedri \emph{vuoti}. Dati \(\mathcal{P}\) come
+poliedro \emph{vuoto} e \(\mathcal{Q}\) un poliedro generico allora \(\mathcal{Q} \cup
+\mathcal{P}\) = \(\mathcal{Q}\) e anche \(\mathcal{P} \cup
+\mathcal{Q}\) = \(\mathcal{Q}\).
+
+Se invece \(\overline{\pi} = \overline{\pi}_{\mathcal{P}} \sqcup
+\overline{\pi}_{\mathcal{Q}}\) e \(\mathcal{U} = \{\mathcal{X}_k \: | \: \mathcal{P}
+= \mathcal{Q}, \mathcal{X}_k \in \overline{\pi} \}\) allora la partizione
+ammissibile, in questo caso, sarà uguale a:
+
+\begin{align*}
+\overline{\pi}_{\mathcal{P} \sqcup \mathcal{Q}} = \mathcal{U} \cup \bigcup_{\mathcal{T} \in \overline{\pi} \backslash \mathcal{U}} \mathcal{T}
+\end{align*}
+
+\begin{algorithm}[H]
+\caption{Join-Poly}\label{join-poly}
+\begin{algorithmic}[1]
+\Function{Join-Poly}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{O}, \pi_{\mathcal{O}}$}
+\State$\overline{\pi}$ := $\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$
+\State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P, \pi_{\mathcal{P}}, \overline{\pi}}$}
+\State$\mathcal{Q}'$ := \Call{Refactor}{$\mathcal{Q, \pi_{\mathcal{Q}}, \overline{\pi}}$}
+\For{\textbf{each} $i$ \textbf{in} $\{0,...,|\mathcal{P}'|\}$}
+\If{$\mathcal{P}'_i = \mathcal{Q}'_i$}
+\State$\mathcal{O}$.add$(\mathcal{P}'_{i})$
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{X}'_{i})$
+\Else
+\State$\mathcal{X}_{\mathcal{T}}$ := $\mathcal{X}_{\mathcal{T}} \cup \overline{\pi}_{i}$
+\State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \bowtie \mathcal{P}'_{i}$
+\State$\mathcal{Q}_{\mathcal{T}}$ := $\mathcal{Q}_{\mathcal{T}} \bowtie \mathcal{Q}'_{i}$
+\EndIf
+\EndFor
+\State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \sqcap \mathcal{Q}_{\mathcal{T}}$
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{X}_{\mathcal{T}})$
+\State$\mathcal{O}$.add$(\mathcal{P}_{\mathcal{T}})$
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
 \chapter{Implementazione}
-\label{sec:orga7122d4}
+\label{sec:org57efcce}
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
 sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
@@ -214,7 +355,7 @@ della \emph{PPLite}. L'implementazione data è quindi da vedere come un \textbf{
 quest'ultima.
 
 \section{\texttt{F\_Poly}}
-\label{sec:org21350fd}
+\label{sec:org519c5b8}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati. I più significativi sono:
@@ -247,7 +388,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv()}}
-\label{sec:orgfff8b8b}
+\label{sec:orgd13673e}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -351,7 +492,7 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:orga595378}
+\label{sec:orgc800e93}
 Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
 livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
 Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
@@ -366,9 +507,9 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{minted}
 
 \subsection{Refactoring}
-\label{sec:org51befd7}
+\label{sec:org8384767}
 
 
 \chapter{Conclusione}
-\label{sec:org752ba44}
+\label{sec:org17a0f3b}
 \end{document}

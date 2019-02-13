@@ -119,7 +119,7 @@ successivamente la partizione corretta.
       \State $\overline{\pi}$.add($\mathcal{A}$)
       \EndFor
       \While{$\exists$ coppie ($\overline{\pi}_i, \overline{\pi}_j$), $i \ne j$ \textbf{t.c.} $\overline{\pi}_i \cap \overline{\pi}_j \ne \emptyset$}
-      \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
+      \State $\overline{\pi}$ := $\ \{\overline{\pi}_i, \overline{\pi}_j\} \cup \{\overline{\pi}_i \cup \overline{\pi}_j\}\}$
       \EndWhile
       \Return $\overline{\pi}$
       \EndFunction
@@ -147,16 +147,186 @@ unico $\mathcal{D}$, tale che $\mathcal{A} \subseteq \mathcal{B}$.
 \Function{Merge}{$\pi, \mathcal{A}$}
 \State$\pi_{\mathcal{O}} := \emptyset$
 \State$\mathcal{D} := \emptyset$
-\For{$\textbf{each} \mathcal{X}_{i} \textbf{in} \pi$}
+\For{\textbf{each} $\mathcal{X}_{i}$ \textbf{in} $\pi$}
 \If{$\mathcal{X}_{i} \cap \mathcal{A} \ne \emptyset$}
 \State$\mathcal{D} := \mathcal{D} \cup \mathcal{X}_{i}$
-\State$\pi$
+\Else
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{X}_{i})$
 \EndIf
 \EndFor
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{D})$
+\State\textbf{return} $\pi_{\mathcal{O}}$
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
 #+END_EXPORT
 
+\-\hspace{0.1cm} *Refactor.* Questa operazione ha come argomenti un poliedro
+fattorizzato e una fattorizzazione ammissibile $\overline{\pi}$ per questo
+poliedro. Non fa altro che convertire i fattori rispetto alla seconda
+fattorizzazione. È importante notare che la partizione ammissibile non sarà più
+fine di $\pi_{\mathcal{P}}$, visto che i blocchi non vengono divisi bensì solo
+uniti.
+
+La refactor è un'operazione necessaria in quanto, avendo due poliedri
+$\mathcal{P}$ e $\mathcal{Q}$ definiti sullo stesso insieme di variabili $X =
+\{x_1, x_2, ..., x_n\}$ e presi $\overline{\pi}_{\mathcal{P}} =
+\{X_{\mathcal{P}_1}, X_{\mathcal{P}_2}, ..., X_{\mathcal{P}_r}\}$,
+$\overline{\pi}_{\mathcal{Q}} = \{X_{\mathcal{Q}_1}, X_{\mathcal{Q}_2}, ...,
+X_{\mathcal{Q}_s}\}$
+partizioni corrette di $\mathcal{P}$ e $\mathcal{Q}$ in genere abbiamo che
+$\overline{\pi}_{\mathcal{P}} \ne \overline{\pi}_{\mathcal{Q}}$. È necessario
+che, come in molte operazioni comuni nell'analisi e manipolazione dei poliedri,
+le dimensioni delle partizioni utilizzate siano uguali in quantità e valori. Se
+si applica la fattorizzazione su poliedri aventi gli stessi blocchi non si fa
+altro che calcolare il /lub/ ($\overline{\pi} = \overline{\pi}_{\mathcal{P}}
+\; \sqcup \; \overline{\pi}_{\mathcal{Q}}$).
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Refactor}\label{refactor}
+\begin{algorithmic}[1]
+\Function{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\State$\mathcal{O}, \pi_{\mathcal{O}} := \emptyset$
+\For{\textbf{each} $i$ \textbf{in} $\{1,..., r\}$} \Comment{r = numero blocchi di $\pi_{\mathcal{P}}$}
+\State$\mathcal{O}_{i}, \pi_{\mathcal{O}i} := \emptyset$
+\For{\textbf{each} $j$ \textbf{in} $\{1,...,m\}$} \Comment{m = numero blocchi di $\overline{\pi}$}
+\If{$\pi_{\mathcal{P}i} \cap \overline{\pi}_{i} \ne \emptyset$}
+\State$\mathcal{O}_{i}$ := $\mathcal{O}_{j} \bowtie \mathcal{P}_{i}$
+\State$\pi_{\mathcal{O}i}$ := $\pi_{\mathcal{O}i} \bowtie \pi_{\mathcal{P}i}$
+\EndIf
+\EndFor
+\State$\mathcal{O}$.add$(\mathcal{O}_{i})$
+\State$\pi_{\mathcal{O}}$.add$(\pi_{\mathcal{O}i})$
+\EndFor
+\State\Call{Remap-Dimensions}{$\mathcal{O}, \pi_{\mathcal{O}}, \overline{\pi}$}
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
+Come spiegato precedentemente, la refactor prende in input un poliedro
+fattorizzato $\mathcal{P}$ e la sua partizione $\pi_{\mathcal{P}}$ per
+rifattorizzarlo in base al terzo parametro $\overline{\pi}$. Non fa altro che
+unire i fattori che hanno intersezione dei relativi blocchi non vuota tra
+$\pi_{\mathcal{P}}$ e $\overline{\pi}$ e generare il blocco finale. È importante
+ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
+blocco di $\overline{\pi}$.
+
+*** Inclusion Test ($\sqsubseteq$)
+Operazione necessaria per controllare se un poliedro è incluso in un altro,
+disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
+poliedri $\mathcal{P}$ e $\mathcal{Q}$ tutti i generatori in
+$\mathcal{G}_{\mathcal{P}}$ soddisfano tutti i vincoli in
+$\mathcal{C}_{\mathcal{Q}}$.
+
+Nel nostro caso e, come mostrato nell'Algoritmo 4, è stata implementata tramite
+wrapper. In particolare vengono rifattorizzati i poliedri con il /lub/
+$\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$ e successivamente viene applicata
+l'/inclusion/ in ordine su ogni coppia di fattori: il test avrà successo se
+tutti i test ritornano /True/.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Inclusion Test}\label{inclusion test}
+\begin{algorithmic}[1]
+\Function{Inclusion}{$\mathcal{P},\pi_{\mathcal{P}},\mathcal{Q},\pi_{\mathcal{Q}}$}
+\State$\overline{\pi}$ := \Call{Leas-Upper-Bound}{$\pi_{\mathcal{P}},\pi_{\mathcal{Q}}$}
+\State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\State$\mathcal{Q}'$ := \Call{Refactor}{$\mathcal{Q}, \pi_{\mathcal{Q}}, \overline{\pi}$}
+\For{\textbf{each} $k$ \textbf{in} $\{1,...,r\}$} \Comment{r = numero di blocchi in $\overline{\pi}$}
+\If{$\mathcal{P}'_{k}$ non include $\mathcal{Q}'_{k}$ }
+\State\Return\textit{False}
+\EndIf
+\EndFor
+\State\Return\textit{True}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
+*** Join ($\sqcup$)
+Tramite la doppia reppresentazione, i generatori $\mathcal{G}_{\mathcal{O}}$
+dove $\mathcal{O}$ è il risultato del /join/, sono semplicemente l'unione dei
+generatori dei poliedri presi in input dalla funzione, ovvero
+$\mathcal{G}_{\mathcal{O}}$ = $\mathcal{G}_{\mathcal{P}} \cup
+\mathcal{G}_{\mathcal{Q}}$. I vincoli $\mathcal{C}_{\mathcal{O}}$ sono ottenuti
+aggiungendo incrementalmente i generatori di $\mathcal{G}_{\mathcal{Q}}$ al
+poliedro definito da $\mathcal{C}_{\mathcal{P}}$.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Join}\label{join}
+\begin{algorithmic}[1]
+\Function{Join}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{O}, \pi_{\mathcal{O}}$}
+\If{\Call{is\_empty}{$\mathcal{P}$}}
+\State$\mathcal{O}, \pi_{\mathcal{O}}$ := $\mathcal{Q}, \pi_{\mathcal{Q}}$
+\ElsIf{\Call{is\_empty}{$\mathcal{Q}$}}
+\State$\mathcal{O}, \pi_{\mathcal{O}}$ := $\mathcal{P}, \pi_{\mathcal{P}}$
+\Else
+\State$\mathcal{O}, \pi_{\mathcal{O}}$ := \Call{Join-Poly}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{O}, \pi_{\mathcal{O}}$}
+\EndIf
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
+Avendo un sistema di poliedri fattorizzati, è necessario per prima cosa
+rifattorizzare $\mathcal{P}$ e $\mathcal{Q}$ utilizzando il loro /lub/. Per ogni
+coppia di fattori $(\mathcal{P}'_{i}, \mathcal{Q}'_{i})$ uguali, se ne aggiunge
+uno con il rispettivo blocco $\overline{\pi}_i$ al risultato. Se invece i due
+fattori risultano diversi, ognuno viene unito a un fattore comune
+$(\mathcal{P}'_{i}, \mathcal{Q}'_{i})$ e successivamente si calcola la /join/ di
+questi due fattori e si inserisce insieme al rispettivo blocco nel poliedro di
+output.
+
+Un caso speciale è stato assegnato ai poliedri /vuoti/. Dati $\mathcal{P}$ come
+poliedro /vuoto/ e $\mathcal{Q}$ un poliedro generico allora $\mathcal{Q} \cup
+\mathcal{P}$ = $\mathcal{Q}$ e anche $\mathcal{P} \cup
+\mathcal{Q}$ = $\mathcal{Q}$.
+
+Se invece $\overline{\pi} = \overline{\pi}_{\mathcal{P}} \sqcup
+\overline{\pi}_{\mathcal{Q}}$ e $\mathcal{U} = \{\mathcal{X}_k \: | \: \mathcal{P}
+= \mathcal{Q}, \mathcal{X}_k \in \overline{\pi} \}$ allora la partizione
+ammissibile, in questo caso, sarà uguale a:
+
+#+BEGIN_EXPORT latex
+\begin{align*}
+\overline{\pi}_{\mathcal{P} \sqcup \mathcal{Q}} = \mathcal{U} \cup \bigcup_{\mathcal{T} \in \overline{\pi} \backslash \mathcal{U}} \mathcal{T}
+\end{align*}
+#+END_EXPORT
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Join-Poly}\label{join-poly}
+\begin{algorithmic}[1]
+\Function{Join-Poly}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{O}, \pi_{\mathcal{O}}$}
+\State$\overline{\pi}$ := $\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$
+\State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P, \pi_{\mathcal{P}}, \overline{\pi}}$}
+\State$\mathcal{Q}'$ := \Call{Refactor}{$\mathcal{Q, \pi_{\mathcal{Q}}, \overline{\pi}}$}
+\For{\textbf{each} $i$ \textbf{in} $\{0,...,|\mathcal{P}'|\}$}
+\If{$\mathcal{P}'_i = \mathcal{Q}'_i$}
+\State$\mathcal{O}$.add$(\mathcal{P}'_{i})$
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{X}'_{i})$
+\Else
+\State$\mathcal{X}_{\mathcal{T}}$ := $\mathcal{X}_{\mathcal{T}} \cup \overline{\pi}_{i}$
+\State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \bowtie \mathcal{P}'_{i}$
+\State$\mathcal{Q}_{\mathcal{T}}$ := $\mathcal{Q}_{\mathcal{T}} \bowtie \mathcal{Q}'_{i}$
+\EndIf
+\EndFor
+\State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \sqcap \mathcal{Q}_{\mathcal{T}}$
+\State$\pi_{\mathcal{O}}$.add$(\mathcal{X}_{\mathcal{T}})$
+\State$\mathcal{O}$.add$(\mathcal{P}_{\mathcal{T}})$
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+#+END_EXPORT
+
+*** Meet ($\sqcap$)
 
 * Implementazione
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
