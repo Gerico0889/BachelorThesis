@@ -327,6 +327,145 @@ ammissibile, in questo caso, sarà uguale a:
 #+END_EXPORT
 
 *** Meet ($\sqcap$)
+Per la doppia rappresentazione, $\mathcal{P} \sqcap \mathcal{Q}$ genera un
+poliedro i cui vincoli $\mathcal{C}_{\mathcal{P} \sqcap \mathcal{Q}}$ sono
+risultati dall'unione di $\mathcal{C}_{\mathcal{P}}$ e
+$\mathcal{C}_{\mathcal{Q}}$, mentre $\mathcal{G}_{\mathcal{P} \sqcap
+\mathcal{Q}}$ si ottiene aggiungendo incrementalmente i vincoli di
+$\mathcal{C}_{\mathcal{Q}}$ al poliedro $\mathcal{P}$. Se $\mathcal{P} \sqcap
+\mathcal{Q}$ risulta non soddisfacibile allora $\mathcal{P} \sqcap \mathcal{Q} =
+\bot$ e $\mathcal{G}_{\mathcal{P} \sqcap \mathcal{Q}} = \emptyset$.
+
+Per quanto riguarda i poliedri fattorizzati è necessario generare
+$\overline{\pi} = \overline{\pi}_{\mathcal{P}} \sqcap
+\overline{\pi}_{\mathcal{Q}}$ e rifattorizzare i due poliedri $\mathcal{P}$ e
+$\mathcal{Q}$ tramite essa, generando quindi $\mathcal{P}'$ e $\mathcal{Q}'$.
+Per tutte le $r$ coppie di fattori $\mathcal{P}'_i$ e $\mathcal{Q}'_i$, se
+sono uguali aggiungo $\mathcal{P}'_i$ con il rispettivo blocco al poliedro di
+output $\mathcal{O}$, altrimenti creo un fattore $\mathcal{F} = \mathcal{P}'_i
+\sqcap \mathcal{Q}'_i$. Se $\mathcal{F}$ dovesse risultare vuoto, allora il
+risultato dell'intera operazione di /meet/ sarebbe un poliedro $\bot$. Se al
+contrario non fosse vuoto, aggiungo $\mathcal{F}$ a $\mathcal{O}$ per poi
+riprender il ciclo fino all'esaurimento dei fattori e ritornando infine
+$\mathcal{O}$ e il suo blocco (rappresentato dal /lub/ di $\pi_{\mathcal{P}}$ e
+$\pi_{\mathcal{Q}}$) come risultato. $\overline{\pi}_{\mathcal{P} \sqcap
+\mathcal{Q}} = \pi_{\mathcal{P}} \sqcap \pi_{\mathcal{Q}}$ è una partizione
+ammissibile se $\mathcal{P} \sqcap \mathcal{Q} \ne \bot$, altrimenti $\bot$ è
+ammissibile.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Meet}\label{meet}
+\begin{algorithmic}[1]
+\Function{Meet}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{Q}, \pi_{\mathcal{Q}}$}
+\State$\overline{\pi}$ := $\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$
+\State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\State$\mathcal{Q}'$ := \Call{Refactor}{$\mathcal{Q}, \pi_{\mathcal{Q}}, \overline{\pi}$}
+\State$\mathcal{O}$ := $\emptyset$
+\For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{r = numero di blocchi in $\overline{\pi}$}
+\If{$\mathcal{P}'_i = \mathcal{Q}'_i$}
+\State$\mathcal{O}$.add$(\mathcal{P}'_i)$
+\Else
+\State$\mathcal{F}$ := $\mathcal{P}'_{i} \bowtie \mathcal{Q}'_{i}$
+\If{\Call{is\_empty}{$\mathcal{F}$}}
+\State\Return$\bot, \bot$
+\EndIf
+\State$\mathcal{O}$.add$(\mathcal{F})$
+\EndIf
+\EndFor
+\State$\pi_{\mathcal{O}}$ := $\overline{\pi}$
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
+
+*** Conditional
+Questa operazione viene utilizzata per aggiungere nuovi vincoli tra le variabili
+di un poliedro. Tramite la doppia rappresentazione è possibile aggiungendo un
+vincolo arbitrario $c$ all'insieme $\mathcal{C}_{\mathcal{P}}$. Se dopo
+l'inserimento il sistema di vincoli risulta insoddisfacibile allora il poliedro
+diventa vuoto. Il sistema di generatori è, come sempre, ricavato dall'aggiunta
+incrementale del vincolo $c$ nel poliedro attraverso la conversione.
+
+Utilizzando poliedri fattorizzati è necessare ricavare il blocco $\mathcal{B}$ che contiene le
+variabili utilizzate nel vincolo, rifattorizzando $\mathcal{P}$ con
+$\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}$ si genera $\mathcal{P}'$.
+Successivamente bisogna prendere il fattore relativo contenente le variabili di
+$\mathcal{B}$, convertire il vincolo con le dimensioni /interne/ del fattore e
+aggiungerlo a quest'ultimo utilizzando un'operazione per normali poliedri. Si
+controlla, infine, che il sistema di vincoli sia ancora soddisfacibile e, in
+caso negativo i blocchi e i fattori in $\bot$ vengono modificati e il poliedro
+si rende /vuoto/. È importante far notare che, dato $\mathcal{O}$ un poliedro
+risultante dall'aggiunta di un vincolo, $\overline{\pi}_{\mathcal{O}} = \overline{\pi}_{\mathcal{P}}
+\uparrow \mathcal{B}$ è ammissibile se $\mathcal{O} \ne \bot$, altrimenti
+$\overline{\pi}_{\mathcal{O}} = \bot$.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Conditional}\label{conditional}
+\begin{algorithmic}[1]
+\Function{Conditional}{$con$}
+\State$\mathcal{B}$ := \Call{extract\_block}{$\mathcal{P}$, $\pi_{\mathcal{P}}$, \textit{con}}
+\State$\overline{\pi}$ := $\pi_{\mathcal{P}} \uparrow \mathcal{B}$
+\State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{r = numero di blocchi in $\overline{\pi}$}
+\If{$\mathcal{B} \cap \overline{\pi}_i \ne \emptyset$}
+\State$con_{int}$ := \Call{convert\_con}{$\overline{\pi}_i$, \textit{con}}
+\State$\mathcal{F}$ := \Call{add\_con}{$\mathcal{P}'_i, con_{int}$}
+\State$\mathcal{O}$.add$(\mathcal{F})$
+\If{\Call{is\_empty}{$\mathcal{O_{i}}$}}
+\State\Return$\bot, \bot$
+\EndIf
+\State$\mathcal{O}$.add$(\mathcal{P'_i})$
+\EndIf
+\EndFor
+\State$\pi_{\mathcal{O}}$ := $\overline{\pi}$
+\State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
+*** Assignment
+Per quanto riguarda il dominio dei poliedri fattorizzati, l'operazione di
+/assignment/ è molto simile alla /conditional/. Dopo aver estratto il blocco
+$\mathcal{B}$ che indica le variabili utilizzate nell'espressione lineare, si
+fattorizza il poliedro $\mathcal{P}$ con $\overline{\pi}_{\mathcal{P}} =
+\pi_{\mathcal{P}} \uparrow \mathcal{B}$ ottenendo $\mathcal{P}'$,
+successivamente si prende il blocco con le variabili di $\mathcal{B}$ e si
+applica al relativo fattore un /assignment/ come per i poliedri non
+fattorizzati, rimappando correttamente le variabili esterne rispetto a quelle
+interne al fattore. La partizione ammissibile per un poliedro risultante da
+questa operazione è $\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}$.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Assignment}\label{assignment}
+\begin{algorithmic}[1]
+\Function{Assignment}{$\mathcal{P}$, $\pi_{\mathcal{P}}, stmt$}
+\State let $stmt = (x_{i} = ax + \epsilon) $
+\State$\mathcal{B}$ := \Call{extract\_block}{$stmt$}
+\State$\overline{\pi}$ := $\pi_{\mathcal{P}} \uparrow \mathcal{B}$
+\State$\mathcal{P}'$ := \Call{refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\For\textbf{each} $i$ \textbf{in} $\{1,...,r\}$\Comment{$r = |\mathcal{P}|$}
+\If{$\overline{\pi}_i \subseteq \mathcal{B}$}
+\State$stmt_{int}$ := \Call{convert}{$\overline{\pi}, stmt$}
+\State$\mathcal{F}$ := \Call{assignment}{$\mathcal{P}'_i, stmt_{int}$}\Comment{Poliedri non fattorizzati}
+\State $\mathcal{O}$.add$(\mathcal{F})$
+\If{$\mathcal{P}'_i$ := $\emptyset$}
+\State\Return$\bot,\bot$
+\EndIf
+\Else
+\State $\mathcal{O}$.add$(\mathcal{P}'_i)$
+\EndIf
+\EndFor
+\State\Return $\mathcal{O}, \overline{\pi}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
 
 * Implementazione
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
@@ -360,7 +499,6 @@ Sono inoltre presenti tre variabili:
 + ~dim_type dim~: indicante le dimensioni del poliedro
 + ~Topol topol~: indicante la topologia del poliedro
 + ~bool is_empty~: indicante se il poliedro è o meno vuoto
-
 *** ~check_inv()~
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
