@@ -1,4 +1,4 @@
-% Created 2019-02-15 ven 18:19
+% Created 2019-02-15 ven 22:18
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{minted}
@@ -37,10 +37,10 @@
 
 
 \chapter{Introduzione}
-\label{sec:orgeb63f52}
+\label{sec:orgc60f52a}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:org0121db8}
+\label{sec:orgecad562}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
@@ -50,7 +50,7 @@ richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
 invece ne sono necessari solo \(2n\).
 
 \section{Blocchi e fattori}
-\label{sec:orgd41e94a}
+\label{sec:org838d859}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -99,7 +99,7 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:org4e3e655}
+\label{sec:orgd38bc62}
 Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
@@ -114,7 +114,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org555f1f5}
+\label{sec:org58bda46}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
 binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
@@ -242,7 +242,7 @@ ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
 blocco di \(\overline{\pi}\).
 
 \subsection{Inclusion Test (\(\sqsubseteq\))}
-\label{sec:org8be828d}
+\label{sec:org1ccfbd0}
 Operazione necessaria per controllare se un poliedro è incluso in un altro,
 disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
 poliedri \(\mathcal{P}\) e \(\mathcal{Q}\) tutti i generatori in
@@ -273,7 +273,7 @@ tutti i test ritornano \emph{True}.
 \end{algorithm}
 
 \subsection{Join (\(\sqcup\))}
-\label{sec:org16d867c}
+\label{sec:org2a1aa1d}
 Tramite la doppia reppresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
 dove \(\mathcal{O}\) è il risultato del \emph{join}, sono semplicemente l'unione dei
 generatori dei poliedri presi in input dalla funzione, ovvero
@@ -347,7 +347,7 @@ ammissibile, in questo caso, sarà uguale a:
 \end{algorithm}
 
 \subsection{Meet (\(\sqcap\))}
-\label{sec:orgd8fe9dc}
+\label{sec:org54f280e}
 Per la doppia rappresentazione, \(\mathcal{P} \sqcap \mathcal{Q}\) genera un
 poliedro i cui vincoli \(\mathcal{C}_{\mathcal{P} \sqcap \mathcal{Q}}\) sono
 risultati dall'unione di \(\mathcal{C}_{\mathcal{P}}\) e
@@ -401,7 +401,7 @@ ammissibile.
 
 
 \subsection{Conditional}
-\label{sec:org1fc5187}
+\label{sec:orgf0d9f43}
 Questa operazione viene utilizzata per aggiungere nuovi vincoli tra le variabili
 di un poliedro. Tramite la doppia rappresentazione è possibile aggiungendo un
 vincolo arbitrario \(c\) all'insieme \(\mathcal{C}_{\mathcal{P}}\). Se dopo
@@ -447,7 +447,7 @@ risultante dall'aggiunta di un vincolo, \(\overline{\pi}_{\mathcal{O}} = \overli
 \end{algorithm}
 
 \subsection{Assignment}
-\label{sec:org7e75a50}
+\label{sec:orgb1768fe}
 Per quanto riguarda il dominio dei poliedri fattorizzati, l'operazione di
 \emph{assignment} è molto simile alla \emph{conditional}. Dopo aver estratto il blocco
 \(\mathcal{B}\) che indica le variabili utilizzate nell'espressione lineare, si
@@ -484,8 +484,29 @@ questa operazione è \(\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}\).
 \end{algorithmic}
 \end{algorithm}
 
+\subsection{Widening (\(\nabla\))}
+\label{sec:org7748ae2}
+Per la doppia rappresentazione, l'operatore di \emph{widening} necessità come
+parametri i generatori e i vincoli di \(\mathcal{P}\) e i vincolo di
+\(\mathcal{Q}\). Il risultato dell'operazione \(\mathcal{P} \nabla
+\mathcal{Q}\) conterrà i vincoli \(\mathcal{C}_{\mathcal{Q}}\) che sono presenti in
+\(\mathcal{C}_{\mathcal{P}}\) o che possono sostituirne un vincolo senza cambiare
+\(\mathcal{P}\).
+
+Per implementarlo è necessario effettuare uan rifattorizzazione \(\mathcal{P}'\)
+del primo argomento \(\mathcal{P}\) con \(\overline{\pi} = \pi_{\mathcal{P}} \sqcup
+\pi_{\mathcal{Q}}\), mentre non è necessario rifattorizzare il secondo argomento.
+Successivamente, per ogni fattore \(\mathcal{Q}_i\) del secondo argomento si
+individua il fattore corrispondente \(\mathcal{P}'_k\) in \(\mathcal{P}'\) e si
+procede a individuare l'insieme \(\mathcal{C}_{\mathcal{O}_i}\) di vincoli di
+\(\mathcal{Q}_i\) che sono \emph{stabili} rispetto a \(\mathcal{P}'_k\): questi vincoli
+costituiscono il risultato del widening rispetto a quel fattore. È possibile,
+come caso speciale, che se \(\pi_{\mathcal{P}'_k} = \pi_{\mathcal{Q}_i}\), allora è
+possibile applicare direttamente l'operatore di widening per poliedri non fattorizzati.
+
+
 \chapter{Implementazione}
-\label{sec:orgfac1179}
+\label{sec:org80082f5}
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
 sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
@@ -493,7 +514,7 @@ della \emph{PPLite}. L'implementazione data è quindi da vedere come un \textbf{
 quest'ultima.
 
 \section{\texttt{F\_Poly}}
-\label{sec:org16cd719}
+\label{sec:org5eb1fcf}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati. I più significativi sono:
@@ -525,7 +546,7 @@ Sono inoltre presenti tre variabili:
 \item \texttt{bool is\_empty}: indicante se il poliedro è o meno vuoto
 \end{itemize}
 \subsection{\texttt{check\_inv()}}
-\label{sec:orgb8fd06f}
+\label{sec:orgdb9834e}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -629,7 +650,7 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:org415fc74}
+\label{sec:org0e0c82d}
 Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
 livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
 Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
@@ -644,9 +665,9 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{minted}
 
 \subsection{Refactoring}
-\label{sec:orgb1280e8}
+\label{sec:org10cb8fe}
 
 
 \chapter{Conclusione}
-\label{sec:orge8bbba3}
+\label{sec:org3fdafea}
 \end{document}

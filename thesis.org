@@ -467,6 +467,26 @@ questa operazione è $\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}$.
 \end{algorithm}
 #+END_EXPORT
 
+*** Widening ($\nabla$)
+Per la doppia rappresentazione, l'operatore di /widening/ necessità come
+parametri i generatori e i vincoli di $\mathcal{P}$ e i vincolo di
+$\mathcal{Q}$. Il risultato dell'operazione $\mathcal{P} \nabla
+\mathcal{Q}$ conterrà i vincoli $\mathcal{C}_{\mathcal{Q}}$ che sono presenti in
+$\mathcal{C}_{\mathcal{P}}$ o che possono sostituirne un vincolo senza cambiare
+$\mathcal{P}$.
+
+Per implementarlo è necessario effettuare uan rifattorizzazione $\mathcal{P}'$
+del primo argomento $\mathcal{P}$ con $\overline{\pi} = \pi_{\mathcal{P}} \sqcup
+\pi_{\mathcal{Q}}$, mentre non è necessario rifattorizzare il secondo argomento.
+Successivamente, per ogni fattore $\mathcal{Q}_i$ del secondo argomento si
+individua il fattore corrispondente $\mathcal{P}'_k$ in $\mathcal{P}'$ e si
+procede a individuare l'insieme $\mathcal{C}_{\mathcal{O}_i}$ di vincoli di
+$\mathcal{Q}_i$ che sono /stabili/ rispetto a $\mathcal{P}'_k$: questi vincoli
+costituiscono il risultato del widening rispetto a quel fattore. È possibile,
+come caso speciale, che se $\pi_{\mathcal{P}'_k} = \pi_{\mathcal{Q}_i}$, allora è
+possibile applicare direttamente l'operatore di widening per poliedri non fattorizzati.
+
+
 * Implementazione
 Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
 delle loro operazioni. In particolare, i metodi che modificano il poliedro
