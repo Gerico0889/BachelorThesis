@@ -449,7 +449,7 @@ questa operazione è $\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}$.
 \State$\mathcal{B}$ := \Call{extract\_block}{$stmt$}
 \State$\overline{\pi}$ := $\pi_{\mathcal{P}} \uparrow \mathcal{B}$
 \State$\mathcal{P}'$ := \Call{refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
-\For\textbf{each} $i$ \textbf{in} $\{1,...,r\}$\Comment{$r = |\mathcal{P}|$}
+\For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{$r = |\mathcal{P}|$}
 \If{$\overline{\pi}_i \subseteq \mathcal{B}$}
 \State$stmt_{int}$ := \Call{convert}{$\overline{\pi}, stmt$}
 \State$\mathcal{F}$ := \Call{assignment}{$\mathcal{P}'_i, stmt_{int}$}\Comment{Poliedri non fattorizzati}
@@ -484,41 +484,85 @@ procede a individuare l'insieme $\mathcal{C}_{\mathcal{O}_i}$ di vincoli di
 $\mathcal{Q}_i$ che sono /stabili/ rispetto a $\mathcal{P}'_k$: questi vincoli
 costituiscono il risultato del widening rispetto a quel fattore. È possibile,
 come caso speciale, che se $\pi_{\mathcal{P}'_k} = \pi_{\mathcal{Q}_i}$, allora è
-possibile applicare direttamente l'operatore di widening per poliedri non fattorizzati.
+possibile applicare direttamente l'operatore di widening per poliedri non
+fattorizzati.
+
+#+BEGIN_EXPORT latex
+\begin{algorithm}[H]
+\caption{Meet}\label{meet}
+\begin{algorithmic}[1]
+\Function{Widenind}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{Q}, \pi_{\mathcal{Q}}$}
+\State $\overline{\pi}$ := $\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$
+\State $\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \overline{\pi}$}
+\State $\mathcal{O}$ := $\emptyset$
+\For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{$q$ = numero di blocchi in $\pi_{\mathcal{Q}}$}
+\State $\mathcal{C}_{\mathcal{O}_i}$ := $\emptyset$
+\State $k$ := $j$, t.c. $\mathcal{X}_{\mathcal{Q}_i} \subseteq \mathcal{X}_j, \mathcal{X}_j \in \overline{\pi}$
+\If{$\overline{\pi}_k = \overline{\pi}_{\mathcal{Q}_i}$}
+\State $\mathcal{Q}_i$ := \Call{Widening}{$\mathcal{P}'_k, \mathcal{Q}_i$}
+\Else
+\State $\mathcal{C}_{\mathcal{O}_i}$ := \Call{select\_stable\_con}{$\mathcal{C}_{\mathcal{Q}_i}, \mathcal{P}'_k$}
+\State $\mathcal{Q}_i$ := \Call{new\_factor}{$\mathcal{C}_{\mathcal{O}_i}$}
+\EndIf
+\State $\mathcal{O}$.add$(\mathcal{O}_i)$
+\EndFor
+\State\Return $\mathcal{O}, \pi_{\mathcal{O}}$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+#+END_EXPORT
+
 
 
 * Implementazione
-Qui andremo a parlare dell'implementazione concreta dei poliedri fattorizzati e
-delle loro operazioni. In particolare, i metodi che modificano il poliedro
-sono stati implementati utilizzando i già presenti, funzionanti e testati metodi
-della /PPLite/. L'implementazione data è quindi da vedere come un *wrapper* di
-quest'ultima.
+Questo capitolo tratterà dell'implementazione effettiva dei poliedri
+fattorizzati e di alcune loro operazioni. La struttura è stata basata su di un
+/wrapper/ preesistente nella /PPlite/ mentre alcune delle implementazioni sono
+state attuate effettuando un porting dalla libreria /PPL/. La maggiorparte delle
+operazioni sono state sviluppate come un wrapper per la /PPLite/, difatti le
+operazioni sui singoli poliedri sono gestite da essa. Lo scopo principale è
+quello di inserirsi all'interno dell'analisi statica e utilizzare i poliedri
+fattorizzati se e quando vengono generati poliedri che implicano un alto
+overhead per essere gestiti, in questo caso i suddetti poliedri vengono
+fattorizzati in maniera tale da diminuire il carico computazionale.
+L'implementazione è stata sviluppata interamente in /C++11/ con l'obiettivo di
+utilizzare i metodi della /Standard Library/ così da incrementare la leggibilità
+del codice. L'efficienza non è stata presa come obiettivo principale durante lo
+sviluppo, dando importanza alla correttezza e alla leggibilità del codice.
 
 ** ~F_Poly~
 La classe dove sono compresi gran parte dei medoti è ~F_Poly~. È stata
 definita nel file ~F_Poly.hh~ dove sono presenti 92 metodi pubblici e 14 metodi
-privati. I più significativi sono:
+privati.
+
+Per la costruzione/distruzione degli oggetti è stata seguita la
+/Rule of Five/, quindi abbiamo:
 
 + Un costruttore esplicito, un costruttore per copia, un costruttore per spostamento
-+ Operazioni di assegnamento per copia e per spostamento
++ Operazioni di assegnamento per copia e per spostamento;
++ Un distruttore;
+
+Abbiamo anche:
+
 + Un metodo ~check_inv()~ per controllare che le invarianti di classe non siano
-  state violate
-+ ??
-+ Funzioni di appoggio per gestire il poliedro
+  state violate;
++ Le operazioni principali descritte nel Capitolo 2.3;
++ Funzioni di appoggio per gestire il poliedro;
 
 Sono inoltre presenti delle stutture dati per la gestione dei fattori:
 
-+ ~Block~: un ~std::vector~ di ~dim_type~ che rappresenta un blocco $X_i$ che
-  contiene alcune dimensioni del poliedro
-+ ~Blocks~: un ~std::vector~ di ~Block~ che esprimono le partizioni del poliedro
-+ ~Factor~: un fattore è un poliedro, ~Factor~ è un alias per oggetti di tipo ~Poly~
-+ ~Factors~: un ~std::vector~ di ~Factor~
++ ~Block~: un ~std::vector~ di ~dim_type~ che rappresenta un blocco $\mathcal{X}_i$ che
+  contiene alcune dimensioni del poliedro;
++ ~Blocks~: un ~std::vector~ di ~Block~ che esprime le partizioni del poliedro;
++ ~Factor~: un fattore è un poliedro, difatti ~Factor~ è un alias per oggetti di tipo ~Poly~;
++ ~Factors~: un ~std::vector~ di ~Factor~;
 
 Sono inoltre presenti tre variabili:
 
 + ~dim_type dim~: indicante le dimensioni del poliedro
 + ~Topol topol~: indicante la topologia del poliedro
-+ ~bool is_empty~: indicante se il poliedro è o meno vuoto
++ ~bool is_empty~: indicante se il poliedro è vuoto o no
+
 *** ~check_inv()~
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
@@ -526,6 +570,7 @@ sta lavorando è in condizioni di correttezza. Le invarianti di classe che devon
 essere rispettate sono le seguenti:
 
 + La dimensione minima del poliedro deve essere $\ge 0$
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (dim < 0) {
   reason = "F_Poly broken: invalid space dimension";
@@ -627,12 +672,18 @@ Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
 testing meno problematica. Le funzioni principali, in parte discusse nel
 capitolo uno, sono:
 
+#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 static Factors refactor(const Factors& f,
                         const Blocks& b1, const Blocks& b2);
 static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
 static Blocks merge(const Blocks& b, const Block& added);
 #+END_SRC
+
+#+BEGIN_EXPORT latex
+
+#+END_EXPORT
+
 
 *** Refactoring
 
