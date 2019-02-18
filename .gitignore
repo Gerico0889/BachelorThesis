@@ -1,0 +1,9 @@
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.ist
+*.bbl
+_minted-thesis
