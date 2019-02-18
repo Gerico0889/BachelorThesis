@@ -2,7 +2,6 @@
 #+AUTHOR: Luigi Zaccone
 
 #+LATEX_CLASS: mimosis
-
 #+SETUPFILE: thesis.setup
 
 
@@ -15,7 +14,8 @@ utilizzati nell'analisi dei programmi non mettono in relazione tutte le
 variabili del programma in un solo vincolo. Per esempio: un ipercubo \\
 $H_n = \{0 \le x_i \le 1 \; | \; i = 1,...,n\}$
 richiede $2^n$ generatori per essere rappresentato, tramite la decomposizione
-invece ne sono necessari solo $2n$.
+invece ne sono necessari solo $2n$. La terminologia e gli esempi saranno
+ispirati al lavoro svolto in \cite{fastpoly}.
 
 ** Blocchi e fattori
 Sia $\mathcal{X} = \{x_1, x_2,..., x_n\}$ un insieme di $n$ variabili. Dato un poliedro, $\mathcal{X}$
@@ -551,7 +551,7 @@ Abbiamo anche:
 
 Sono inoltre presenti delle stutture dati per la gestione dei fattori:
 
-+ ~Block~: un ~std::vector~ di ~dim_type~ che rappresenta un blocco $\mathcal{X}_i$ che
++ ~Block~: un ~std::vector~[fn:vector] di ~dim_type~ che rappresenta un blocco $\mathcal{X}_i$ che
   contiene alcune dimensioni del poliedro;
 + ~Blocks~: un ~std::vector~ di ~Block~ che esprime le partizioni del poliedro;
 + ~Factor~: un fattore è un poliedro, difatti ~Factor~ è un alias per oggetti di tipo ~Poly~;
@@ -579,6 +579,7 @@ if (dim < 0) {
 }
   #+END_SRC
 + Se il poliedro è vuoto, i fattori e i blocchi devono essere anch'essi vuoti
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (is_empty()) {
   if (!(factors.empty() && blocks.empty())) {
@@ -591,6 +592,7 @@ if (is_empty()) {
 }
   #+END_SRC
 + Il numero di blocchi deve essere uguale al numero di fattori
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (factors.size() != blocks.size()) {
   reason = "F_Poly broken: #factors != #blocks";
@@ -599,6 +601,7 @@ if (factors.size() != blocks.size()) {
 }
   #+END_SRC
 + La cardinalità dei blocchi deve essere uguale a ~dim~
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 dim_type dim_ = 0;
 for (const auto& block : blocks)
@@ -611,17 +614,18 @@ if (dim != dim_) {
   #+END_SRC
 + Le dimensioni di un fattore devono essere uguali alle dimensioni del blocco
   che lo rappresenta
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 // Each factor space dim should match its block.
-for (dim_type i = 0; i < num_rows(factors); ++i) {
+for (dim_type i = 0; i < num_rows(factors); ++i)
   if (factors[i].space_dim() != num_rows(blocks[i])) {
     reason = "F_Poly broken: factor vs block space dim mismatch";
     maybe_dump();
     return false;
   }
-}
   #+END_SRC
 + Nessun fattore deve essere vuoto
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (std::any_of(factors.begin(), factors.end(),
                 std::mem_fn(&Poly::is_empty))) {
@@ -632,6 +636,7 @@ if (std::any_of(factors.begin(), factors.end(),
   #+END_SRC
 + Ogni dimensione dello spazio deve apparire una e una volta soltanto nei
   blocchi e non devono esserci blocchi vuoti
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 std::vector<bool> dims(dim, false);
 for (const auto& block : blocks) {
@@ -657,6 +662,7 @@ for (const auto& block : blocks) {
 }
   #+END_SRC
 + Ogni dimensione dello spazio deve essere presente in un blocco
+  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
   reason = "F_Poly broken: a space dim is missing from blocks";
@@ -666,11 +672,20 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
   #+END_SRC
 
 ** Operazione di base
-Le funzioni più significative di ~F_Poly~ sono state implementate più ad alto
-livello, sfruttando le funzioni già implementate e funzionanti della /PPLite/.
-Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
-testing meno problematica. Le funzioni principali, in parte discusse nel
-capitolo uno, sono:
+Durante la lettura di questo paragrafo, sarà palese la diversa notazione
+utilizzata rispetto a \cite{fastpoly}: questo perché, per motivi di
+compatibilità e trasparenza si è deciso di implementare le varie operazioni
+utilizzando i nomi con il loro corrispettivo della /PPLite/.
+
+Inizialmente il lavoro si è basato sul attuare un porting dai poliedri
+fattorizzati implementati nella /PPL/, successivamente il focus è stato
+nell'adattarli al meglio alle strutture utilizzate nella PPLite, permettendo una
+semplificazione nella codifica e nel testing. Il principio base
+sotto all'implementazione di alcune operazioni è stato quello di preparare
+strutturalmente i poliedri fattorizzati in maniera tale da rendere possibile
+richiamare le varie operazioni.
+
+Diverse sono le funzioni più significative definite all'interno di ~F_Poly.hh~:
 
 #+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
@@ -678,14 +693,38 @@ static Factors refactor(const Factors& f,
                         const Blocks& b1, const Blocks& b2);
 static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
 static Blocks merge(const Blocks& b, const Block& added);
+void join(const Factors& f, const Blocks& b);
+void join(const F_Poly& f);
+void affine_image(Var var, const Linear_Expr& expr,
+                  const Integer& inhomo = Integer::zero(),
+                  const Integer& den = Integer::one());
+
+
+void affine_preimage(Var var, const Linear_Expr& expr,
+                     const Integer& inhomo = Integer::zero(),
+                     const Integer& den = Integer::one());
+void add_con(const Con& c);
+void add_gen(const Gen& c);
+bool inclusion(const Factors& f, const Blocks& b) const;
 #+END_SRC
 
-#+BEGIN_EXPORT latex
-
-#+END_EXPORT
-
-
-*** Refactoring
-
-
+*** ~refactor~
+La semantica rimane invariata invariata rispetto a quanto descritto
+nell'Algoritmo \ref{refactor}. Per la /join/ $(\bowtie)$ tra i fattori è stata
+utilizzata la ~concatenate_assign()~ della PPlite, una funzione omonima, per
+quanto riguarda il join dei blocchi, è stata implementata utilizzando
+~std::insert~[fn:insert]. E importante notare che questa operazione sia
+ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
+all'interno dei blocchi interessati.
 * Conclusione
+
+#+LATEX: \bibliographystyle{plain}
+#+LATEX: \renewcommand\bibname{Bibliografia}
+#+LATEX: \bibliography{mybib}
+
+* Footnotes
+
+[fn:vector] ~template<class T, class Allocator = std::allocator<T>> class vector;~
+
+[fn:insert] ~template <class InputIt>
+iterator insert(const_iterator pos, InputIt first, InputIt last);~

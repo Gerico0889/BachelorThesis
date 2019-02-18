@@ -1,4 +1,4 @@
-% Created 2019-02-17 dom 18:06
+% Created 2019-02-18 lun 17:16
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{minted}
@@ -37,20 +37,21 @@
 
 
 \chapter{Introduzione}
-\label{sec:org3339474}
+\label{sec:orga216e26}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:org68c310b}
+\label{sec:org137d6d0}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
 variabili del programma in un solo vincolo. Per esempio: un ipercubo \\
 \(H_n = \{0 \le x_i \le 1 \; | \; i = 1,...,n\}\)
 richiede \(2^n\) generatori per essere rappresentato, tramite la decomposizione
-invece ne sono necessari solo \(2n\).
+invece ne sono necessari solo \(2n\). La terminologia e gli esempi saranno
+ispirati al lavoro svolto in \cite{fastpoly}.
 
 \section{Blocchi e fattori}
-\label{sec:org9653a0c}
+\label{sec:orgd454245}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -99,7 +100,7 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:org9fa21ae}
+\label{sec:org085e556}
 Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
@@ -114,7 +115,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org96f50f9}
+\label{sec:org9430b47}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
 binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
@@ -242,7 +243,7 @@ ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
 blocco di \(\overline{\pi}\).
 
 \subsection{Inclusion Test (\(\sqsubseteq\))}
-\label{sec:orga55d02c}
+\label{sec:org5f78bc5}
 Operazione necessaria per controllare se un poliedro è incluso in un altro,
 disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
 poliedri \(\mathcal{P}\) e \(\mathcal{Q}\) tutti i generatori in
@@ -273,7 +274,7 @@ tutti i test ritornano \emph{True}.
 \end{algorithm}
 
 \subsection{Join (\(\sqcup\))}
-\label{sec:orgb247e04}
+\label{sec:orgf7433f1}
 Tramite la doppia reppresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
 dove \(\mathcal{O}\) è il risultato del \emph{join}, sono semplicemente l'unione dei
 generatori dei poliedri presi in input dalla funzione, ovvero
@@ -347,7 +348,7 @@ ammissibile, in questo caso, sarà uguale a:
 \end{algorithm}
 
 \subsection{Meet (\(\sqcap\))}
-\label{sec:orgfa24b86}
+\label{sec:org04fbf9f}
 Per la doppia rappresentazione, \(\mathcal{P} \sqcap \mathcal{Q}\) genera un
 poliedro i cui vincoli \(\mathcal{C}_{\mathcal{P} \sqcap \mathcal{Q}}\) sono
 risultati dall'unione di \(\mathcal{C}_{\mathcal{P}}\) e
@@ -401,7 +402,7 @@ ammissibile.
 
 
 \subsection{Conditional}
-\label{sec:org6f598ed}
+\label{sec:org2b2f7b0}
 Questa operazione viene utilizzata per aggiungere nuovi vincoli tra le variabili
 di un poliedro. Tramite la doppia rappresentazione è possibile aggiungendo un
 vincolo arbitrario \(c\) all'insieme \(\mathcal{C}_{\mathcal{P}}\). Se dopo
@@ -447,7 +448,7 @@ risultante dall'aggiunta di un vincolo, \(\overline{\pi}_{\mathcal{O}} = \overli
 \end{algorithm}
 
 \subsection{Assignment}
-\label{sec:orgdf91650}
+\label{sec:org1846553}
 Per quanto riguarda il dominio dei poliedri fattorizzati, l'operazione di
 \emph{assignment} è molto simile alla \emph{conditional}. Dopo aver estratto il blocco
 \(\mathcal{B}\) che indica le variabili utilizzate nell'espressione lineare, si
@@ -485,7 +486,7 @@ questa operazione è \(\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}\).
 \end{algorithm}
 
 \subsection{Widening (\(\nabla\))}
-\label{sec:org2e4fee6}
+\label{sec:org4901834}
 Per la doppia rappresentazione, l'operatore di \emph{widening} necessità come
 parametri i generatori e i vincoli di \(\mathcal{P}\) e i vincolo di
 \(\mathcal{Q}\). Il risultato dell'operazione \(\mathcal{P} \nabla
@@ -531,7 +532,7 @@ fattorizzati.
 
 
 \chapter{Implementazione}
-\label{sec:orgd1daf70}
+\label{sec:org36c49dd}
 Questo capitolo tratterà dell'implementazione effettiva dei poliedri
 fattorizzati e di alcune loro operazioni. La struttura è stata basata su di un
 \emph{wrapper} preesistente nella \emph{PPlite} mentre alcune delle implementazioni sono
@@ -548,7 +549,7 @@ del codice. L'efficienza non è stata presa come obiettivo principale durante lo
 sviluppo, dando importanza alla correttezza e alla leggibilità del codice.
 
 \section{\texttt{F\_Poly}}
-\label{sec:org8395ddc}
+\label{sec:org3e1a123}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati.
@@ -574,7 +575,7 @@ state violate;
 Sono inoltre presenti delle stutture dati per la gestione dei fattori:
 
 \begin{itemize}
-\item \texttt{Block}: un \texttt{std::vector} di \texttt{dim\_type} che rappresenta un blocco \(\mathcal{X}_i\) che
+\item \texttt{Block}: un \texttt{std::vector}\footnote{\texttt{template<class T, class Allocator = std::allocator<T>> class vector;}} di \texttt{dim\_type} che rappresenta un blocco \(\mathcal{X}_i\) che
 contiene alcune dimensioni del poliedro;
 \item \texttt{Blocks}: un \texttt{std::vector} di \texttt{Block} che esprime le partizioni del poliedro;
 \item \texttt{Factor}: un fattore è un poliedro, difatti \texttt{Factor} è un alias per oggetti di tipo \texttt{Poly};
@@ -590,7 +591,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv()}}
-\label{sec:orge38185b}
+\label{sec:orgbc2d239}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -598,7 +599,7 @@ essere rispettate sono le seguenti:
 
 \begin{itemize}
 \item La dimensione minima del poliedro deve essere \(\ge 0\)
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 if (dim < 0) {
   reason = "F_Poly broken: invalid space dimension";
   maybe_dump();
@@ -606,7 +607,7 @@ if (dim < 0) {
 }
 \end{minted}
 \item Se il poliedro è vuoto, i fattori e i blocchi devono essere anch'essi vuoti
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 if (is_empty()) {
   if (!(factors.empty() && blocks.empty())) {
     reason = "F_Poly broken: empty polyhedron has factors";
@@ -618,7 +619,7 @@ if (is_empty()) {
 }
 \end{minted}
 \item Il numero di blocchi deve essere uguale al numero di fattori
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 if (factors.size() != blocks.size()) {
   reason = "F_Poly broken: #factors != #blocks";
   maybe_dump();
@@ -626,7 +627,7 @@ if (factors.size() != blocks.size()) {
 }
 \end{minted}
 \item La cardinalità dei blocchi deve essere uguale a \texttt{dim}
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 dim_type dim_ = 0;
 for (const auto& block : blocks)
   dim_ += block.size();
@@ -638,18 +639,17 @@ if (dim != dim_) {
 \end{minted}
 \item Le dimensioni di un fattore devono essere uguali alle dimensioni del blocco
 che lo rappresenta
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 // Each factor space dim should match its block.
-for (dim_type i = 0; i < num_rows(factors); ++i) {
+for (dim_type i = 0; i < num_rows(factors); ++i)
   if (factors[i].space_dim() != num_rows(blocks[i])) {
     reason = "F_Poly broken: factor vs block space dim mismatch";
     maybe_dump();
     return false;
   }
-}
 \end{minted}
 \item Nessun fattore deve essere vuoto
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 if (std::any_of(factors.begin(), factors.end(),
                 std::mem_fn(&Poly::is_empty))) {
   reason = "F_Poly broken: empty factor";
@@ -659,7 +659,7 @@ if (std::any_of(factors.begin(), factors.end(),
 \end{minted}
 \item Ogni dimensione dello spazio deve apparire una e una volta soltanto nei
 blocchi e non devono esserci blocchi vuoti
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 std::vector<bool> dims(dim, false);
 for (const auto& block : blocks) {
   if (block.size() == 0) {
@@ -684,7 +684,7 @@ for (const auto& block : blocks) {
 }
 \end{minted}
 \item Ogni dimensione dello spazio deve essere presente in un blocco
-\begin{minted}[]{c++}
+\begin{minted}[,fontsize=\small]{c++}
 if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
   reason = "F_Poly broken: a space dim is missing from blocks";
   maybe_dump();
@@ -694,25 +694,53 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:orga914dcc}
-Le funzioni più significative di \texttt{F\_Poly} sono state implementate più ad alto
-livello, sfruttando le funzioni già implementate e funzionanti della \emph{PPLite}.
-Questo ha permesso di avere tempi di sviluppo più tempestivi e una fase di
-testing meno problematica. Le funzioni principali, in parte discusse nel
-capitolo uno, sono:
+\label{sec:orgb9c01da}
+Durante la lettura di questo paragrafo, sarà palese la diversa notazione
+utilizzata rispetto a \cite{fastpoly}: questo perché, per motivi di
+compatibilità e trasparenza si è deciso di implementare le varie operazioni
+utilizzando i nomi con il loro corrispettivo della \emph{PPLite}.
+
+Inizialmente il lavoro si è basato sul attuare un porting dai poliedri
+fattorizzati implementati nella \emph{PPL}, successivamente il focus è stato
+nell'adattarli al meglio alle strutture utilizzate nella PPLite, permettendo una
+semplificazione nella codifica e nel testing. Il principio base
+sotto all'implementazione di alcune operazioni è stato quello di preparare
+strutturalmente i poliedri fattorizzati in maniera tale da rendere possibile
+richiamare le varie operazioni.
+
+Diverse sono le funzioni più significative definite all'interno di \texttt{F\_Poly.hh}:
 
 \begin{minted}[,fontsize=\small]{c++}
 static Factors refactor(const Factors& f,
                         const Blocks& b1, const Blocks& b2);
 static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
 static Blocks merge(const Blocks& b, const Block& added);
+void join(const Factors& f, const Blocks& b);
+void join(const F_Poly& f);
+void affine_image(Var var, const Linear_Expr& expr,
+                  const Integer& inhomo = Integer::zero(),
+                  const Integer& den = Integer::one());
+
+
+void affine_preimage(Var var, const Linear_Expr& expr,
+                     const Integer& inhomo = Integer::zero(),
+                     const Integer& den = Integer::one());
+void add_con(const Con& c);
+void add_gen(const Gen& c);
+bool inclusion(const Factors& f, const Blocks& b) const;
 \end{minted}
 
-
-\subsection{Refactoring}
-\label{sec:org4d55763}
-
-
+\subsection{\texttt{refactor}}
+\label{sec:org3656f4e}
+La semantica rimane invariata invariata rispetto a quanto descritto
+nell'Algoritmo \ref{refactor}. Per la \emph{join} \((\bowtie)\) tra i fattori è stata
+utilizzata la \texttt{concatenate\_assign()} della PPlite, una funzione omonima, per
+quanto riguarda il join dei blocchi, è stata implementata utilizzando \texttt{std::insert}\footnote{\texttt{template <class InputIt>
+iterator insert(const\_iterator pos, InputIt first, InputIt last);}}
 \chapter{Conclusione}
-\label{sec:org9fa8920}
+\label{sec:org9902a33}
+
+\bibliographystyle{plain}
+\renewcommand\bibname{Bibliografia}
+\bibliography{mybib}
 \end{document}
