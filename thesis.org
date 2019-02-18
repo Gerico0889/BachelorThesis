@@ -716,6 +716,150 @@ quanto riguarda il join dei blocchi, è stata implementata utilizzando
 ~std::insert~[fn:insert]. E importante notare che questa operazione sia
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
 all'interno dei blocchi interessati.
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+Blocks bs(bs2.size());
+  Factors res(bs.size(), Factor(0, Spec_Elem::UNIVERSE));
+  for (dim_type i = 0; i != num_rows(bs1); ++i)
+    for (dim_type j = 0; j != num_rows(bs2); ++j) {
+      if (detail::are_disjoint(bs1[i], bs2[j]))
+        continue;
+      res[j].concatenate_assign(fs[i]);
+      concatenate_assign(bs[j], bs1[i]);
+    }
+#+END_SRC
+
+Per rimappare le dimensioni in maniera corretta viene utilizzata la funzione
+~map_space_dims()~, che prende come argomento un oggetto di tipo ~Dims~ che
+viene riempito delle varie dimensioni dei blocchi che saranno rimappati in base
+all'indice in cui si trovano.
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+// Remap those factors res[i] s.t. bs[i] != bs2[i]
+  for (dim_type i = 0; i != num_rows(bs2); ++i) {
+    const auto& b = bs[i];
+    const auto& b2 = bs2[i];
+    assert(b.size() == b2.size());
+    if (b == b2)
+      continue;
+    Dims pf(b.size());
+    for (auto j = b.size(); j-- > 0; )
+      pf[b[j]] = b2[j];
+    res[i].map_space_dims(pf);
+  }
+  return res;
+#+END_SRC
+
+Il metodo ~are_disjoint(const Block& b1, const Block& b2)~ viene utilizzato per
+vedere se due blocchi sono uguali.
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+inline bool
+are_disjoint(const Block& b1, const Block& b2) {
+  return std::find_first_of(b1.begin(), b1.end(),
+                            b2.begin(), b2.end()) == b1.end();
+}
+#+END_SRC
+
+Utilizza ~std::find_first_of~[fn:findfirstof] e ritorna falso se trova un elemento che è
+presente in un insieme e non in un altro.
+
+*** ~least_upper_bound~
+L'implementazione di questo metodo non è stata menzionata in \cite{fastpoly} ma
+ne è stato solo descritto l'aspetto matematico. In termini più pratici questa
+operazione prende due parametri ~const Blocks& b1, const Blocks& b2~ e,
+inizialmente, crea un blocco ~lub~ che sarà composto dalle dimensioni non in
+comune tra ~b1~ e ~b2~:
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+Blocks lub; dim_type i = 0;
+bool first = true;
+
+for (const auto &bl1 : b1)
+  for (const auto &bl2 : b2)
+    if (!detail::are_disjoint(bl1, bl2)) {
+      if (first) {
+        lub.push_back(bl2);
+        first = false;
+      }
+      else {
+        lub[i] = block_union(lub[i], bl2);
+      }
+  ++i;
+  first = true;
+}
+#+END_SRC
+
+Successivamente si itera su ~lub~ per unire i blocchi che presentavano
+dimensioni comuni fino a costruire la partizione ~lub~.
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+for (auto it1 = lub.begin(); it1 != lub.end(); ++it1)
+  for (auto it2 = it1 + 1; it2 != lub.end(); ++it2)
+    if (!detail::are_disjoint(*it1, *it2)) {
+      ,*it1 = block_union(*it1, *it2);
+      lub.erase(it2);
+      --it2;
+    }
+#+END_SRC
+
+Per unire i blocchi è stata utilizzata al funzione ~block_union(const Block& b1,
+const Block& b2)~ che permette di unire i blocchi ed evitare che si vengano a
+creare dimensioni doppie.
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+F_Poly::Block
+F_Poly::block_union(const Block& b1, const Block& b2) {
+  Block out(b1);
+  bool add = true;
+  for (const auto dim2 : b2) {
+    for (const auto dim1 : b1)
+      if (dim1 == dim2) {
+        add = false;
+        break;
+      }
+    if (add)
+      out.push_back(dim2);
+    else
+      add = true;
+  }
+  return out;
+}
+#+END_SRC
+
+*** ~add_con~
+Il metodo ~add_con~ non è altro che l'implementazione dell'Algoritmo
+\ref{conditional}. Per poter sviluppare questa operazione sono necessare due diverse
+funzioni helper oltre a ~refactor~ e ~merge~:
+
++ ~extract_block()~: una funzione che, preso un vincolo, restituisce il blocco
+  contenente tutte le variabili utilizzate in esso:
+  #+ATTR_LATEX: :options fontsize=\small
+  #+BEGIN_SRC C++
+inline Block
+extract_block(const Linear_Expr& e) {
+  Block var_block;
+  for (dim_type i = 0; i != e.space_dim(); ++i)
+    if (e.get(Var(i)) != 0)
+      var_block.push_back(i);
+  return var_block;
+}
+  #+END_SRC
+  non facciamo altro che utilizzare iterare una ~Linear_Expr~ e inserendo in un
+  ~std::vector~ tutte la variabili dell'esperssione lineare.
++ ~convert~: è una funzione che permette di mappare le dimensioni di un vincolo.
+  Definendo come /esterne/ le dimensioni del poliedro nella sua interezza e
+  /interne/ quelle di un suo fattore, questo metodo effettua la traduzione da
+  vincolo esterno a vincolo interno in base al blocco che viene passato.
+
+*** ~affine_image~ e ~affine_preimage~
+
 * Conclusione
 
 #+LATEX: \bibliographystyle{plain}
@@ -723,6 +867,9 @@ all'interno dei blocchi interessati.
 #+LATEX: \bibliography{mybib}
 
 * Footnotes
+
+[fn:findfirstof] ~template <class InputIt, class ForwardIt>
+InputIt find_first_of(InputIt first, InputIt last, ForwardIt s_first, ForwardIt s_last);~
 
 [fn:vector] ~template<class T, class Allocator = std::allocator<T>> class vector;~
 
