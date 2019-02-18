@@ -851,15 +851,140 @@ extract_block(const Linear_Expr& e) {
   return var_block;
 }
   #+END_SRC
-  non facciamo altro che utilizzare iterare una ~Linear_Expr~ e inserendo in un
-  ~std::vector~ tutte la variabili dell'esperssione lineare.
+  non facciamo altro che iterare una ~Linear_Expr~ inserendo tutte le variabili
+  presenti in quest'ultima in un ~std::vector~.
 + ~convert~: è una funzione che permette di mappare le dimensioni di un vincolo.
   Definendo come /esterne/ le dimensioni del poliedro nella sua interezza e
   /interne/ quelle di un suo fattore, questo metodo effettua la traduzione da
   vincolo esterno a vincolo interno in base al blocco che viene passato.
 
 *** ~affine_image~ e ~affine_preimage~
+Questa funzione è l'implementazione dell'operazione /assignment/ vista
+nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
+coerenti con le definizioni della PPLite, la funzione prende in input:
 
++ Una variabile ~var~ di tipo ~Var~;
++ Un'espressione lineare ~expr~ di tipo ~Linear_Expr~;
++ Un intero ~inhomo~ di tipo ~Integer~ che rappresenta l'/inhomogeneus term/;
++ Un intero ~den~ di tipo ~Integer~ che rappresenta il /denominatore/.
+
+Questi parametri formeranno lo statement $var = \frac{expr}{den} + inhomo$
+equivalente a $x_i = ax + \epsilon$ dell'Algoritmo \ref{assignment}. Le uniche
+differenze con lo pseudocodice sono che è necessario convertire sia ~var~ che
+~expr~ in base al blocco corrispondente. Una volta convertite non si fa altro
+che chiamare la ~affine_image~ della PPLite per ogni fattore.
+
+#+ATTR_LATEX: :options fontsize=\small
+#+BEGIN_SRC C++
+void
+F_Poly::affine_image(Var var, const Linear_Expr& expr,
+                     const Integer& inhomo, const Integer& den) {
+  Block b = detail::extract_block(expr);
+  detail::add_var(b, var);
+  Blocks bs_out = merge(blocks, b);
+  factors = refactor(factors, blocks, bs_out);
+  blocks = bs_out;
+  for (dim_type i = 0; i < num_rows(factors); ++i) {
+    if (detail::are_disjoint(b, blocks[i]))
+      break;
+    Var v_int = detail::convert(var, blocks[i]);
+    Linear_Expr le_int = detail::convert(expr, blocks[i]);
+    factors[i].affine_image(v_int, le_int, inhomo, den);
+    if (factors[i].is_empty())
+      set_empty();
+  }
+}
+#+END_SRC
+
+La funzione ~affine_preimage~ è identica a quella appena descritta, con l'unica
+differenza di chiamare la ~affine_preimage~ della PPLite per ogni fattore.
+
+** Altre operazioni
+Oltre alle operazioni descritte in \cite{fastpoly} ne sono state aggiunte altre
+per rendere più completa la classe. Tutte le operazioni descritte
+successivamente non sono altro che il corrispettivo sui poliedri fattorizzati di
+metodi omonimi presenti nella PPLite.
+
+*** ~add_space_dims~ e ~remove_space_dims~
+Funzioni che permettono l'aggiunta e la rimozione di dimensioni del poliedro, ne
+sono state implementate tre versioni:
+
++ ~add_space_dims~: permette di aggiungere $n$ (con $n$ parametro della
+  funzione) dimensioni al poliedro.
+  Quest'ultimo viene incorporato nel nuovo spazio vettoriale. Avendo dei fattori
+  implica che per ogni dimensione aggiunta deve essere aggiunto un nuovo blocco
+  singoletto contenente la nuova dimensione e un rispettivo fattore /universo/
+  di dimensione $1$. È presente anche un parametro ~bool project~ (settato a
+  ~false~ di default) che permette, se passato come ~true~, di non incorporare il
+  poliedro nel nuovo spazio vettoriale. Difatti, per ogni dimensione aggiunta
+  viene creato un blocco singoletto che contiene la dimensione ~dim~ del
+  poliedro, mentre il fattore viene creato da un sistema di vincoli che indica
+  che la sua unica dimensione è vincolata ad assumere il valore 0:
+  #+ATTR_LATEX: :options fontsize=\small
+  #+BEGIN_SRC C++
+void
+F_Poly::add_space_dims(dim_type m, bool project) {
+  assert(m >= 0);
+  if (m == 0)
+    return;
+  if (is_empty()) {
+    dim += m;
+    return;
+  }
+  Factor f(1, Spec_Elem::UNIVERSE, topology());
+  if (project)
+    f.add_con(Var(0) == 0);
+  factors.insert(factors.end(), m, f);
+  for (dim_type i = 0; i != m; ++i) {
+    blocks.emplace_back(1, dim);
+    ++dim;
+  }
+}
+  #+END_SRC
++ ~remove_space_dim~: permette di rimuovere una dimensione dal poliedro. Il
+  problema principale è che, rimuovendo una dimensione, è necessario
+  riorganizzare i blocchi in modo tale da essere uniformati all'insieme
+  $\{1,...,dim\}$. Questa operazione è riservata a una funzione chiamata
+  ~reduce_blocks~:
+  #+ATTR_LATEX: :options fontsize=\small
+  #+BEGIN_SRC C++
+void
+F_Poly::remove_space_dim(const dim_type v) {
+  for (dim_type i = 0; i < num_rows(blocks); ++i)
+    for (dim_type j = 0; j < num_rows(blocks[i]); ++j)
+      if (v == blocks[i][j]) {
+        if (num_rows(blocks[i]) == 1) {
+          blocks.erase(blocks.begin() + i);
+          factors.erase(factors.begin() + i);
+          reduce_blocks(blocks, v);
+        }
+        else {
+          blocks[i].erase(blocks[i].begin() + j);
+          factors[i].remove_space_dim(Var(v));
+          reduce_blocks(blocks, v);
+        }
+        --dim;
+        return;
+      }
+}
+  #+END_SRC
+  È presente anche la versione ~remove_space_dims(const Index_Set& vars)~ che
+  permette di rimuovere tutte le dimensioni presenti dentro ~vars~.
++ ~remove_higher_space_dims~: la sua implementazione utilizza la funzione
+  precedente e non fa altro che rimuovere le $n$ dimensioni (con $n$ parametro
+  della funzione) più grandi del poliedro:
+  #+ATTR_LATEX: :options fontsize=\small
+  #+BEGIN_SRC C++
+void
+F_Poly::remove_higher_space_dims(dim_type new_dim) {
+  if (is_empty()) {
+    dim = new_dim;
+    return;
+  }
+  for (dim_type i = space_dim(); i-- > new_dim; )
+    remove_space_dim(i);
+}
+  #+END_SRC
 * Conclusione
 
 #+LATEX: \bibliographystyle{plain}
