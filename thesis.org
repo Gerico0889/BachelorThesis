@@ -3,7 +3,7 @@
 
 #+LATEX_CLASS: mimosis
 #+SETUPFILE: thesis.setup
-
+#+INCLUDE: "frontispiece.org"
 
 * Introduzione
 
@@ -570,7 +570,6 @@ sta lavorando è in condizioni di correttezza. Le invarianti di classe che devon
 essere rispettate sono le seguenti:
 
 + La dimensione minima del poliedro deve essere $\ge 0$
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (dim < 0) {
   reason = "F_Poly broken: invalid space dimension";
@@ -579,7 +578,6 @@ if (dim < 0) {
 }
   #+END_SRC
 + Se il poliedro è vuoto, i fattori e i blocchi devono essere anch'essi vuoti
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (is_empty()) {
   if (!(factors.empty() && blocks.empty())) {
@@ -592,7 +590,6 @@ if (is_empty()) {
 }
   #+END_SRC
 + Il numero di blocchi deve essere uguale al numero di fattori
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (factors.size() != blocks.size()) {
   reason = "F_Poly broken: #factors != #blocks";
@@ -601,7 +598,6 @@ if (factors.size() != blocks.size()) {
 }
   #+END_SRC
 + La cardinalità dei blocchi deve essere uguale a ~dim~
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 dim_type dim_ = 0;
 for (const auto& block : blocks)
@@ -614,7 +610,6 @@ if (dim != dim_) {
   #+END_SRC
 + Le dimensioni di un fattore devono essere uguali alle dimensioni del blocco
   che lo rappresenta
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 // Each factor space dim should match its block.
 for (dim_type i = 0; i < num_rows(factors); ++i)
@@ -625,7 +620,6 @@ for (dim_type i = 0; i < num_rows(factors); ++i)
   }
   #+END_SRC
 + Nessun fattore deve essere vuoto
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (std::any_of(factors.begin(), factors.end(),
                 std::mem_fn(&Poly::is_empty))) {
@@ -636,7 +630,6 @@ if (std::any_of(factors.begin(), factors.end(),
   #+END_SRC
 + Ogni dimensione dello spazio deve apparire una e una volta soltanto nei
   blocchi e non devono esserci blocchi vuoti
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 std::vector<bool> dims(dim, false);
 for (const auto& block : blocks) {
@@ -662,7 +655,6 @@ for (const auto& block : blocks) {
 }
   #+END_SRC
 + Ogni dimensione dello spazio deve essere presente in un blocco
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
   reason = "F_Poly broken: a space dim is missing from blocks";
@@ -687,7 +679,6 @@ richiamare le varie operazioni.
 
 Diverse sono le funzioni più significative definite all'interno di ~F_Poly.hh~:
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 static Factors refactor(const Factors& f,
                         const Blocks& b1, const Blocks& b2);
@@ -717,7 +708,6 @@ quanto riguarda il join dei blocchi, è stata implementata utilizzando
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
 all'interno dei blocchi interessati.
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 Blocks bs(bs2.size());
   Factors res(bs.size(), Factor(0, Spec_Elem::UNIVERSE));
@@ -735,7 +725,6 @@ Per rimappare le dimensioni in maniera corretta viene utilizzata la funzione
 viene riempito delle varie dimensioni dei blocchi che saranno rimappati in base
 all'indice in cui si trovano.
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 // Remap those factors res[i] s.t. bs[i] != bs2[i]
   for (dim_type i = 0; i != num_rows(bs2); ++i) {
@@ -755,7 +744,6 @@ all'indice in cui si trovano.
 Il metodo ~are_disjoint(const Block& b1, const Block& b2)~ viene utilizzato per
 vedere se due blocchi sono uguali.
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 inline bool
 are_disjoint(const Block& b1, const Block& b2) {
@@ -774,7 +762,6 @@ operazione prende due parametri ~const Blocks& b1, const Blocks& b2~ e,
 inizialmente, crea un blocco ~lub~ che sarà composto dalle dimensioni non in
 comune tra ~b1~ e ~b2~:
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 Blocks lub; dim_type i = 0;
 bool first = true;
@@ -797,7 +784,6 @@ for (const auto &bl1 : b1)
 Successivamente si itera su ~lub~ per unire i blocchi che presentavano
 dimensioni comuni fino a costruire la partizione ~lub~.
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 for (auto it1 = lub.begin(); it1 != lub.end(); ++it1)
   for (auto it2 = it1 + 1; it2 != lub.end(); ++it2)
@@ -812,7 +798,6 @@ Per unire i blocchi è stata utilizzata al funzione ~block_union(const Block& b1
 const Block& b2)~ che permette di unire i blocchi ed evitare che si vengano a
 creare dimensioni doppie.
 
-#+ATTR_LATEX: :options fontsize=\small
 #+BEGIN_SRC C++
 F_Poly::Block
 F_Poly::block_union(const Block& b1, const Block& b2) {
@@ -840,7 +825,6 @@ funzioni helper oltre a ~refactor~ e ~merge~:
 
 + ~extract_block()~: una funzione che, preso un vincolo, restituisce il blocco
   contenente tutte le variabili utilizzate in esso:
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 inline Block
 extract_block(const Linear_Expr& e) {
@@ -874,7 +858,7 @@ differenze con lo pseudocodice sono che è necessario convertire sia ~var~ che
 ~expr~ in base al blocco corrispondente. Una volta convertite non si fa altro
 che chiamare la ~affine_image~ della PPLite per ogni fattore.
 
-#+ATTR_LATEX: :options fontsize=\small
+
 #+BEGIN_SRC C++
 void
 F_Poly::affine_image(Var var, const Linear_Expr& expr,
@@ -920,7 +904,6 @@ sono state implementate tre versioni:
   viene creato un blocco singoletto che contiene la dimensione ~dim~ del
   poliedro, mentre il fattore viene creato da un sistema di vincoli che indica
   che la sua unica dimensione è vincolata ad assumere il valore 0:
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 void
 F_Poly::add_space_dims(dim_type m, bool project) {
@@ -946,7 +929,6 @@ F_Poly::add_space_dims(dim_type m, bool project) {
   riorganizzare i blocchi in modo tale da essere uniformati all'insieme
   $\{1,...,dim\}$. Questa operazione è riservata a una funzione chiamata
   ~reduce_blocks~:
-  #+ATTR_LATEX: :options fontsize=\small
   #+BEGIN_SRC C++
 void
 F_Poly::remove_space_dim(const dim_type v) {
@@ -973,8 +955,7 @@ F_Poly::remove_space_dim(const dim_type v) {
 + ~remove_higher_space_dims~: la sua implementazione utilizza la funzione
   precedente e non fa altro che rimuovere le $n$ dimensioni (con $n$ parametro
   della funzione) più grandi del poliedro:
-  #+ATTR_LATEX: :options fontsize=\small
-  #+BEGIN_SRC C++
+    #+BEGIN_SRC C++
 void
 F_Poly::remove_higher_space_dims(dim_type new_dim) {
   if (is_empty()) {
@@ -985,6 +966,73 @@ F_Poly::remove_higher_space_dims(dim_type new_dim) {
     remove_space_dim(i);
 }
   #+END_SRC
+
+*** ~add_con~ e ~add_gen~
+Le due funzioni vengono utilizzate rispettivamente per aggiungere un vincolo e
+un generatore al poliedro. Per quanto riguarda la prima, non è altro che la
+/conditional/ vista nell'Algoritmo \ref{conditional}, la seconda è un caso a
+parte.
+
+Per ogni generatore che viene passato come parametro possono esserci tre casi:
+
++ *Il poliedro è vuoto*: in questo caso si controlla che il generatore sia un
+  punto, successivamente tutto il poliedro viene settato come /universo/ e, per
+  ogni fattore, viene aggiunto un vincolo $d \cdot 0 = coeff(Var(i))$
+  #+BEGIN_SRC C++
+if (is_empty()) {
+  assert(g.is_point());
+  *this = F_Poly(dim, Spec_Elem::UNIVERSE, topology());
+  for (dim_type i = dim; i-- > 0; )
+    factors[i].add_con(g.divisor() * Var(0) == g.coeff(Var(i)));
+  assert(check_inv());
+  return;
+}
+  #+END_SRC
++ *Il poliedro non è vuoto e il generatore è un punto*: in questo caso non si fa
+  altro che costruire un insieme di fattori, ognuno dei quali conterrà il
+  generatore passato come parametro; infine questi fattori vengono aggiunti al
+  poliedro tramite la /join/:
+  #+BEGIN_SRC C++
+if (g.is_point()) {
+  Factors fs_g;
+  const auto nb = num_rows(blocks);
+  fs_g.reserve(nb);
+  for (dim_type i = 0; i != nb; ++i) {
+    const auto& bi = blocks[i];
+    const auto nbi = num_rows(bi);
+    fs_g.emplace_back(nbi, Spec_Elem::UNIVERSE, topology());
+    auto& fi = fs_g.back();
+    for (dim_type j = 0; j != nbi; ++j)
+      fi.add_con(g.divisor() * Var(j) == g.coeff(Var(bi[j])));
+  }
+  join(fs_g, blocks);
+  assert(check_inv());
+  return;
+}
+  #+END_SRC
++ *Il poliedro non è vuoto e il generatore non è un punto*: in questo caso viene
+  creato un blocco $\mathcal{B}$ contentente tutte le dimensioni che appaiono
+  nel generatore, successivamente si crea un blocco $\overline{\pi} =
+  \pi_{\mathcal{P}} \uparrow \mathcal{B}$ tramite il quale si ri-fattorizza il
+  nostro poliedro in $\mathcal{P}'$. Infine, per ogni blocco che compare anche
+  nel generatore si richiama la ~add_gen()~ della PPLite
+  #+BEGIN_SRC C++
+  assert(!is_empty() && !g.is_point());
+  Block b_g = detail::extract_block(g);
+  Blocks b_out = merge(blocks, b_g);
+  factors = refactor(factors, blocks, b_out);
+  blocks = b_out;
+
+  for (dim_type i = 0; i != num_rows(blocks); ++i) {
+    if (detail::are_disjoint(b_g, blocks[i]))
+      continue;
+    auto g_int = detail::convert(g, blocks[i]);
+    factors[i].add_gen(std::move(g_int));
+    break;
+  }
+  assert(check_inv());
+  #+END_SRC
+
 * Conclusione
 
 #+LATEX: \bibliographystyle{plain}

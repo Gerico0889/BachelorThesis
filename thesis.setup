@@ -12,3 +12,34 @@
 #+LATEX_HEADER: \newtheorem{exmp}{Esempio}[section]
 #+LATEX_HEADER: \usepackage{amsmath}
 #+LATEX_HEADER: \floatname{algorithm}{Algoritmo}
+
+#+LATEX_HEADER: \usepackage{listings}
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \definecolor{codegreen}{rgb}{0,0.6,0}
+#+LATEX_HEADER: \definecolor{codegray}{rgb}{0.5,0.5,0.5}
+#+LATEX_HEADER: \definecolor{backcolour}{RGB}{247,248,250}
+#+LATEX_HEADER: \definecolor{codebrown}{RGB}{171,88,106}
+#+LATEX_HEADER: \definecolor{codeblue}{RGB}{122,99,192}
+#+LATEX_HEADER: \definecolor{codeorange}{RGB}{255,165,121}
+#+LATEX_HEADER: \lstdefinestyle{mystyle}{
+#+LATEX_HEADER:     language=C++,
+#+LATEX_HEADER:     backgroundcolor=\color{backcolour},
+#+LATEX_HEADER:     commentstyle=\color{codegreen},
+#+LATEX_HEADER:     keywordstyle=\color{codeblue},
+#+LATEX_HEADER:     keywordstyle=[2]{\color{codeblue}},
+#+LATEX_HEADER:     morekeywords={Blocks, Block, Factor, Factors, dim_type,
+#+LATEX_HEADER:                   Vars, Index_Set, Linear_Expr, Con, Cons, Gen,
+#+LATEX_HEADER:                   Gens, Var, F_Poly},
+#+LATEX_HEADER:     numberstyle=\tiny\color{codegray},
+#+LATEX_HEADER:     stringstyle=\color{codeorange},
+#+LATEX_HEADER:     basicstyle=\footnotesize\ttfamily,
+#+LATEX_HEADER:     breakatwhitespace=false,
+#+LATEX_HEADER:     breaklines=true,
+#+LATEX_HEADER:     captionpos=b,
+#+LATEX_HEADER:     keepspaces=true,
+#+LATEX_HEADER:     numbers=none,
+#+LATEX_HEADER:     showspaces=false,
+#+LATEX_HEADER:     showstringspaces=false,
+#+LATEX_HEADER:     showtabs=false,
+#+LATEX_HEADER:     tabsize=2
+#+LATEX_HEADER: }

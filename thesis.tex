@@ -1,7 +1,8 @@
-% Created 2019-02-18 lun 19:22
+% Created 2019-02-19 mar 17:55
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
- \usepackage{minted}
+ \usepackage{listings}
+\usepackage{minted}
  \addto\captionsenglish{\renewcommand\contentsname{Indice}}
 \usepackage{hyperref}
 \usepackage{amsmath}
@@ -16,6 +17,43 @@
 \newtheorem{exmp}{Esempio}[section]
 \usepackage{amsmath}
 \floatname{algorithm}{Algoritmo}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{backcolour}{RGB}{247,248,250}
+\definecolor{codebrown}{RGB}{171,88,106}
+\definecolor{codeblue}{RGB}{122,99,192}
+\definecolor{codeorange}{RGB}{255,165,121}
+\lstdefinestyle{mystyle}{
+language=C++,
+backgroundcolor=\color{backcolour},
+commentstyle=\color{codegreen},
+keywordstyle=\color{codeblue},
+keywordstyle=[2]{\color{codeblue}},
+morekeywords={Blocks, Block, Factor, Factors, dim_type,
+Vars, Index_Set, Linear_Expr, Con, Cons, Gen,
+Gens, Var, F_Poly},
+numberstyle=\tiny\color{codegray},
+stringstyle=\color{codeorange},
+basicstyle=\footnotesize\ttfamily,
+breakatwhitespace=false,
+breaklines=true,
+captionpos=b,
+keepspaces=true,
+numbers=none,
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+tabsize=2
+}
+\usepackage{unipr}
+\titolo{Fattorizzazione Cartesiana nella libreria PPlite}
+\titoloIng{Cartesian Factoring in the PPLite library}
+\laureando{Luigi Zaccone}
+\annoaccademico{2017-2018}
+\corsodilaurea{Informatica}
+\relatore[Chiar.mo Prof.]{Enea Zaffanella}
 
 \newcommand{\mboxparagraph}[1]{\paragraph{#1}\mbox{}\\}
 \newcommand{\mboxsubparagraph}[1]{\subparagraph{#1}\mbox{}\\}
@@ -35,12 +73,11 @@
 \tableofcontents
 
 
-
 \chapter{Introduzione}
-\label{sec:orga35441a}
+\label{sec:orgacfba4e}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:orga11158d}
+\label{sec:orgd4b3fe6}
 La fattorizzazione cartesiana permette di avere una complessità di esecuzione
 minore sulle operazioni applicate ai poliedri. L'idea è che i poliedri
 utilizzati nell'analisi dei programmi non mettono in relazione tutte le
@@ -51,7 +88,7 @@ invece ne sono necessari solo \(2n\). La terminologia e gli esempi saranno
 ispirati al lavoro svolto in \cite{fastpoly}.
 
 \section{Blocchi e fattori}
-\label{sec:orgc24d770}
+\label{sec:org792c9df}
 Sia \(\mathcal{X} = \{x_1, x_2,..., x_n\}\) un insieme di \(n\) variabili. Dato un poliedro, \(\mathcal{X}\)
 può essere partizionato in un sottoinsieme \(\mathcal{X}_k\) che chiamiamo \emph{blocchi} tale
 che i vincoli esistono solo tra variabili presenti nello stesso \emph{blocco}.
@@ -100,7 +137,7 @@ forma un \emph{reticolo di partizioni} \((\mathcal{L}, \sqsubseteq, \sqcup, \sqc
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:orgf4e90c0}
+\label{sec:org28db91a}
 Una partizione \emph{ammissibile} \(\overline{\pi}\) è tale se, dato un poliedro P, non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
@@ -115,7 +152,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org7d3d2da}
+\label{sec:org4e53b79}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Innanzitutto è fondamentalche che, nelle operazioni
 binarie, i poliedri abbiano lo stesso numero di dimensioni. Per descrivere
@@ -243,7 +280,7 @@ ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
 blocco di \(\overline{\pi}\).
 
 \subsection{Inclusion Test (\(\sqsubseteq\))}
-\label{sec:orgb6cbba5}
+\label{sec:orgb4c984d}
 Operazione necessaria per controllare se un poliedro è incluso in un altro,
 disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
 poliedri \(\mathcal{P}\) e \(\mathcal{Q}\) tutti i generatori in
@@ -274,7 +311,7 @@ tutti i test ritornano \emph{True}.
 \end{algorithm}
 
 \subsection{Join (\(\sqcup\))}
-\label{sec:org3bd42c7}
+\label{sec:org1e42a41}
 Tramite la doppia reppresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
 dove \(\mathcal{O}\) è il risultato del \emph{join}, sono semplicemente l'unione dei
 generatori dei poliedri presi in input dalla funzione, ovvero
@@ -348,7 +385,7 @@ ammissibile, in questo caso, sarà uguale a:
 \end{algorithm}
 
 \subsection{Meet (\(\sqcap\))}
-\label{sec:org06985fd}
+\label{sec:org5bef6c3}
 Per la doppia rappresentazione, \(\mathcal{P} \sqcap \mathcal{Q}\) genera un
 poliedro i cui vincoli \(\mathcal{C}_{\mathcal{P} \sqcap \mathcal{Q}}\) sono
 risultati dall'unione di \(\mathcal{C}_{\mathcal{P}}\) e
@@ -402,7 +439,7 @@ ammissibile.
 
 
 \subsection{Conditional}
-\label{sec:org7815582}
+\label{sec:org8a655f6}
 Questa operazione viene utilizzata per aggiungere nuovi vincoli tra le variabili
 di un poliedro. Tramite la doppia rappresentazione è possibile aggiungendo un
 vincolo arbitrario \(c\) all'insieme \(\mathcal{C}_{\mathcal{P}}\). Se dopo
@@ -448,7 +485,7 @@ risultante dall'aggiunta di un vincolo, \(\overline{\pi}_{\mathcal{O}} = \overli
 \end{algorithm}
 
 \subsection{Assignment}
-\label{sec:org1195de3}
+\label{sec:org911e96a}
 Per quanto riguarda il dominio dei poliedri fattorizzati, l'operazione di
 \emph{assignment} è molto simile alla \emph{conditional}. Dopo aver estratto il blocco
 \(\mathcal{B}\) che indica le variabili utilizzate nell'espressione lineare, si
@@ -486,7 +523,7 @@ questa operazione è \(\overline{\pi}_{\mathcal{P}} \uparrow \mathcal{B}\).
 \end{algorithm}
 
 \subsection{Widening (\(\nabla\))}
-\label{sec:org21ccdfe}
+\label{sec:orgd447808}
 Per la doppia rappresentazione, l'operatore di \emph{widening} necessità come
 parametri i generatori e i vincoli di \(\mathcal{P}\) e i vincolo di
 \(\mathcal{Q}\). Il risultato dell'operazione \(\mathcal{P} \nabla
@@ -532,7 +569,7 @@ fattorizzati.
 
 
 \chapter{Implementazione}
-\label{sec:org61656a4}
+\label{sec:org39d7878}
 Questo capitolo tratterà dell'implementazione effettiva dei poliedri
 fattorizzati e di alcune loro operazioni. La struttura è stata basata su di un
 \emph{wrapper} preesistente nella \emph{PPlite} mentre alcune delle implementazioni sono
@@ -549,7 +586,7 @@ del codice. L'efficienza non è stata presa come obiettivo principale durante lo
 sviluppo, dando importanza alla correttezza e alla leggibilità del codice.
 
 \section{\texttt{F\_Poly}}
-\label{sec:org433706e}
+\label{sec:org3fd096e}
 La classe dove sono compresi gran parte dei medoti è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati.
@@ -591,7 +628,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv()}}
-\label{sec:orge8a50af}
+\label{sec:orga8fdb5e}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è in condizioni di correttezza. Le invarianti di classe che devono
@@ -599,15 +636,17 @@ essere rispettate sono le seguenti:
 
 \begin{itemize}
 \item La dimensione minima del poliedro deve essere \(\ge 0\)
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 if (dim < 0) {
   reason = "F_Poly broken: invalid space dimension";
   maybe_dump();
   return false;
 }
-\end{minted}
+\end{lstlisting}
 \item Se il poliedro è vuoto, i fattori e i blocchi devono essere anch'essi vuoti
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 if (is_empty()) {
   if (!(factors.empty() && blocks.empty())) {
     reason = "F_Poly broken: empty polyhedron has factors";
@@ -617,17 +656,19 @@ if (is_empty()) {
   // No other check for an empty polyhedron.
   return true;
 }
-\end{minted}
+\end{lstlisting}
 \item Il numero di blocchi deve essere uguale al numero di fattori
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 if (factors.size() != blocks.size()) {
   reason = "F_Poly broken: #factors != #blocks";
   maybe_dump();
   return false;
 }
-\end{minted}
+\end{lstlisting}
 \item La cardinalità dei blocchi deve essere uguale a \texttt{dim}
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 dim_type dim_ = 0;
 for (const auto& block : blocks)
   dim_ += block.size();
@@ -636,10 +677,11 @@ if (dim != dim_) {
   maybe_dump();
   return false;
 }
-\end{minted}
+\end{lstlisting}
 \item Le dimensioni di un fattore devono essere uguali alle dimensioni del blocco
 che lo rappresenta
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 // Each factor space dim should match its block.
 for (dim_type i = 0; i < num_rows(factors); ++i)
   if (factors[i].space_dim() != num_rows(blocks[i])) {
@@ -647,19 +689,21 @@ for (dim_type i = 0; i < num_rows(factors); ++i)
     maybe_dump();
     return false;
   }
-\end{minted}
+\end{lstlisting}
 \item Nessun fattore deve essere vuoto
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 if (std::any_of(factors.begin(), factors.end(),
                 std::mem_fn(&Poly::is_empty))) {
   reason = "F_Poly broken: empty factor";
   maybe_dump();
   return false;
 }
-\end{minted}
+\end{lstlisting}
 \item Ogni dimensione dello spazio deve apparire una e una volta soltanto nei
 blocchi e non devono esserci blocchi vuoti
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 std::vector<bool> dims(dim, false);
 for (const auto& block : blocks) {
   if (block.size() == 0) {
@@ -682,19 +726,20 @@ for (const auto& block : blocks) {
     dims[d] = true;
   }
 }
-\end{minted}
+\end{lstlisting}
 \item Ogni dimensione dello spazio deve essere presente in un blocco
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
   reason = "F_Poly broken: a space dim is missing from blocks";
   maybe_dump();
   return false;
 }
-\end{minted}
+\end{lstlisting}
 \end{itemize}
 
 \section{Operazione di base}
-\label{sec:org6db066f}
+\label{sec:org5c3a749}
 Durante la lettura di questo paragrafo, sarà palese la diversa notazione
 utilizzata rispetto a \cite{fastpoly}: questo perché, per motivi di
 compatibilità e trasparenza si è deciso di implementare le varie operazioni
@@ -710,7 +755,8 @@ richiamare le varie operazioni.
 
 Diverse sono le funzioni più significative definite all'interno di \texttt{F\_Poly.hh}:
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 static Factors refactor(const Factors& f,
                         const Blocks& b1, const Blocks& b2);
 static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
@@ -728,10 +774,10 @@ void affine_preimage(Var var, const Linear_Expr& expr,
 void add_con(const Con& c);
 void add_gen(const Gen& c);
 bool inclusion(const Factors& f, const Blocks& b) const;
-\end{minted}
+\end{lstlisting}
 
 \subsection{\texttt{refactor}}
-\label{sec:org6e7d7c7}
+\label{sec:org156c306}
 La semantica rimane invariata invariata rispetto a quanto descritto
 nell'Algoritmo \ref{refactor}. Per la \emph{join} \((\bowtie)\) tra i fattori è stata
 utilizzata la \texttt{concatenate\_assign()} della PPlite, una funzione omonima, per
@@ -741,7 +787,8 @@ iterator insert(const\_iterator pos, InputIt first, InputIt last);}}. E importan
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
 all'interno dei blocchi interessati.
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 Blocks bs(bs2.size());
   Factors res(bs.size(), Factor(0, Spec_Elem::UNIVERSE));
   for (dim_type i = 0; i != num_rows(bs1); ++i)
@@ -751,14 +798,15 @@ Blocks bs(bs2.size());
       res[j].concatenate_assign(fs[i]);
       concatenate_assign(bs[j], bs1[i]);
     }
-\end{minted}
+\end{lstlisting}
 
 Per rimappare le dimensioni in maniera corretta viene utilizzata la funzione
 \texttt{map\_space\_dims()}, che prende come argomento un oggetto di tipo \texttt{Dims} che
 viene riempito delle varie dimensioni dei blocchi che saranno rimappati in base
 all'indice in cui si trovano.
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 // Remap those factors res[i] s.t. bs[i] != bs2[i]
   for (dim_type i = 0; i != num_rows(bs2); ++i) {
     const auto& b = bs[i];
@@ -772,32 +820,34 @@ all'indice in cui si trovano.
     res[i].map_space_dims(pf);
   }
   return res;
-\end{minted}
+\end{lstlisting}
 
 Il metodo \texttt{are\_disjoint(const Block\& b1, const Block\& b2)} viene utilizzato per
 vedere se due blocchi sono uguali.
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 inline bool
 are_disjoint(const Block& b1, const Block& b2) {
   return std::find_first_of(b1.begin(), b1.end(),
                             b2.begin(), b2.end()) == b1.end();
 }
-\end{minted}
+\end{lstlisting}
 
 Utilizza \texttt{std::find\_first\_of}\footnote{\texttt{template <class InputIt, class ForwardIt>
 InputIt find\_first\_of(InputIt first, InputIt last, ForwardIt s\_first, ForwardIt s\_last);}} e ritorna falso se trova un elemento che è
 presente in un insieme e non in un altro.
 
 \subsection{\texttt{least\_upper\_bound}}
-\label{sec:orgddab25d}
+\label{sec:orgb256790}
 L'implementazione di questo metodo non è stata menzionata in \cite{fastpoly} ma
 ne è stato solo descritto l'aspetto matematico. In termini più pratici questa
 operazione prende due parametri \texttt{const Blocks\& b1, const Blocks\& b2} e,
 inizialmente, crea un blocco \texttt{lub} che sarà composto dalle dimensioni non in
 comune tra \texttt{b1} e \texttt{b2}:
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 Blocks lub; dim_type i = 0;
 bool first = true;
 
@@ -814,12 +864,13 @@ for (const auto &bl1 : b1)
   ++i;
   first = true;
 }
-\end{minted}
+\end{lstlisting}
 
 Successivamente si itera su \texttt{lub} per unire i blocchi che presentavano
 dimensioni comuni fino a costruire la partizione \texttt{lub}.
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 for (auto it1 = lub.begin(); it1 != lub.end(); ++it1)
   for (auto it2 = it1 + 1; it2 != lub.end(); ++it2)
     if (!detail::are_disjoint(*it1, *it2)) {
@@ -827,13 +878,14 @@ for (auto it1 = lub.begin(); it1 != lub.end(); ++it1)
       lub.erase(it2);
       --it2;
     }
-\end{minted}
+\end{lstlisting}
 
 Per unire i blocchi è stata utilizzata al funzione \texttt{block\_union(const Block\& b1,
 const Block\& b2)} che permette di unire i blocchi ed evitare che si vengano a
 creare dimensioni doppie.
 
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 F_Poly::Block
 F_Poly::block_union(const Block& b1, const Block& b2) {
   Block out(b1);
@@ -851,10 +903,10 @@ F_Poly::block_union(const Block& b1, const Block& b2) {
   }
   return out;
 }
-\end{minted}
+\end{lstlisting}
 
 \subsection{\texttt{add\_con}}
-\label{sec:org2a7797b}
+\label{sec:org8bca510}
 Il metodo \texttt{add\_con} non è altro che l'implementazione dell'Algoritmo
 \ref{conditional}. Per poter sviluppare questa operazione sono necessare due diverse
 funzioni helper oltre a \texttt{refactor} e \texttt{merge}:
@@ -862,7 +914,8 @@ funzioni helper oltre a \texttt{refactor} e \texttt{merge}:
 \begin{itemize}
 \item \texttt{extract\_block()}: una funzione che, preso un vincolo, restituisce il blocco
 contenente tutte le variabili utilizzate in esso:
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 inline Block
 extract_block(const Linear_Expr& e) {
   Block var_block;
@@ -871,7 +924,7 @@ extract_block(const Linear_Expr& e) {
       var_block.push_back(i);
   return var_block;
 }
-\end{minted}
+\end{lstlisting}
 non facciamo altro che iterare una \texttt{Linear\_Expr} inserendo tutte le variabili
 presenti in quest'ultima in un \texttt{std::vector}.
 \item \texttt{convert}: è una funzione che permette di mappare le dimensioni di un vincolo.
@@ -881,7 +934,7 @@ vincolo esterno a vincolo interno in base al blocco che viene passato.
 \end{itemize}
 
 \subsection{\texttt{affine\_image} e \texttt{affine\_preimage}}
-\label{sec:org29c1b15}
+\label{sec:orga5b4206}
 Questa funzione è l'implementazione dell'operazione \emph{assignment} vista
 nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
 coerenti con le definizioni della PPLite, la funzione prende in input:
@@ -899,7 +952,9 @@ differenze con lo pseudocodice sono che è necessario convertire sia \texttt{var
 \texttt{expr} in base al blocco corrispondente. Una volta convertite non si fa altro
 che chiamare la \texttt{affine\_image} della PPLite per ogni fattore.
 
-\begin{minted}[,fontsize=\small]{c++}
+
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 void
 F_Poly::affine_image(Var var, const Linear_Expr& expr,
                      const Integer& inhomo, const Integer& den) {
@@ -918,36 +973,37 @@ F_Poly::affine_image(Var var, const Linear_Expr& expr,
       set_empty();
   }
 }
-\end{minted}
+\end{lstlisting}
 
 La funzione \texttt{affine\_preimage} è identica a quella appena descritta, con l'unica
 differenza di chiamare la \texttt{affine\_preimage} della PPLite per ogni fattore.
 
 \section{Altre operazioni}
-\label{sec:org984c7fe}
+\label{sec:org1bec9ef}
 Oltre alle operazioni descritte in \cite{fastpoly} ne sono state aggiunte altre
 per rendere più completa la classe. Tutte le operazioni descritte
 successivamente non sono altro che il corrispettivo sui poliedri fattorizzati di
 metodi omonimi presenti nella PPLite.
 
 \subsection{\texttt{add\_space\_dims} e \texttt{remove\_space\_dims}}
-\label{sec:org93f061d}
-Funzioni che permettono l'aggiunta e la rimozioni di dimensioni del poliedro, ne
+\label{sec:orgea63e39}
+Funzioni che permettono l'aggiunta e la rimozione di dimensioni del poliedro, ne
 sono state implementate tre versioni:
 
 \begin{itemize}
 \item \texttt{add\_space\_dims}: permette di aggiungere \(n\) (con \(n\) parametro della
 funzione) dimensioni al poliedro.
 Quest'ultimo viene incorporato nel nuovo spazio vettoriale. Avendo dei fattori
-implica che per ogni dimensioni aggiunta deve essere aggiunto un nuovo blocco
+implica che per ogni dimensione aggiunta deve essere aggiunto un nuovo blocco
 singoletto contenente la nuova dimensione e un rispettivo fattore \emph{universo}
 di dimensione \(1\). È presente anche un parametro \texttt{bool project} (settato a
-\texttt{false} di default) che permette, se passato come \texttt{true} di non incorporare il
+\texttt{false} di default) che permette, se passato come \texttt{true}, di non incorporare il
 poliedro nel nuovo spazio vettoriale. Difatti, per ogni dimensione aggiunta
 viene creato un blocco singoletto che contiene la dimensione \texttt{dim} del
 poliedro, mentre il fattore viene creato da un sistema di vincoli che indica
 che la sua unica dimensione è vincolata ad assumere il valore 0:
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 void
 F_Poly::add_space_dims(dim_type m, bool project) {
   assert(m >= 0);
@@ -966,13 +1022,14 @@ F_Poly::add_space_dims(dim_type m, bool project) {
     ++dim;
   }
 }
-\end{minted}
+\end{lstlisting}
 \item \texttt{remove\_space\_dim}: permette di rimuovere una dimensione dal poliedro. Il
 problema principale è che, rimuovendo una dimensione, è necessario
 riorganizzare i blocchi in modo tale da essere uniformati all'insieme
 \(\{1,...,dim\}\). Questa operazione è riservata a una funzione chiamata
 \texttt{reduce\_blocks}:
-\begin{minted}[,fontsize=\small]{c++}
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 void
 F_Poly::remove_space_dim(const dim_type v) {
   for (dim_type i = 0; i < num_rows(blocks); ++i)
@@ -992,27 +1049,100 @@ F_Poly::remove_space_dim(const dim_type v) {
         return;
       }
 }
-\end{minted}
+\end{lstlisting}
 È presente anche la versione \texttt{remove\_space\_dims(const Index\_Set\& vars)} che
 permette di rimuovere tutte le dimensioni presenti dentro \texttt{vars}.
-\item \texttt{remove\_higher\_space\_dims}: la sua implementazione utilizzare la funzione
+\item \texttt{remove\_higher\_space\_dims}: la sua implementazione utilizza la funzione
 precedente e non fa altro che rimuovere le \(n\) dimensioni (con \(n\) parametro
-della funzione) del poliedro:
-\begin{minted}[,fontsize=\small]{c++}
+della funzione) più grandi del poliedro:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
 void
 F_Poly::remove_higher_space_dims(dim_type new_dim) {
   if (is_empty()) {
     dim = new_dim;
     return;
   }
-
   for (dim_type i = space_dim(); i-- > new_dim; )
     remove_space_dim(i);
 }
-\end{minted}
+\end{lstlisting}
 \end{itemize}
+
+\subsection{\texttt{add\_con} e \texttt{add\_gen}}
+\label{sec:org255e545}
+Le due funzioni vengono utilizzate rispettivamente per aggiungere un vincolo e
+un generatore al poliedro. Per quanto riguarda la prima, non è altro che la
+\emph{conditional} vista nell'Algoritmo \ref{conditional}, la seconda è un caso a
+parte.
+
+Per ogni generatore che viene passato come parametro possono esserci tre casi:
+
+\begin{itemize}
+\item \textbf{Il poliedro è vuoto}: in questo caso si controlla che il generatore sia un
+punto, successivamente tutto il poliedro viene settato come \emph{universo} e, per
+ogni fattore, viene aggiunto un vincolo \(d \cdot 0 = coeff(Var(i))\)
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+if (is_empty()) {
+  assert(g.is_point());
+  *this = F_Poly(dim, Spec_Elem::UNIVERSE, topology());
+  for (dim_type i = dim; i-- > 0; )
+    factors[i].add_con(g.divisor() * Var(0) == g.coeff(Var(i)));
+  assert(check_inv());
+  return;
+}
+\end{lstlisting}
+\item \textbf{Il poliedro non è vuoto e il generatore è un punto}: in questo caso non si fa
+altro che costruire un insieme di fattori, ognuno dei quali conterrà il
+generatore passato come parametro; infine questi fattori vengono aggiunti al
+poliedro tramite la \emph{join}:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+if (g.is_point()) {
+  Factors fs_g;
+  const auto nb = num_rows(blocks);
+  fs_g.reserve(nb);
+  for (dim_type i = 0; i != nb; ++i) {
+    const auto& bi = blocks[i];
+    const auto nbi = num_rows(bi);
+    fs_g.emplace_back(nbi, Spec_Elem::UNIVERSE, topology());
+    auto& fi = fs_g.back();
+    for (dim_type j = 0; j != nbi; ++j)
+      fi.add_con(g.divisor() * Var(j) == g.coeff(Var(bi[j])));
+  }
+  join(fs_g, blocks);
+  assert(check_inv());
+  return;
+}
+\end{lstlisting}
+\item \textbf{Il poliedro non è vuoto e il generatore non è un punto}: in questo caso viene
+creato un blocco \(\mathcal{B}\) contentente tutte le dimensioni che appaiono
+nel generatore, successivamente si crea un blocco \(\overline{\pi} =
+  \pi_{\mathcal{P}} \uparrow \mathcal{B}\) tramite il quale si ri-fattorizza il
+nostro poliedro in \(\mathcal{P}'\). Infine, per ogni blocco che compare anche
+nel generatore si richiama la \texttt{add\_gen()} della PPLite
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+  assert(!is_empty() && !g.is_point());
+  Block b_g = detail::extract_block(g);
+  Blocks b_out = merge(blocks, b_g);
+  factors = refactor(factors, blocks, b_out);
+  blocks = b_out;
+
+  for (dim_type i = 0; i != num_rows(blocks); ++i) {
+    if (detail::are_disjoint(b_g, blocks[i]))
+      continue;
+    auto g_int = detail::convert(g, blocks[i]);
+    factors[i].add_gen(std::move(g_int));
+    break;
+  }
+  assert(check_inv());
+\end{lstlisting}
+\end{itemize}
+
 \chapter{Conclusione}
-\label{sec:org70cad7e}
+\label{sec:orgd0efd2a}
 
 \bibliographystyle{plain}
 \renewcommand\bibname{Bibliografia}
