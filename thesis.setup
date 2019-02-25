@@ -12,6 +12,10 @@
 #+LATEX_HEADER: \newtheorem{exmp}{Esempio}[section]
 #+LATEX_HEADER: \usepackage{amsmath}
 #+LATEX_HEADER: \floatname{algorithm}{Algoritmo}
+#+LATEX_HEADER: \usepackage{amsfonts}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER: \let\emptyset\varnothing
+#+LATEX_HEADER: \usepackage{bm}
 
 #+LATEX_HEADER: \usepackage{listings}
 #+LATEX_HEADER: \usepackage{color}
