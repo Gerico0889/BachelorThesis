@@ -1,4 +1,4 @@
-% Created 2019-02-25 lun 17:23
+% Created 2019-02-28 gio 18:38
 % Intended LaTeX compiler: pdflatex
 \documentclass{mimosis}
  \usepackage{listings}
@@ -52,7 +52,7 @@ showtabs=false,
 tabsize=2
 }
 \usepackage{unipr}
-\titolo{Fattorizzazione Cartesiana \\ nella libreria PPLite}
+\titolo{Fattorizzazione cartesiana \\ nella libreria PPLite}
 \titoloIng{Cartesian Factoring in the PPLite Library}
 \laureando{Luigi Zaccone}
 \annoaccademico{2017-2018}
@@ -78,17 +78,17 @@ tabsize=2
 
 
 \chapter{Introduzione}
-\label{sec:org44fb0e1}
+\label{sec:orgc833658}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:orgb0e9c4b}
+\label{sec:orgd34fac9}
 I poliedri chiusi convessi che saranno utilizzati potranno essere rappresentati
 in due modi:
 
 \begin{itemize}
 \item tramite un sistema finito di vincoli \(\mathcal{C}\). I vincoli
 non sono altro che le equazioni e disequazioni che individuano rispettivamente
-i semispazi e gli iperpiani del poliedro \cite{becchi};
+gli iperpiani e i semispazi del poliedro \cite{becchi};
 \item tramite un sistema finito di generatori \(\mathcal{G}\). Questi
 permettono di costruire il luogo geometrico dei punti determinati da
 combinazioni di particolari elementi del poliedro stesso \cite{becchi}. I
@@ -118,19 +118,17 @@ Se \(\mathcal{P} = \emptyset\) allora non ha rette.
 Quindi possiamo esprimere un generatore come \(\mathcal{G} =
     (\mathit{L},\mathit{R},\mathit{P})\) dove \(\mathit{L},\mathit{R},\mathit{P}\)
 sono sottoinsiemi finiti di \(\mathbb{R}^n\) di cardinalità \(l,r\) e \(p\)
-rispettivamente, tali che \(0 \notin \mathit{R}\) e \(0 \notin \mathit{L}\), con
+rispettivamente, tali che \(\bm{0} \notin \mathit{R}\) e \(\bm{0} \notin \mathit{L}\), con
 \begin{align*}
 \mathcal{P} = \text{gen}(\mathcal{G}) \stackrel{\text{def}}{=} \{\mathit{L}\bm{\lambda} + \mathit{R}\bm{\rho} + \mathit{P}\bm{\pi} \: | \:
 \bm{\lambda} \in \mathbb{R}^l, \bm{\rho} \in \mathbb{R}^r_+, \bm{\pi} \in \mathbb{R}^p_+, \sum\limits_{i=1}^p \pi_i = 1\}
 \end{align*}
 
-I punti di un poliedro \(\mathcal{P}\) sono quindi ottenibili come combinazioni
-convesse dei punti in \(\mathit{P}\) e come somma di combinazioni non negative
+I punti di un poliedro \(\mathcal{P}\) sono quindi ottenibili come somma di combinazioni
+convesse dei punti in \(\mathit{P}\) e di combinazioni non negative
 dei raggi in \(\mathit{R}\) (e quindi combinazioni lineari delle rette in \(\mathit{L}\)).
 \end{itemize}
 \end{itemize}
-
-
 
 La fattorizzazione cartesiana, quando applicata, permette di diminuire la complessità di esecuzione
 delle operazioni sui poliedri convessi. L'idea è che i poliedri
@@ -142,7 +140,7 @@ invece ne sono necessari solo \(2n\) di dimensione 1. La terminologia e gli esem
 ispirati al lavoro svolto in \cite{fastpoly}.
 
 \section{Blocchi e fattori}
-\label{sec:org967469f}
+\label{sec:org0d50a63}
 Qui e nei successivi paragrafi verrano considerati esclusivamente poliedri \emph{non}
 vuoti.
 
@@ -201,7 +199,7 @@ più grossolana. È da notare che nel reticolo della
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:orge4e8631}
+\label{sec:org3da832b}
 Una partizione \(\pi\) è \emph{ammissibile} per un poliedro P se non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
 P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
@@ -216,7 +214,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org804a9f1}
+\label{sec:org9945b87}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Occorre premettere che in quasi tutte le operazioni
 binarie, i poliedri hanno la stessa dimensione. Fa eccezione la concatenazione. Per descrivere
@@ -250,8 +248,8 @@ successivamente la partizione corretta.
     \EndFor
     \State $\pi$.add($\mathcal{B}$)
     \EndFor
-    \While{$\exists$ $\pi_i, \pi_j \in \pi$, $i \ne j$ \textbf{t.c.} $\mathcal{X}_i \cap \mathcal{X}_j \ne \emptyset$}
-    \State $\pi$ := $(\pi \setminus \{\pi_i, \pi_j\}) \cup \{\pi_i \cup \pi_j\}$
+    \While{$\exists$ $\mathcal{X}_i, \mathcal{X}_j \in \pi$, $i \ne j$ \textbf{t.c.} $\mathcal{X}_i \cap \mathcal{X}_j \ne \emptyset$}
+    \State $\pi$ := $(\pi \setminus \{\mathcal{X}_i, \mathcal{X}_j\}) \cup \{\mathcal{X}_i \cup \mathcal{X}_j\}$
     \EndWhile
     \Return $\pi$
     \EndFunction
@@ -313,12 +311,12 @@ altro che calcolare il \emph{lub} (\(\pi = \pi_{\mathcal{P}}
 \begin{algorithm}[H]
 \caption{Refactor}\label{refactor}
 \begin{algorithmic}[1]
-\Function{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \pi$}
+\Function{Refactor}{$\mathcal{P}, \pi, \pi_{\mathcal{P}}$}
 \State$\mathcal{O}, \pi_{\mathcal{O}} := \emptyset$
-\For{\textbf{each} $i$ \textbf{in} $\{1,..., r\}$} \Comment{r = numero blocchi di $\pi_{\mathcal{P}}$}
+\For{\textbf{each} $i$ \textbf{in} $\{1,..., r\}$} \Comment{r = numero blocchi di $\pi$}
 \State$\mathcal{O}_{i}, \pi_{\mathcal{O}i} := \emptyset$
-\For{\textbf{each} $j$ \textbf{in} $\{1,...,m\}$} \Comment{m = numero blocchi di $\pi$}
-\If{$\pi_{\mathcal{P}i} \cap \pi_{i} \ne \emptyset$}
+\For{\textbf{each} $j$ \textbf{in} $\{1,...,m\}$} \Comment{m = numero blocchi di $\pi_{\mathcal{P}}$}
+\If{$\pi_{\mathcal{P}i} \cap \pi_{j} \ne \emptyset$}
 \State$\mathcal{O}_{i}$ := $\mathcal{O}_{j} \bowtie \mathcal{P}_{i}$
 \State$\pi_{\mathcal{O}i}$ := $\pi_{\mathcal{O}i} \bowtie \pi_{\mathcal{P}i}$
 \EndIf
@@ -333,22 +331,22 @@ altro che calcolare il \emph{lub} (\(\pi = \pi_{\mathcal{P}}
 \end{algorithm}
 
 Come spiegato precedentemente, la refactor prende in input un poliedro
-fattorizzato \(\mathcal{P}\) e la sua partizione \(\pi_{\mathcal{P}}\) per
-rifattorizzarlo in base al terzo parametro \(\pi\). Non fa altro che
+fattorizzato \(\mathcal{P}\) e la sua partizione \(\pi\) per
+rifattorizzarlo in base al terzo parametro \(\pi_{\mathcal{P}}\). Non fa altro che
 unire i fattori che hanno intersezione dei relativi blocchi non vuota tra
 \(\pi_{\mathcal{P}}\) e \(\pi\) e generare il blocco finale. È importante
 ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
-blocco di \(\pi\).
+blocco di \(\pi_{\mathcal{P}}\).
 
 \subsection{Inclusion Test (\(\sqsubseteq\))}
-\label{sec:org447bbc8}
-Operazione necessaria per controllare se un poliedro è incluso in un altro,
-disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
-poliedri \(\mathcal{P}\) e \(\mathcal{Q}\) tutti i generatori in
+\label{sec:orgcfb8043}
+Operazione necessaria per controllare se un poliedro è incluso in un altro.
+Disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
+poliedri \(\mathcal{P}\) e \(\mathcal{Q}\), tutti i generatori in
 \(\mathcal{G}_{\mathcal{P}}\) soddisfano tutti i vincoli in
 \(\mathcal{C}_{\mathcal{Q}}\).
 
-Nel nostro caso e, come mostrato nell'Algoritmo 4, è stata implementata tramite
+Nel nostro caso, come mostrato nell'Algoritmo 4, è stata implementata tramite
 wrapper. In particolare vengono rifattorizzati i poliedri con il \emph{lub}
 \(\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}\) e successivamente viene applicata
 l'\emph{inclusion} in ordine su ogni coppia di fattori: il test avrà successo se
@@ -358,7 +356,7 @@ tutti i test ritornano \emph{True}.
 \caption{Inclusion Test}\label{inclusion test}
 \begin{algorithmic}[1]
 \Function{Inclusion}{$\mathcal{P},\pi_{\mathcal{P}},\mathcal{Q},\pi_{\mathcal{Q}}$}
-\State$\pi$ := \Call{Leas-Upper-Bound}{$\pi_{\mathcal{P}},\pi_{\mathcal{Q}}$}
+\State$\pi$ := \Call{Least-Upper-Bound}{$\pi_{\mathcal{P}},\pi_{\mathcal{Q}}$}
 \State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \pi$}
 \State$\mathcal{Q}'$ := \Call{Refactor}{$\mathcal{Q}, \pi_{\mathcal{Q}}, \pi$}
 \For{\textbf{each} $k$ \textbf{in} $\{1,...,r\}$} \Comment{r = numero di blocchi in $\pi$}
@@ -372,8 +370,8 @@ tutti i test ritornano \emph{True}.
 \end{algorithm}
 
 \subsection{Join (\(\sqcup\))}
-\label{sec:org10038e8}
-Tramite la doppia reppresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
+\label{sec:org4548c08}
+Tramite la doppia rappresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
 dove \(\mathcal{O}\) è il risultato del \emph{join}, sono semplicemente l'unione dei
 generatori dei poliedri presi in input dalla funzione, ovvero
 \(\mathcal{G}_{\mathcal{O}}\) = \(\mathcal{G}_{\mathcal{P}} \cup
@@ -401,14 +399,14 @@ Avendo un sistema di poliedri fattorizzati, è necessario per prima cosa
 rifattorizzare \(\mathcal{P}\) e \(\mathcal{Q}\) utilizzando il loro \emph{lub}. Per ogni
 coppia di fattori \((\mathcal{P}'_{i}, \mathcal{Q}'_{i})\) uguali, se ne aggiunge
 uno con il rispettivo blocco \(\pi_i\) al risultato. Se invece i due
-fattori risultano diversi, ognuno viene unito a un fattore comune
-\((\mathcal{P}'_{i}, \mathcal{Q}'_{i})\) e successivamente si calcola la \emph{join} di
+fattori risultano diversi, ognuno viene unita a una coppia di fattori comuni
+\((\mathcal{P}_{\mathcal{T}}, \mathcal{Q}_{\mathcal{T}})\) e successivamente si calcola la \emph{join} di
 questi due fattori e si inserisce insieme al rispettivo blocco nel poliedro di
 output.
 
 Un caso speciale è stato assegnato ai poliedri \emph{vuoti}. Dati \(\mathcal{P}\) come
-poliedro \emph{vuoto} e \(\mathcal{Q}\) un poliedro generico allora \(\mathcal{Q} \cup
-\mathcal{P}\) = \(\mathcal{Q}\) e anche \(\mathcal{P} \cup
+poliedro \emph{vuoto} e \(\mathcal{Q}\) un poliedro generico allora \(\mathcal{Q} \sqcup
+\mathcal{P}\) = \(\mathcal{Q}\) e anche \(\mathcal{P} \sqcup
 \mathcal{Q}\) = \(\mathcal{Q}\).
 
 Se invece \(\pi = \pi_{\mathcal{P}} \sqcup
@@ -432,12 +430,12 @@ ammissibile, in questo caso, sarà uguale a:
 \State$\mathcal{O}$.add$(\mathcal{P}'_{i})$
 \State$\pi_{\mathcal{O}}$.add$(\mathcal{X}'_{i})$
 \Else
-\State$\mathcal{X}_{\mathcal{T}}$ := $\mathcal{X}_{\mathcal{T}} \cup \pi_{i}$
+\State$\mathcal{X}_{\mathcal{T}}$ := $\mathcal{X}_{\mathcal{T}} \cup \mathcal{X}_i$
 \State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \bowtie \mathcal{P}'_{i}$
 \State$\mathcal{Q}_{\mathcal{T}}$ := $\mathcal{Q}_{\mathcal{T}} \bowtie \mathcal{Q}'_{i}$
 \EndIf
 \EndFor
-\State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \sqcap \mathcal{Q}_{\mathcal{T}}$
+\State$\mathcal{P}_{\mathcal{T}}$ := $\mathcal{P}_{\mathcal{T}} \sqcup \mathcal{Q}_{\mathcal{T}}$
 \State$\pi_{\mathcal{O}}$.add$(\mathcal{X}_{\mathcal{T}})$
 \State$\mathcal{O}$.add$(\mathcal{P}_{\mathcal{T}})$
 \State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
@@ -446,7 +444,7 @@ ammissibile, in questo caso, sarà uguale a:
 \end{algorithm}
 
 \subsection{Meet (\(\sqcap\))}
-\label{sec:orgcf46ad3}
+\label{sec:orgdfe8161}
 Per la doppia rappresentazione, \(\mathcal{P} \sqcap \mathcal{Q}\) genera un
 poliedro i cui vincoli \(\mathcal{C}_{\mathcal{P} \sqcap \mathcal{Q}}\) sono
 risultati dall'unione di \(\mathcal{C}_{\mathcal{P}}\) e
@@ -457,18 +455,18 @@ risultati dall'unione di \(\mathcal{C}_{\mathcal{P}}\) e
 \bot\) e \(\mathcal{G}_{\mathcal{P} \sqcap \mathcal{Q}} = \emptyset\).
 
 Per quanto riguarda i poliedri fattorizzati è necessario generare
-\(\pi = \pi_{\mathcal{P}} \sqcap
+\(\pi = \pi_{\mathcal{P}} \sqcup
 \pi_{\mathcal{Q}}\) e rifattorizzare i due poliedri \(\mathcal{P}\) e
 \(\mathcal{Q}\) tramite essa, generando quindi \(\mathcal{P}'\) e \(\mathcal{Q}'\).
 Per tutte le \(r\) coppie di fattori \(\mathcal{P}'_i\) e \(\mathcal{Q}'_i\), se
 sono uguali aggiungo \(\mathcal{P}'_i\) con il rispettivo blocco al poliedro di
 output \(\mathcal{O}\), altrimenti creo un fattore \(\mathcal{F} = \mathcal{P}'_i
 \sqcap \mathcal{Q}'_i\). Se \(\mathcal{F}\) dovesse risultare vuoto, allora il
-risultato dell'intera operazione di \emph{meet} sarebbe un poliedro \(\bot\). Se al
+risultato dell'intera operazione di \emph{meet} è un poliedro \(\bot\). Se al
 contrario non fosse vuoto, aggiungo \(\mathcal{F}\) a \(\mathcal{O}\) per poi
 riprender il ciclo fino all'esaurimento dei fattori e ritornando infine
 \(\mathcal{O}\) e il suo blocco (rappresentato dal \emph{lub} di \(\pi_{\mathcal{P}}\) e
-\(\pi_{\mathcal{Q}}\)) come risultato. \(\pi_{\mathcal{P} \sqcap
+\(\pi_{\mathcal{Q}}\)) come risultato. \(\pi_{\mathcal{P} \sqcup
 \mathcal{Q}} = \pi_{\mathcal{P}} \sqcap \pi_{\mathcal{Q}}\) è una partizione
 ammissibile se \(\mathcal{P} \sqcap \mathcal{Q} \ne \bot\), altrimenti \(\bot\) è
 ammissibile.
@@ -500,7 +498,7 @@ ammissibile.
 
 
 \subsection{Conditional}
-\label{sec:org91bce44}
+\label{sec:org70a23f8}
 Questa operazione viene utilizzata per aggiungere nuovi vincoli tra le variabili
 di un poliedro. Tramite la doppia rappresentazione è possibile aggiungendo un
 vincolo arbitrario \(c\) all'insieme \(\mathcal{C}_{\mathcal{P}}\). Se dopo
@@ -508,15 +506,15 @@ l'inserimento il sistema di vincoli risulta insoddisfacibile allora il poliedro
 diventa vuoto. Il sistema di generatori è, come sempre, ricavato dall'aggiunta
 incrementale del vincolo \(c\) nel poliedro attraverso la conversione.
 
-Utilizzando poliedri fattorizzati è necessare ricavare il blocco \(\mathcal{B}\) che contiene le
+Utilizzando poliedri fattorizzati è necessario ricavare il blocco \(\mathcal{B}\) che contiene le
 variabili utilizzate nel vincolo, rifattorizzando \(\mathcal{P}\) con
 \(\pi_{\mathcal{P}} \uparrow \mathcal{B}\) si genera \(\mathcal{P}'\).
 Successivamente bisogna prendere il fattore relativo contenente le variabili di
 \(\mathcal{B}\), convertire il vincolo con le dimensioni \emph{interne} del fattore e
 aggiungerlo a quest'ultimo utilizzando un'operazione per normali poliedri. Si
 controlla, infine, che il sistema di vincoli sia ancora soddisfacibile e, in
-caso negativo i blocchi e i fattori in \(\bot\) vengono modificati e il poliedro
-si rende \emph{vuoto}. È importante far notare che, dato \(\mathcal{O}\) un poliedro
+caso negativo i blocchi e i fattori vengono modificati in \(\bot\) rendendo il
+poliedro \emph{vuoto}. È importante far notare che, dato \(\mathcal{O}\) un poliedro
 risultante dall'aggiunta di un vincolo, \(\pi_{\mathcal{O}} = \pi_{\mathcal{P}}
 \uparrow \mathcal{B}\) è ammissibile se \(\mathcal{O} \ne \bot\), altrimenti
 \(\pi_{\mathcal{O}} = \bot\).
@@ -528,6 +526,7 @@ risultante dall'aggiunta di un vincolo, \(\pi_{\mathcal{O}} = \pi_{\mathcal{P}}
 \State$\mathcal{B}$ := \Call{extract\_block}{$\mathcal{P}$, $\pi_{\mathcal{P}}$, \textit{con}}
 \State$\pi$ := $\pi_{\mathcal{P}} \uparrow \mathcal{B}$
 \State$\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \pi$}
+\State$\mathcal{O}$ := $\emptyset$
 \For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{r = numero di blocchi in $\pi$}
 \If{$\mathcal{B} \cap \pi_i \ne \emptyset$}
 \State$con_{int}$ := \Call{convert\_con}{$\pi_i$, \textit{con}}
@@ -536,6 +535,7 @@ risultante dall'aggiunta di un vincolo, \(\pi_{\mathcal{O}} = \pi_{\mathcal{P}}
 \If{\Call{is\_empty}{$\mathcal{O_{i}}$}}
 \State\Return$\bot, \bot$
 \EndIf
+\Else
 \State$\mathcal{O}$.add$(\mathcal{P'_i})$
 \EndIf
 \EndFor
@@ -546,7 +546,7 @@ risultante dall'aggiunta di un vincolo, \(\pi_{\mathcal{O}} = \pi_{\mathcal{P}}
 \end{algorithm}
 
 \subsection{Assignment}
-\label{sec:orgf60447c}
+\label{sec:org4d15a01}
 Per quanto riguarda il dominio dei poliedri fattorizzati, l'operazione di
 \emph{assignment} è molto simile alla \emph{conditional}. Dopo aver estratto il blocco
 \(\mathcal{B}\) che indica le variabili utilizzate nell'espressione lineare, si
@@ -566,7 +566,8 @@ questa operazione è \(\pi_{\mathcal{P}} \uparrow \mathcal{B}\).
 \State$\mathcal{B}$ := \Call{extract\_block}{$stmt$}
 \State$\pi$ := $\pi_{\mathcal{P}} \uparrow \mathcal{B}$
 \State$\mathcal{P}'$ := \Call{refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \pi$}
-\For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{$r = |\mathcal{P}|$}
+\State$\mathcal{O}$ := $\emptyset$
+\For{\textbf{each} $i$ \textbf{in} $\{1,...,r\}$}\Comment{$r$ = numero di blocchi in $\pi$}
 \If{$\pi_i \subseteq \mathcal{B}$}
 \State$stmt_{int}$ := \Call{convert}{$\pi, stmt$}
 \State$\mathcal{F}$ := \Call{assignment}{$\mathcal{P}'_i, stmt_{int}$}\Comment{Poliedri non fattorizzati}
@@ -584,28 +585,28 @@ questa operazione è \(\pi_{\mathcal{P}} \uparrow \mathcal{B}\).
 \end{algorithm}
 
 \subsection{Widening (\(\nabla\))}
-\label{sec:orga9a28ff}
-Per la doppia rappresentazione, l'operatore di \emph{widening} necessità come
-parametri i generatori e i vincoli di \(\mathcal{P}\) e i vincolo di
+\label{sec:orgb24d417}
+Per la doppia rappresentazione, l'operatore di \emph{widening} necessita come
+parametri i generatori e i vincoli di \(\mathcal{P}\) e i vincoli di
 \(\mathcal{Q}\). Il risultato dell'operazione \(\mathcal{P} \nabla
 \mathcal{Q}\) conterrà i vincoli \(\mathcal{C}_{\mathcal{Q}}\) che sono presenti in
 \(\mathcal{C}_{\mathcal{P}}\) o che possono sostituirne un vincolo senza cambiare
 \(\mathcal{P}\).
 
-Per implementarlo è necessario effettuare uan rifattorizzazione \(\mathcal{P}'\)
+Per implementarlo è necessario effettuare una rifattorizzazione \(\mathcal{P}'\)
 del primo argomento \(\mathcal{P}\) con \(\pi = \pi_{\mathcal{P}} \sqcup
 \pi_{\mathcal{Q}}\), mentre non è necessario rifattorizzare il secondo argomento.
 Successivamente, per ogni fattore \(\mathcal{Q}_i\) del secondo argomento si
 individua il fattore corrispondente \(\mathcal{P}'_k\) in \(\mathcal{P}'\) e si
 procede a individuare l'insieme \(\mathcal{C}_{\mathcal{O}_i}\) di vincoli di
 \(\mathcal{Q}_i\) che sono \emph{stabili} rispetto a \(\mathcal{P}'_k\): questi vincoli
-costituiscono il risultato del widening rispetto a quel fattore. È possibile,
-come caso speciale, che se \(\pi_{\mathcal{P}'_k} = \pi_{\mathcal{Q}_i}\), allora è
+costituiscono il risultato del widening rispetto a quel fattore.
+Come caso speciale, se \(\pi_{\mathcal{P}'_k} = \pi_{\mathcal{Q}_i}\), allora è
 possibile applicare direttamente l'operatore di widening per poliedri non
 fattorizzati.
 
 \begin{algorithm}[H]
-\caption{Meet}\label{meet}
+\caption{Widening}\label{widening}
 \begin{algorithmic}[1]
 \Function{Widenind}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{Q}, \pi_{\mathcal{Q}}$}
 \State $\pi$ := $\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$
@@ -627,10 +628,8 @@ fattorizzati.
 \end{algorithmic}
 \end{algorithm}
 
-
-
 \chapter{Implementazione}
-\label{sec:org7bb8a04}
+\label{sec:org021bc5c}
 Questo capitolo tratterà dell'implementazione effettiva dei poliedri
 fattorizzati e di alcune loro operazioni. La struttura è stata basata su di un
 \emph{wrapper} preesistente nella \emph{PPlite} mentre alcune delle implementazioni sono
@@ -646,8 +645,21 @@ utilizzare i metodi della \emph{libreria standard} così da incrementare la legg
 del codice. L'efficienza non è stata presa come obiettivo principale durante lo
 sviluppo, dando importanza alla correttezza e alla leggibilità del codice.
 
+Durante l'implementazione è stata seguita una metodologia che è possibile suddividere in tre fasi:
+
+\begin{enumerate}
+\item inizialmente è stato effettuato un porting del codice dalla \emph{PPL} alla
+\emph{PPLite}, con adattamento alle strutture dati di quest'ultima;
+\item successivamente è stato attuato un adeguamento incrementale agli standard di
+naming e codifica usati nella PPLite;
+\item infine si è rivisto il codice scritto e si ci è apprestati a semplificarlo
+tramite l'utilizzo più sistematico di algoritmi della libreria standard e
+funzioni di supporto della PPLite. Questo ha permesso di avere un codice più
+corto e più facile da leggere.
+\end{enumerate}
+
 \section{\texttt{F\_Poly}}
-\label{sec:org2452e47}
+\label{sec:orgeb265ec}
 La classe dove sono compresi gran parte dei metodi è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati.
@@ -675,7 +687,7 @@ stata violata;
 \item funzioni di appoggio per gestire il poliedro.
 \end{itemize}
 
-Sono presenti delle stutture dati per la gestione dei fattori:
+Sono presenti delle strutture dati per la gestione dei fattori:
 
 \begin{itemize}
 \item \texttt{block} di tipo \texttt{Block}: un \texttt{std::vector} di \texttt{dim\_type} che rappresenta un blocco \(\mathcal{X}_i\) che
@@ -694,8 +706,8 @@ Sono inoltre presenti tre variabili:
 \item \texttt{bool is\_empty}: indicante se il poliedro è vuoto o no.
 \end{itemize}
 
-\subsection{\texttt{check\_inv()}}
-\label{sec:orga65b2f1}
+\subsection{\texttt{check\_inv}}
+\label{sec:orge2643eb}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è ben formato. Le invarianti di classe che devono
@@ -814,24 +826,10 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 .
 \end{itemize}
 
-\section{Operazione di base}
-\label{sec:orgd0d0278}
-Nel seguito di descrivono le implementazioni delle operazioni di base.
-
-È stata seguita una metodologia che è possibile suddividere in tre fasi:
-
-\begin{enumerate}
-\item inizialmente è stato effettuato un porting del codice dalla \emph{PPL} alla
-\emph{PPLite}, con adattamento alle strutture dati di quest'ultima;
-\item successivamente è stato attuato un adeguamento incrementale agli standard di
-naming e codifica usati nella PPLite;
-\item infine si è rivisto il codice scritto e si ci è apprestati a semplificarlo
-tramite l'utilizzo più sistematico di algoritmi della libreria standard e
-funzioni di supporto della PPLite. Questo ha permesso di avere un codice più
-corto e più facile da leggere.
-\end{enumerate}
-
-Diverse sono le funzioni più significative definite all'interno di \texttt{F\_Poly.hh}:
+\section{Operazioni di base}
+\label{sec:org54c94eb}
+In questa sezione verranno descritte le funzione che più vengono utilizzate
+all'intendo di \texttt{F\_Poly.cc}:
 
 \lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
 \begin{lstlisting}
@@ -839,29 +837,15 @@ static Factors refactor(const Factors& f,
                         const Blocks& b1, const Blocks& b2);
 static Blocks least_upper_bound(const Blocks& b1, const Blocks& b2);
 static Blocks merge(const Blocks& b, const Block& added);
-void join(const Factors& f, const Blocks& b);
-void join(const F_Poly& f);
-void affine_image(Var var, const Linear_Expr& expr,
-                  const Integer& inhomo = Integer::zero(),
-                  const Integer& den = Integer::one());
-
-
-void affine_preimage(Var var, const Linear_Expr& expr,
-                     const Integer& inhomo = Integer::zero(),
-                     const Integer& den = Integer::one());
-void add_con(const Con& c);
-void add_gen(const Gen& c);
-bool inclusion(const Factors& f, const Blocks& b) const;
 \end{lstlisting}
 
 \subsection{\texttt{refactor}}
-\label{sec:org3b8f332}
+\label{sec:org2ce3080}
 La semantica rimane invariata invariata rispetto a quanto descritto
 nell'Algoritmo \ref{refactor}. Per la \emph{join} \((\bowtie)\) tra i fattori è stata
 utilizzata la \texttt{concatenate\_assign()} della PPlite, una funzione omonima, per
 quanto riguarda il join dei blocchi, è stata implementata utilizzando
-\texttt{std::insert}\footnote{\texttt{template <class InputIt>
-iterator insert(const\_iterator pos, InputIt first, InputIt last);}}. E importante notare che questa operazione sia
+\texttt{std::insert}. E importante notare che questa operazione sia
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
 all'interno dei blocchi interessati.
 
@@ -901,7 +885,7 @@ all'indice in cui si trovano.
 \end{lstlisting}
 
 Il metodo \texttt{are\_disjoint(const Block\& b1, const Block\& b2)} viene utilizzato per
-vedere se due blocchi sono uguali.
+vedere se due blocchi hanno almeno una variabile in comune:
 
 \lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
 \begin{lstlisting}
@@ -912,12 +896,11 @@ are_disjoint(const Block& b1, const Block& b2) {
 }
 \end{lstlisting}
 
-Utilizza \texttt{std::find\_first\_of}\footnote{\texttt{template <class InputIt, class ForwardIt>
-InputIt find\_first\_of(InputIt first, InputIt last, ForwardIt s\_first, ForwardIt s\_last);}} e ritorna falso se trova un elemento che è
-presente in un insieme e non in un altro.
+Utilizza \texttt{std::find\_first\_of} e ritorna \texttt{true} se non trova alcun elemento del
+primo insieme nel secondo.
 
 \subsection{\texttt{least\_upper\_bound}}
-\label{sec:org8763648}
+\label{sec:org56a0ae7}
 L'implementazione di questo metodo non è stata menzionata in \cite{fastpoly} ma
 ne è stato solo descritto l'aspetto matematico. In termini più pratici questa
 operazione prende due parametri \texttt{const Blocks\& b1, const Blocks\& b2} e,
@@ -983,10 +966,165 @@ F_Poly::block_union(const Block& b1, const Block& b2) {
 }
 \end{lstlisting}
 
+\subsection{\texttt{merge}}
+\label{sec:org5fec2f1}
+La funzione \texttt{merge} prende due parametri, un \texttt{Blocks b} e un \texttt{Block added} e
+genera un \texttt{Blocks out} che consiste nell'unione di \texttt{b} e \texttt{added}. La funzione
+cicla sul primo parametro, e da qui può essere suddivisa in tre parti principali:
+
+\begin{itemize}
+\item si controlla se i blocchi \texttt{b[i]} e \texttt{added} hanno variabili in comune, in caso
+positivo (se è la prima volta che si trovano blocchi non disgiunti) si
+aggiunge \texttt{b[i]} ad \texttt{out}:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+Blocks out;
+bool first = true;
+dim_type index = 0;
+for (dim_type i = 0; i < num_rows(b); ++i) {
+  if (!detail::are_disjoint(b[i], added)) {
+    if (first) {
+      out.push_back(b[i]);
+      first = false;
+      index = i;
+    }
+\end{lstlisting}
+;
+\item se i blocchi sono disgiunti ma non è la prima volta che se ne trovano:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+   else {
+     concatenate_assign(out[index], b[i]);
+   }
+\end{lstlisting}
+;
+\item se invece i blocchi sono disgiunti:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+   else
+     out.push_back(b[i]);
+}
+\end{lstlisting}
+\end{itemize}
+.
+
+Infine si ritorna \texttt{out}.
+\section{Operazioni sui poliedri}
+\label{sec:org8adc05b}
+Qui verranno mostrate le implementazioni delle operazioni discusse nella Sezione
+2.3.
+
+\subsection{\texttt{inclusion}}
+\label{sec:orgc7e8f66}
+Come descritto nella Sezione 2.3.1, questa operazione è utile per controllare se
+un poliedro è incluso in un altro.
+
+La funzione prende come parametri un insieme
+di fattori e i loro relativi blocchi. Si calcola il \emph{lub} tra i
+blocchi passati come parametri e i blocchi di \texttt{this}, il risultato è utilizzato
+per rifattorizzare i fattori di \texttt{this} (in un nuovo insieme di
+fattori P) e i fattori passati come parametro (in un nuovo insieme di fattori
+Q). Una volta fatto ciò non si fa altro che scrorrere i vari fattori e
+richiamare la funzione \texttt{contains} della \emph{PPLite}.
+
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+bool
+F_Poly::inclusion(const Factors& f, const Blocks& b) const {
+  Blocks b_lub = least_upper_bound(blocks, b);
+  Factors P = refactor(factors, blocks, b_lub);
+  Factors Q = refactor(f, b, b_lub);
+
+  for (const auto& P_factor : P)
+    for (const auto& Q_factor : Q)
+      if(!P_factor.contains(Q_factor))
+        return false;
+
+  return true;
+}
+\end{lstlisting}
+\subsection{\texttt{join}}
+\label{sec:org56f2a90}
+Questa operazione permette di unire due poliedri. La funzione prende due
+parametri: un insieme di fattori \texttt{fs} e i suoi blocchi \texttt{bs}. La sua implementazione può
+essere suddivisa in tre fasi:
+
+\begin{enumerate}
+\item inizialmente vengono creati tutti li oggetti necessari:
+\begin{itemize}
+\item \texttt{Pr} e \texttt{Qr} sono i due insiemi di fattori che conterranno i
+poliedri di \texttt{this} e di \texttt{fs}, entrambi rifattorizzati in base ai lori
+rispettivi blocchi e al \emph{lub} tra \texttt{blocks} e \texttt{bs};
+\item \texttt{O} e \texttt{U} saranno, rispettivamente, i fattori e i blocchi finali
+(contenenti quindi il risultato della funzione);
+\item \texttt{Pt}, \texttt{Qt} e \texttt{bpo} sono oggetti temporanei il cui scopo verrà spiegato
+successivamente.
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+   Factors Pr;
+   Factors Qr;
+   Factors O = Factors();
+   Factor Pt;
+   Factor Qt;
+   Block bpo = Block();
+   Blocks U = Blocks();
+   Blocks lub = least_upper_bound(blocks, bs);
+   bool first = true;
+   Pr = refactor(factors, blocks, lub);
+   Qr = refactor(fs, bs, lub);
+\end{lstlisting}
+\end{itemize}
+\item successivamente si procede alla costruzione dei vari poliedri che andranno a
+formare il join finale. Inizialmente si controlla, per ogni poliedro, se
+\texttt{Pr[i] = Qr[i]}, se sono uguali allora dentro \texttt{O} e \texttt{U} vengono inseriti
+rispettivamente \texttt{Pr[i]} e il suo blocco:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+for (dim_type i = 0; i < num_rows(Pr); ++i) {
+  if (Pr[i] == Qr[i]) {
+    O.push_back(Pr[i]);
+    U.push_back(lub[i]);
+  }
+\end{lstlisting}
+se non sono uguali ed è la prima volta che si verifica
+questa situazione, i blocchi, \texttt{Qr[i]} e \texttt{Rr[i]} vengono inseriti
+rispettivamente negli oggetti temporanei \texttt{bpo}, \texttt{Qt} e \texttt{Pt}:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+else {
+  if (first) {
+    bpo =lub[i];
+    Qt = Qr[i];
+    Pt = Pr[i];
+    first = false;
+\end{lstlisting}
+se invece non è la prima volta, vengono semplicemente concatenati invece che
+aggiunti:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+else {
+  concatenate_assign(bpo, lub[i]);
+  Pt.concatenate_assign(Pr[i]);
+  Qt.concatenate_assign(Qr[i]);
+}
+\end{lstlisting}
+\item a questo punto è necessario aggiuntere a \texttt{O} e \texttt{U} i poliedri che sono
+risultati essere differenti nel punto precedente. Infine alle strutture in
+\texttt{this} si assegnano i poliedri e blocchi su cui è stato applicato il join:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+Pt.poly_hull_assign(Qt);
+U.push_back(bpo);
+O.push_back(Pt);
+factors = O;
+blocks = U;
+dim = space_dim(blocks);
+\end{lstlisting}
+\end{enumerate}
 \subsection{\texttt{add\_con}}
-\label{sec:org1ac6221}
+\label{sec:orga0afad0}
 Il metodo \texttt{add\_con} non è altro che l'implementazione dell'Algoritmo
-\ref{conditional}. Per poter sviluppare questa operazione sono necessare due diverse
+\ref{conditional}. Per poter sviluppare questa operazione sono necessaire due diverse
 funzioni helper oltre a \texttt{refactor} e \texttt{merge}:
 
 \begin{itemize}
@@ -1010,61 +1148,20 @@ Definendo come \emph{esterne} le dimensioni del poliedro nella sua interezza e
 \emph{interne} quelle di un suo fattore, questo metodo effettua la traduzione da
 vincolo esterno a vincolo interno in base al blocco che viene passato.
 \end{itemize}
-
-\subsection{\texttt{affine\_image} e \texttt{affine\_preimage}}
-\label{sec:orgbe6f1ba}
-Questa funzione è l'implementazione dell'operazione \emph{assignment} vista
-nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
-coerenti con le definizioni della PPLite, la funzione prende in input:
-
-\begin{itemize}
-\item Una variabile \texttt{var} di tipo \texttt{Var};
-\item Un'espressione lineare \texttt{expr} di tipo \texttt{Linear\_Expr};
-\item Un intero \texttt{inhomo} di tipo \texttt{Integer} che rappresenta l'\emph{inhomogeneus term};
-\item Un intero \texttt{den} di tipo \texttt{Integer} che rappresenta il \emph{denominatore}.
-\end{itemize}
-
-Questi parametri formeranno lo statement \(var = \frac{expr}{den} + inhomo\)
-equivalente a \(x_i = ax + \epsilon\) dell'Algoritmo \ref{assignment}. Le uniche
-differenze con lo pseudocodice sono che è necessario convertire sia \texttt{var} che
-\texttt{expr} in base al blocco corrispondente. Una volta convertite non si fa altro
-che chiamare la \texttt{affine\_image} della PPLite per ogni fattore.
-
-
-\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
-\begin{lstlisting}
-void
-F_Poly::affine_image(Var var, const Linear_Expr& expr,
-                     const Integer& inhomo, const Integer& den) {
-  Block b = detail::extract_block(expr);
-  detail::add_var(b, var);
-  Blocks bs_out = merge(blocks, b);
-  factors = refactor(factors, blocks, bs_out);
-  blocks = bs_out;
-  for (dim_type i = 0; i < num_rows(factors); ++i) {
-    if (detail::are_disjoint(b, blocks[i]))
-      break;
-    Var v_int = detail::convert(var, blocks[i]);
-    Linear_Expr le_int = detail::convert(expr, blocks[i]);
-    factors[i].affine_image(v_int, le_int, inhomo, den);
-    if (factors[i].is_empty())
-      set_empty();
-  }
-}
-\end{lstlisting}
-
-La funzione \texttt{affine\_preimage} è identica a quella appena descritta, con l'unica
-differenza di chiamare la \texttt{affine\_preimage} della PPLite per ogni fattore.
-
+\subsection{\texttt{intersection\_assign}}
+\label{sec:org0c7e9aa}
+Questa funzione non fa altro che richiamare \texttt{add\_con} ??
+\subsection{\texttt{widen}}
+\label{sec:orgbe101da}
 \section{Altre operazioni}
-\label{sec:org071275b}
+\label{sec:orgd28c6b5}
 Oltre alle operazioni descritte in \cite{fastpoly} ne sono state aggiunte altre
 per rendere più completa la classe. Tutte le operazioni descritte
 successivamente non sono altro che il corrispettivo sui poliedri fattorizzati di
 metodi omonimi presenti nella PPLite.
 
 \subsection{\texttt{add\_space\_dims} e \texttt{remove\_space\_dims}}
-\label{sec:orgf5c9a2a}
+\label{sec:org7e968ce}
 Funzioni che permettono l'aggiunta e la rimozione di dimensioni del poliedro, ne
 sono state implementate tre versioni:
 
@@ -1147,13 +1244,9 @@ F_Poly::remove_higher_space_dims(dim_type new_dim) {
 \end{lstlisting}
 \end{itemize}
 
-\subsection{\texttt{add\_con} e \texttt{add\_gen}}
-\label{sec:org47624ef}
-Le due funzioni vengono utilizzate rispettivamente per aggiungere un vincolo e
-un generatore al poliedro. Per quanto riguarda la prima, non è altro che la
-\emph{conditional} vista nell'Algoritmo \ref{conditional}, la seconda è un caso a
-parte.
-
+\subsection{\texttt{add\_gen}}
+\label{sec:orgb8fba45}
+Il metodo \texttt{add\_gen} viene utilizzato per aggiungere un generatore al poliedro.
 Per ogni generatore che viene passato come parametro possono esserci tre casi:
 
 \begin{itemize}
@@ -1195,7 +1288,7 @@ if (g.is_point()) {
 }
 \end{lstlisting}
 \item \textbf{Il poliedro non è vuoto e il generatore non è un punto}: in questo caso viene
-creato un blocco \(\mathcal{B}\) contentente tutte le dimensioni che appaiono
+creato un blocco \(\mathcal{B}\) contenente tutte le dimensioni che appaiono
 nel generatore, successivamente si crea un blocco \(\pi =
   \pi_{\mathcal{P}} \uparrow \mathcal{B}\) tramite il quale si ri-fattorizza il
 nostro poliedro in \(\mathcal{P}'\). Infine, per ogni blocco che compare anche
@@ -1219,8 +1312,116 @@ nel generatore si richiama la \texttt{add\_gen()} della PPLite
 \end{lstlisting}
 \end{itemize}
 
+\subsection{\texttt{affine\_image} e \texttt{affine\_preimage}}
+\label{sec:org4d1a29e}
+Questa funzione è l'implementazione dell'operazione \emph{assignment} vista
+nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
+coerenti con le definizioni della PPLite, la funzione prende in input:
+
+\begin{itemize}
+\item Una variabile \texttt{var} di tipo \texttt{Var};
+\item Un'espressione lineare \texttt{expr} di tipo \texttt{Linear\_Expr};
+\item Un intero \texttt{inhomo} di tipo \texttt{Integer} che rappresenta l'\emph{inhomogeneus term};
+\item Un intero \texttt{den} di tipo \texttt{Integer} che rappresenta il \emph{denominatore}.
+\end{itemize}
+
+Questi parametri formeranno lo statement \(var = \frac{expr}{den} + inhomo\)
+equivalente a \(x_i = ax + \epsilon\) dell'Algoritmo \ref{assignment}. Le uniche
+differenze con lo pseudocodice sono che è necessario convertire sia \texttt{var} che
+\texttt{expr} in base al blocco corrispondente. Una volta convertite non si fa altro
+che chiamare la \texttt{affine\_image} della PPLite per ogni fattore.
+
+
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+void
+F_Poly::affine_image(Var var, const Linear_Expr& expr,
+                     const Integer& inhomo, const Integer& den) {
+  Block b = detail::extract_block(expr);
+  detail::add_var(b, var);
+  Blocks bs_out = merge(blocks, b);
+  factors = refactor(factors, blocks, bs_out);
+  blocks = bs_out;
+  for (dim_type i = 0; i < num_rows(factors); ++i) {
+    if (detail::are_disjoint(b, blocks[i]))
+      break;
+    Var v_int = detail::convert(var, blocks[i]);
+    Linear_Expr le_int = detail::convert(expr, blocks[i]);
+    factors[i].affine_image(v_int, le_int, inhomo, den);
+    if (factors[i].is_empty())
+      set_empty();
+  }
+}
+\end{lstlisting}
+
+La funzione \texttt{affine\_preimage} è identica a quella appena descritta, con l'unica
+differenza di chiamare la \texttt{affine\_preimage} della PPLite per ogni fattore.
+
+\subsection{Predicati}
+\label{sec:org153251c}
+Sono presenti diversi predicati in \texttt{F\_Poly.hh} che permettono di controllare lo
+stato del poliedro, i principali sono:
+\begin{itemize}
+\item \texttt{bool is\_empty} non fa altro che dire se il poliedro è vuoto o no;
+\item \texttt{bool is\_minimized} controlla che tutti i fattori siano minimizzati, per farlo
+viene utilizzato \texttt{std::all\_of} passando come predicato unario il puntatore
+alla funzione \texttt{is\_minimized} della classe \texttt{Poly}:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+bool is_minimized() const {
+  return is_empty()
+  || std::all_of(factors.begin(), factors.end(),
+                 std::mem_fn(&Poly::is_minimized));
+}
+\end{lstlisting}
+\item \texttt{bool is\_necessarily\_closed} dice se la topologia del poliedro è chiusa o no;
+\item \texttt{bool is\_universe} dice se il poliedro è di tipo universo;
+\item \texttt{bool is\_bounded} controlla se il sistema di equazioni che definisce il
+poliedro è bounded
+\item \texttt{bool equals(const F\_Poly\& y)} controlla se \texttt{this} è uguale a \texttt{y}.
+Inizialmente viene calcolato il \emph{lub} tra i blocchi di \texttt{this} e \texttt{y},
+successivamente vengono rifattorizzati i fattori in base al lub calcolato e
+vengono assegnati a \texttt{fx} e \texttt{fy}, infine si controlla se ogni fattore in \texttt{fx}
+è uguale a ogni fattore in \texttt{fy}:
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+bool
+F_Poly::equals(const F_Poly& y) const {
+  if (dim != y.space_dim())
+    return false;
+  if (is_empty() && y.is_empty())
+    return true;
+
+  Blocks b_lub = least_upper_bound(blocks, y.blocks);
+  Factors fx = refactor(factors, blocks, b_lub);
+  Factors fy = refactor(y.factors, y.blocks, b_lub);
+
+  for (auto i = fx.size(); i-- > 0; )
+    if (fx[i] != fy[i])
+      return false;
+
+  return true;
+}
+\end{lstlisting}
+\end{itemize}
+
+\subsection{Overload degli operatori}
+\label{sec:orgf95e279}
+È stato anche fatto un overload negli operatori \texttt{=} e \texttt{!=}, l'implementazione è
+semplice e si basa sui predicati descritti nella sezione precedente:
+
+\lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
+\begin{lstlisting}
+inline bool
+operator==(const F_Poly& x, const F_Poly& y) {
+  return x.equals(y); }
+
+inline bool
+operator!=(const F_Poly& x, const F_Poly& y) {
+  return !(x == y); }
+\end{lstlisting}
 \chapter{Conclusione}
-\label{sec:org05b8c77}
+\label{sec:orgb7e406e}
 
 \bibliographystyle{plain}
 \renewcommand\bibname{Bibliografia}
