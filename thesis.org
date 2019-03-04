@@ -11,10 +11,10 @@ in due modi:
 
 + tramite un sistema finito di vincoli $\mathcal{C}$. I vincoli
   non sono altro che le equazioni e disequazioni che individuano rispettivamente
-  gli iperpiani e i semispazi del poliedro \cite{becchi};
+  gli iperpiani e i semispazi del poliedro \cite{Becchi17th};
 + tramite un sistema finito di generatori $\mathcal{G}$. Questi
   permettono di costruire il luogo geometrico dei punti determinati da
-  combinazioni di particolari elementi del poliedro stesso \cite{becchi}. I
+  combinazioni di particolari elementi del poliedro stesso \cite{Becchi17th}. I
   generatori possono essere formati da:
   + *punto*: ogni elementi del poliedro $\mathcal{P}$ è un suo punto. Un punto
     può anche essere un /vertice/ se non può essere espresso come combinazione
@@ -981,7 +981,7 @@ for (dim_type i = 0; i < num_rows(Pr); ++i) {
   }
    #+END_SRC
    se non sono uguali ed è la prima volta che si verifica
-   questa situazione, i blocchi, ~Qr[i]~ e ~Rr[i]~ vengono inseriti
+   questa situazione, i blocchi ~Qr[i]~ e ~Rr[i]~ vengono inseriti
    rispettivamente negli oggetti temporanei ~bpo~, ~Qt~ e ~Pt~:
    #+BEGIN_SRC C++
 else {
@@ -1034,9 +1034,6 @@ extract_block(const Linear_Expr& e) {
   Definendo come /esterne/ le dimensioni del poliedro nella sua interezza e
   /interne/ quelle di un suo fattore, questo metodo effettua la traduzione da
   vincolo esterno a vincolo interno in base al blocco che viene passato.
-*** ~intersection_assign~
-Questa funzione non fa altro che richiamare ~add_con~ ??
-*** ~widen~
 ** Altre operazioni
 Oltre alle operazioni descritte in \cite{fastpoly} ne sono state aggiunte altre
 per rendere più completa la classe. Tutte le operazioni descritte
