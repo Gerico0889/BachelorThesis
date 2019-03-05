@@ -5,6 +5,39 @@
 
 * Introduzione
 
+#+BEGIN_EXPORT latex
+\newdimen\origiwspc%
+  \newdimen\origiwstr%
+  \origiwspc=\fontdimen2\font% original inter word space
+  \origiwstr=\fontdimen3\font% original inter word stretch
+  \fontdimen2\font=0.2ex
+#+END_EXPORT
+
+I poliedri sono sottoinsiemi di uno spazio $n\text{-dimensionale}$, definiti come
+intersezione di un insieme finito di semispazi. Hanno un'ottima capacità di
+rappresentare legami e proprietà tra $n$ elementi con valori nel reale, trovando
+applicazione nell'analisi di sistemi complessi. In particolare,
+nell'/interpretazione astratta/ sono utilizzati in campo informatico per
+l'analisis statica di codice, ovvero riuscire a individuare a /compile time/
+errori di overflow o possibili accessi errati in memoria utilizzando strutture
+dati (come array o vettori). L'utilizzo di questi strumenti è però limitato da
+problemi di complettisà computazionale, con caso pessimo di tipo esponenziale. I
+tentativi per diminuirne la complessità si sono concentrati nel trovare domini
+meno complessi e con un inferiore peso computazionale, ma che mantenessero
+comunque una buona precisione (i.e. pentagons, octagons, bounded difference). È
+stata provata anche l'implementazione di nuovi algoritmi che permettessero una
+maggiore efficienza avendo però dei risultati più approssimativi.
+
+Le implementazioni di questo dominio sono comunque in continua evoluzione. Fino
+ad'ora se ne possono distinguere diverse in base al modo di rappresentare i
+poliedri. Un esemprio è la rappresentazione con soli vincoli o la /Doppia
+Rappresentazione/ (descritta nella sezione successiva).
+
+In questa tesi verrà discusso il lavoro svolto per l'implementazione,
+all'interno della libreria /PPLite/, dei poliedri fattorizzati. Le operazioni
+principali si basano sul lavono svolto da \cite{SinghPV17}. L'idea di base è
+quella di dividere i poliedri in una serie di sotto poliedri di dimensione
+inferiore in modo da eseguire più efficientemente le operazioni su di essi.
 * Fattorizzazione cartesiana
 I poliedri chiusi convessi che saranno utilizzati potranno essere rappresentati
 in due modi:
