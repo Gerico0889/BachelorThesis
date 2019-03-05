@@ -759,9 +759,9 @@ static Blocks merge(const Blocks& b, const Block& added);
 *** ~refactor~
 La semantica rimane invariata invariata rispetto a quanto descritto
 nell'Algoritmo \ref{refactor}. Per la /join/ $(\bowtie)$ tra i fattori è stata
-utilizzata la ~concatenate_assign()~ della PPlite, una funzione omonima, per
+utilizzata la ~concatenate_assign()~ della PPlite; una funzione omonima, per
 quanto riguarda il join dei blocchi, è stata implementata utilizzando
-~std::insert~. E importante notare che questa operazione sia
+~std::vector::insert~. E importante notare che questa operazione è
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
 all'interno dei blocchi interessati.
 
@@ -816,39 +816,41 @@ primo insieme nel secondo.
 L'implementazione di questo metodo non è stata menzionata in \cite{fastpoly} ma
 ne è stato solo descritto l'aspetto matematico. In termini più pratici questa
 operazione prende due parametri ~const Blocks& b1, const Blocks& b2~ e,
-inizialmente, crea un blocco ~lub~ che sarà composto dalle dimensioni non in
+inizialmente, crea un blocco ~lub~ che sarà composto dalle variabili non in
 comune tra ~b1~ e ~b2~:
 
 #+BEGIN_SRC C++
-Blocks lub; dim_type i = 0;
-bool first = true;
+F_Poly::Blocks
+F_Poly::least_upper_bound(const Blocks& b1, const Blocks& b2) {
+  Blocks lub; dim_type i = 0;
+  bool first = true;
 
-for (const auto &bl1 : b1)
-  for (const auto &bl2 : b2)
-    if (!detail::are_disjoint(bl1, bl2)) {
-      if (first) {
-        lub.push_back(bl2);
-        first = false;
+  for (const auto &bl1 : b1)
+    for (const auto &bl2 : b2)
+      if (!detail::are_disjoint(bl1, bl2)) {
+        if (first) {
+          lub.push_back(bl2);
+          first = false;
+        }
+        else {
+          lub[i] = block_union(lub[i], bl2);
+        }
+        ++i;
+        first = true;
       }
-      else {
-        lub[i] = block_union(lub[i], bl2);
-      }
-  ++i;
-  first = true;
-}
 #+END_SRC
 
 Successivamente si itera su ~lub~ per unire i blocchi che presentavano
 dimensioni comuni fino a costruire la partizione ~lub~.
 
 #+BEGIN_SRC C++
-for (auto it1 = lub.begin(); it1 != lub.end(); ++it1)
-  for (auto it2 = it1 + 1; it2 != lub.end(); ++it2)
-    if (!detail::are_disjoint(*it1, *it2)) {
-      ,*it1 = block_union(*it1, *it2);
-      lub.erase(it2);
-      --it2;
-    }
+  for (auto it1 = lub.begin(); it1 != lub.end(); ++it1)
+    for (auto it2 = it1 + 1; it2 != lub.end(); ++it2)
+      if (!detail::are_disjoint(*it1, *it2)) {
+        *it1 = block_union(*it1, *it2);
+        lub.erase(it2);
+        --it2;
+      }
 #+END_SRC
 
 Per unire i blocchi è stata utilizzata al funzione ~block_union(const Block& b1,
@@ -1034,6 +1036,106 @@ extract_block(const Linear_Expr& e) {
   Definendo come /esterne/ le dimensioni del poliedro nella sua interezza e
   /interne/ quelle di un suo fattore, questo metodo effettua la traduzione da
   vincolo esterno a vincolo interno in base al blocco che viene passato.
+
+Inizialmente viene creato un blocco ~b~ che conterrà le variabili utilizzate nel
+vincolo ~c~ passato come parametro alla funzione. Successivamente possono
+presentarsi due casi nel caso in cui il ~b~ sia vuoto:
++ se il vincolo è tautologico, quindi vero in ogni possibile interpretazione, si ritorna;
++ se il vincolo è incosistente, il poliedro viene settato a ~empty~ e si
+  ritorna.
+
+#+BEGIN_SRC C++
+void
+F_Poly::add_con(const Con& c) {
+  if (is_empty())
+    return;
+
+  Block b = detail::extract_block(c);
+  if (b.size() == 0) {
+    if (c.is_tautological())
+      return;
+    else {
+      assert(c.is_inconsistent());
+      set_empty();
+      return;
+    }
+  }
+#+END_SRC
+
+Se invece ~b~ non è vuoto si procede con l'aggiunta del vincolo al poliedro.
+
+Inizialmente viene fatto un merge tra i blocchi del poliedro e il blocco ~b~
+calcolato precedentemente, successivamente si rifattorizza in base al blocco
+risultante dal merge e, quest'ultimo, sostituirà i blocchi "vecchi" del
+poliedro.
+
+Una volta fatto ciò, si cicla all'interno dei blocchi e, non appena si trova un
+blocco non disgiunto dal blocco ~b~, si definisce la variabile ~c_int~ che
+conterrà il vincolo ~c~ ma con le variabili adattate a quelle del blocco
+~blocks[i]~, successivamente si aggiunge il vincolo utilizzando la funzione
+~add_con~ della classe ~Poly~ e, se dopo aver aggiunto il vincolo il fattore
+risultasse vuoto, allora il poliedro viene settato a ~empty~.
+
+#+BEGIN_SRC C++
+  Blocks blocks_out = merge(blocks, b);
+  factors = refactor(factors, blocks, blocks_out);
+  blocks = blocks_out;
+
+  for (dim_type i = 0; i != num_rows(blocks); ++i) {
+    if (detail::are_disjoint(b, blocks[i]))
+      continue;
+    Con c_int = detail::convert(c, blocks[i]);
+    factors[i].add_con(std::move(c_int));
+    if (factors[i].is_empty()) {
+      set_empty();
+      return;
+    }
+  }
+}
+#+END_SRC
+
+*** ~affine_image~ e ~affine_preimage~
+La funzione ~affine_image~ è l'implementazione dell'operazione /assignment/ vista
+nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
+coerenti con le definizioni della PPLite, la funzione prende in input:
+
++ Una variabile ~var~ di tipo ~Var~;
++ Un'espressione lineare ~expr~ di tipo ~Linear_Expr~;
++ Un intero ~inhomo~ di tipo ~Integer~ che rappresenta il /termine noto/;
++ Un intero ~den~ di tipo ~Integer~ che rappresenta il /denominatore/.
+
+Questi parametri formeranno lo statement $var = \frac{expr}{den} + inhomo$
+equivalente a $x_i = ax + \epsilon$ dell'Algoritmo \ref{assignment}. Le uniche
+differenze con lo pseudocodice sono che è necessario convertire sia ~var~ che
+~expr~ in base al blocco corrispondente. Una volta convertite non si fa altro
+che chiamare la ~affine_image~ della PPLite per ogni fattore.
+
+
+#+BEGIN_SRC C++
+void
+F_Poly::affine_image(Var var, const Linear_Expr& expr,
+                     const Integer& inhomo,
+                     const Integer& den) {
+  Block b = detail::extract_block(expr);
+  detail::add_var(b, var);
+  Blocks bs_out = merge(blocks, b);
+  factors = refactor(factors, blocks, bs_out);
+  blocks = bs_out;
+  for (dim_type i = 0; i < num_rows(factors); ++i) {
+    if (detail::are_disjoint(b, blocks[i]))
+      break;
+    Var v_int = detail::convert(var, blocks[i]);
+    Linear_Expr le_int = detail::convert(expr, blocks[i]);
+    factors[i].affine_image(v_int, le_int, inhomo, den);
+    if (factors[i].is_empty())
+      set_empty();
+  }
+}
+#+END_SRC
+
+La funzione ~affine_preimage~ è identica a quella appena descritta, con l'unica
+differenza di chiamare la ~affine_preimage~ della PPLite per ogni fattore.
+
 ** Altre operazioni
 Oltre alle operazioni descritte in \cite{fastpoly} ne sono state aggiunte altre
 per rendere più completa la classe. Tutte le operazioni descritte
@@ -1041,7 +1143,7 @@ successivamente non sono altro che il corrispettivo sui poliedri fattorizzati di
 metodi omonimi presenti nella PPLite.
 
 *** ~add_space_dims~ e ~remove_space_dims~
-Funzioni che permettono l'aggiunta e la rimozione di dimensioni del poliedro, ne
+Funzioni che permettono l'aggiunta e la rimozione di dimensioni del poliedro. Ne
 sono state implementate tre versioni:
 
 + ~add_space_dims~: permette di aggiungere $n$ (con $n$ parametro della
@@ -1049,7 +1151,7 @@ sono state implementate tre versioni:
   Quest'ultimo viene incorporato nel nuovo spazio vettoriale. Avendo dei fattori
   implica che per ogni dimensione aggiunta deve essere aggiunto un nuovo blocco
   singoletto contenente la nuova dimensione e un rispettivo fattore /universo/
-  di dimensione $1$. È presente anche un parametro ~bool project~ (settato a
+  di dimensione 1. È presente anche un parametro ~bool project~ (settato a
   ~false~ di default) che permette, se passato come ~true~, di non incorporare il
   poliedro nel nuovo spazio vettoriale. Difatti, per ogni dimensione aggiunta
   viene creato un blocco singoletto che contiene la dimensione ~dim~ del
@@ -1079,7 +1181,17 @@ F_Poly::add_space_dims(dim_type m, bool project) {
   problema principale è che, rimuovendo una dimensione, è necessario
   riorganizzare i blocchi in modo tale da essere uniformati all'insieme
   $\{1,...,dim\}$. Questa operazione è riservata a una funzione chiamata
-  ~reduce_blocks~:
+  ~reduce_blocks~.
+
+  La funzione inizia con un doppio ciclo ~for~ che permette di scorrere
+  all'interno di ogni blocco del poliedro. Per ogni blocco, se il valore di
+  ~blocks[i][j]~ è uguale a ~v~, possiamo avere diverse casistiche:
+
+  + il blocco ~blocks[i]~ è formato da un singolo elemento: in questo caso viene
+    eliminato tutto il blocco e il corrispondente fattore;
+  + il blocco ~blocks[i]~ è formato da più elementi: in questo caso viene
+    eliminato solo il j-esimo elemento dell'i-esimo blocco, il fattore viene
+    gestito tramite la ~remove_space_dim~ della classe ~Poly~.
   #+BEGIN_SRC C++
 void
 F_Poly::remove_space_dim(const dim_type v) {
@@ -1103,9 +1215,13 @@ F_Poly::remove_space_dim(const dim_type v) {
   #+END_SRC
   È presente anche la versione ~remove_space_dims(const Index_Set& vars)~ che
   permette di rimuovere tutte le dimensioni presenti dentro ~vars~.
-+ ~remove_higher_space_dims~: la sua implementazione utilizza la funzione
-  precedente e non fa altro che rimuovere le $n$ dimensioni (con $n$ parametro
-  della funzione) più grandi del poliedro:
++ ~remove_higher_space_dims~: è una variante della funzione
+  precedente, rimuove le $n$ dimensioni (con $n$ parametro
+  della funzione) più grandi del poliedro. È presente nel wrapper utilizzato in
+  quanto risulta essere più efficiente nella
+  classe ~Poly~, per quanto riguarda ~F_Poly~ non risulta esserlo considerato
+  che le dimensioni da rimuovere non sono necessariamente le ultime.
+  Viene implementata quindi utilizzando la funzione descritta precedentemente.
     #+BEGIN_SRC C++
 void
 F_Poly::remove_higher_space_dims(dim_type new_dim) {
@@ -1124,7 +1240,7 @@ Per ogni generatore che viene passato come parametro possono esserci tre casi:
 
 + *Il poliedro è vuoto*: in questo caso si controlla che il generatore sia un
   punto, successivamente tutto il poliedro viene settato come /universo/ e, per
-  ogni fattore, viene aggiunto un vincolo $d \cdot 0 = coeff(Var(i))$
+  ogni fattore, viene aggiunto un vincolo $d \cdot \mathit{Var}(0) = \mathit{coeff}(\mathit{Var}(i))$
   #+BEGIN_SRC C++
 if (is_empty()) {
   assert(g.is_point());
@@ -1179,47 +1295,6 @@ if (g.is_point()) {
   }
   assert(check_inv());
   #+END_SRC
-
-*** ~affine_image~ e ~affine_preimage~
-Questa funzione è l'implementazione dell'operazione /assignment/ vista
-nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
-coerenti con le definizioni della PPLite, la funzione prende in input:
-
-+ Una variabile ~var~ di tipo ~Var~;
-+ Un'espressione lineare ~expr~ di tipo ~Linear_Expr~;
-+ Un intero ~inhomo~ di tipo ~Integer~ che rappresenta l'/inhomogeneus term/;
-+ Un intero ~den~ di tipo ~Integer~ che rappresenta il /denominatore/.
-
-Questi parametri formeranno lo statement $var = \frac{expr}{den} + inhomo$
-equivalente a $x_i = ax + \epsilon$ dell'Algoritmo \ref{assignment}. Le uniche
-differenze con lo pseudocodice sono che è necessario convertire sia ~var~ che
-~expr~ in base al blocco corrispondente. Una volta convertite non si fa altro
-che chiamare la ~affine_image~ della PPLite per ogni fattore.
-
-
-#+BEGIN_SRC C++
-void
-F_Poly::affine_image(Var var, const Linear_Expr& expr,
-                     const Integer& inhomo, const Integer& den) {
-  Block b = detail::extract_block(expr);
-  detail::add_var(b, var);
-  Blocks bs_out = merge(blocks, b);
-  factors = refactor(factors, blocks, bs_out);
-  blocks = bs_out;
-  for (dim_type i = 0; i < num_rows(factors); ++i) {
-    if (detail::are_disjoint(b, blocks[i]))
-      break;
-    Var v_int = detail::convert(var, blocks[i]);
-    Linear_Expr le_int = detail::convert(expr, blocks[i]);
-    factors[i].affine_image(v_int, le_int, inhomo, den);
-    if (factors[i].is_empty())
-      set_empty();
-  }
-}
-#+END_SRC
-
-La funzione ~affine_preimage~ è identica a quella appena descritta, con l'unica
-differenza di chiamare la ~affine_preimage~ della PPLite per ogni fattore.
 
 *** Predicati
 Sono presenti diversi predicati in ~F_Poly.hh~ che permettono di controllare lo

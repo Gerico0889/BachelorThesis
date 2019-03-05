@@ -6,7 +6,7 @@
 #+LATEX_HEADER: \usepackage{amsthm}
 #+LATEX_HEADER: \usepackage{float}
 #+LATEX_HEADER: \usepackage[noend]{algpseudocode}
-#+LATEX_HEADER: \KOMAoptions{fontsize=12pt,headings=normal}
+#+LATEX_HEADER: \KOMAoptions{fontsize=12pt,headings=normal,twoside=false,headsepline=true,footsepline=false}
 #+LATEX_HEADER: \makeglossaries
 #+LATEX_HEADER: \theoremstyle{definition}
 #+LATEX_HEADER: \newtheorem{exmp}{Esempio}[section]
