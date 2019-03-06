@@ -1,7 +1,51 @@
 #+TITLE: a
 #+LATEX_CLASS: mimosis
 #+SETUPFILE: thesis.setup
-#+INCLUDE: "frontispiece.org"
+#+OPTIONS: title:nil toc:nil
+
+#+BEGIN_EXPORT latex
+\begin{titlepage}
+
+	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+	\center
+
+	\includegraphics[width=0.55\linewidth]{images/logoUnipr.jpg}\\[1cm]
+
+	%%\textsc{\LARGE Universit\`{a} degli Studi di Parma}\\[1.5cm]
+	\textsc{\Large Dipartimento di Scienze Matematiche,\\ Fisiche e Informatiche}\\[0.5cm]
+	\textsc{\large Corso di Laurea in Informatica}\\[0.5cm]
+
+	\HRule \\[0.4cm]
+	{\large \bfseries \begin{center}
+	    Fattorizzazione cartesiana nella libreria PPLite
+	\end{center}}
+	{\large \bfseries \begin{center}
+            Cartesian Factoring in the PPLite Library
+        \end{center}}
+	\HRule \\[1.5cm]
+
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushleft} \large
+			\emph{Laureando:}\\
+			Luigi \textsc{Zaccone}
+		\end{flushleft}
+	\end{minipage}
+	~
+	\begin{minipage}{0.5\textwidth}
+		\begin{flushright} \large
+			\emph{Relatore:} \\
+			Prof. Enea \textsc{Zaffanella}
+		\end{flushright}
+	\end{minipage}\\[2.5cm]
+
+	{\large Anno Accademico 2017/2018}
+
+	\vfill
+
+\end{titlepage}
+\tableofcontents
+#+END_EXPORT
 
 * Introduzione
 
@@ -10,7 +54,6 @@
   \newdimen\origiwstr%
   \origiwspc=\fontdimen2\font% original inter word space
   \origiwstr=\fontdimen3\font% original inter word stretch
-  \fontdimen2\font=0.2ex
 #+END_EXPORT
 
 I poliedri sono sottoinsiemi di uno spazio $n\text{-dimensionale}$, definiti come
@@ -21,23 +64,45 @@ nell'/interpretazione astratta/ sono utilizzati in campo informatico per
 l'analisis statica di codice, ovvero riuscire a individuare a /compile time/
 errori di overflow o possibili accessi errati in memoria utilizzando strutture
 dati (come array o vettori). L'utilizzo di questi strumenti è però limitato da
-problemi di complettisà computazionale, con caso pessimo di tipo esponenziale. I
+problemi di complessità computazionale, con caso pessimo di tipo esponenziale. I
 tentativi per diminuirne la complessità si sono concentrati nel trovare domini
 meno complessi e con un inferiore peso computazionale, ma che mantenessero
-comunque una buona precisione (i.e. pentagons, octagons, bounded difference). È
+comunque una buona precisione (e.g pentagons, octagons, bounded differences). È
 stata provata anche l'implementazione di nuovi algoritmi che permettessero una
-maggiore efficienza avendo però dei risultati più approssimativi.
+maggiore efficienza avendo però dei risultati approssimati.
 
 Le implementazioni di questo dominio sono comunque in continua evoluzione. Fino
 ad'ora se ne possono distinguere diverse in base al modo di rappresentare i
-poliedri. Un esemprio è la rappresentazione con soli vincoli o la /Doppia
-Rappresentazione/ (descritta nella sezione successiva).
+poliedri. Un esempio è la rappresentazione /singola/ (che utilizza solamente vincoli) o la /doppia
+rappresentazione/ (descritta nella sezione successiva, che utilizza sia vincoli
+che generatori).
 
-In questa tesi verrà discusso il lavoro svolto per l'implementazione,
-all'interno della libreria /PPLite/, dei poliedri fattorizzati. Le operazioni
-principali si basano sul lavono svolto da \cite{SinghPV17}. L'idea di base è
-quella di dividere i poliedri in una serie di sotto poliedri di dimensione
-inferiore in modo da eseguire più efficientemente le operazioni su di essi.
+L'idea di base, proposta in \cite{HalbwachsMG06} e in seguito migliorata
+leggermente in \cite{SinghPV17} è quella di dividere i poliedri in una serie di sotto poliedri
+di dimensione inferiore in modo da eseguire più efficientemente le operazioni su
+di essi. I sotto poliedri saranno formati dai vincoli che hanno variabili in comune.
+
+La /PPL/, in dettaglio descritta in \cite{BagnaraHZ08SCP}, è una libreria scritta un C++ utilizzata per la
+manipolazione numerica di informazioni. La /PPLite/, esposta in
+\cite{BecchiZ18SAS} e in \cite{Becchi17th}, si ispira al lavoro della
+/PPL/ ma con obiettivi differenti: mettere a disposizione a ricercatori e
+studenti un framework /leggero/, scritto in C++ /moderno/, per la sperimentazioni di idee e algoritmi nel
+contesto della computazione dei poliedri.
+
+Il lavoro svolto è stato quello di, inizialmente, effettuare un porting della
+/fattorizzazione cartesiana/ dalla PPL, descritta in \cite{Arioli17th}, alla
+PPLite. Una volta effettuato il porting si è provveduto a modernizzare il codice
+e a implementare nuove operazioni.
+
+Il resto della tesi è organizzato nel modo seguente:
++ nel capitolo 1 verranno introdotte, formalmente, le funzioni principali
+  descritte in \cite{SinghPV17};
++ nel capitolo 2 verranno descritte le implementazioni concrete di suddette
+  funzioni e anche di alcune funzioni helper e aggiuntive;
++ nel capitolo 3 verranno mostrati alcuni test di correttezza e un test di
+  efficienza;
++ nella conclusione verrà discusso il lavoro svolto e proposti sviluppi futuri.
+
 * Fattorizzazione cartesiana
 I poliedri chiusi convessi che saranno utilizzati potranno essere rappresentati
 in due modi:
@@ -96,7 +161,7 @@ variabili del programma in un solo vincolo. Per esempio: un ipercubo \\
 $H_n = \{0 \le x_i \le 1 \; | \; i = 1,...,n\}$
 richiede $2^n$ generatori di $n$ dimensioni per essere rappresentato, tramite la decomposizione
 invece ne sono necessari solo $2n$ di dimensione 1. La terminologia e gli esempi saranno
-ispirati al lavoro svolto in \cite{fastpoly}.
+ispirati al lavoro svolto in \cite{SinghPV17}.
 
 ** Blocchi e fattori
 Qui e nei successivi paragrafi verrano considerati esclusivamente poliedri /non/
@@ -799,15 +864,20 @@ ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
 all'interno dei blocchi interessati.
 
 #+BEGIN_SRC C++
-Blocks bs(bs2.size());
+F_Poly::Factors
+F_Poly::refactor(const Factors& fs,
+                 const Blocks& bs1, const Blocks& bs2) {
+  Blocks bs(bs2.size());
   Factors res(bs.size(), Factor(0, Spec_Elem::UNIVERSE));
-  for (dim_type i = 0; i != num_rows(bs1); ++i)
+
+  for (dim_type i = 0; i != num_rows(bs1); ++i) {
     for (dim_type j = 0; j != num_rows(bs2); ++j) {
       if (detail::are_disjoint(bs1[i], bs2[j]))
         continue;
       res[j].concatenate_assign(fs[i]);
       concatenate_assign(bs[j], bs1[i]);
     }
+  }
 #+END_SRC
 
 Per rimappare le dimensioni in maniera corretta viene utilizzata la funzione
@@ -816,7 +886,7 @@ viene riempito delle varie dimensioni dei blocchi che saranno rimappati in base
 all'indice in cui si trovano.
 
 #+BEGIN_SRC C++
-// Remap those factors res[i] s.t. bs[i] != bs2[i]
+  // Remap those factors res[i] s.t. bs[i] != bs2[i]
   for (dim_type i = 0; i != num_rows(bs2); ++i) {
     const auto& b = bs[i];
     const auto& b2 = bs2[i];
@@ -824,8 +894,14 @@ all'indice in cui si trovano.
     if (b == b2)
       continue;
     Dims pf(b.size());
-    for (auto j = b.size(); j-- > 0; )
-      pf[b[j]] = b2[j];
+    for (auto j = 0; j != b.size(); ++j) {
+      for (auto k = 0; k != b2.size(); ++k) {
+        if (b[j] == b2[k]) {
+          pf[j] = k;
+          break;
+        }
+      }
+    }
     res[i].map_space_dims(pf);
   }
   return res;
@@ -846,10 +922,10 @@ Utilizza ~std::find_first_of~ e ritorna ~true~ se non trova alcun elemento del
 primo insieme nel secondo.
 
 *** ~least_upper_bound~
-L'implementazione di questo metodo non è stata menzionata in \cite{fastpoly} ma
+L'implementazione di questo metodo non è stata menzionata in \cite{SinghPV17} ma
 ne è stato solo descritto l'aspetto matematico. In termini più pratici questa
 operazione prende due parametri ~const Blocks& b1, const Blocks& b2~ e,
-inizialmente, crea un blocco ~lub~ che sarà composto dalle variabili non in
+inizialmente, crea un blocco ~lub~ che sarà composto dalle dimensioni in
 comune tra ~b1~ e ~b2~:
 
 #+BEGIN_SRC C++
@@ -1170,7 +1246,7 @@ La funzione ~affine_preimage~ è identica a quella appena descritta, con l'unica
 differenza di chiamare la ~affine_preimage~ della PPLite per ogni fattore.
 
 ** Altre operazioni
-Oltre alle operazioni descritte in \cite{fastpoly} ne sono state aggiunte altre
+Oltre alle operazioni descritte in \cite{SinghPV17} ne sono state aggiunte altre
 per rendere più completa la classe. Tutte le operazioni descritte
 successivamente non sono altro che il corrispettivo sui poliedri fattorizzati di
 metodi omonimi presenti nella PPLite.
@@ -1385,9 +1461,63 @@ inline bool
 operator!=(const F_Poly& x, const F_Poly& y) {
   return !(x == y); }
 #+END_SRC
+* Valutazione sperimentale
+In questa sezione verranno mostrati i diversi test di correttezza che sono stati
+effettuati e un test di efficienza per palesare l'effettivo guadagno che ci si
+aspettava.
+
+Per quanto riguarda i test di correttezza, sono stati utilizzati quelli già
+presenti nella PPLite. Per farlo, è stato necessario fare in modo che, ogni
+qualvolta viene costruito un oggetto di tipo ~Poly~ ne viene costruito, in
+realtà, uno di tipo ~F_Poly~. Per l'esattezza, sono stati completati con
+successo 143 test di correttezza, tra cui:
+
++ *addcons1.cc, addcons2.cc, addcons3.cc*: 23 test sull'aggiunta di vincoli;
++ *addspacedims.cc*: 7 test sull'aggiunta di dimensioni;
++ *affinedim1.cc*: 4 test sulle dimensioni affini;
++ *affineimage.cc*: 13 test sulle immagini affini;
++ *affinepreimage.cc*: 16 test sulle preimmagini affini;
++ *bounded.cc*: 5 test per verificare che il poliedro sia bounded;
++ *constrains.cc*: 7 test sul metodo constrains;
++ *disjoint.cc*: 5 test sulla correttezza del metodo $\text{is\_disjoint\_from}$;
++ *empty1.cc*: 7 test sulla generazione di poliedri vuoti;
++ *foldspacedims.cc*: 9 test sulla fold delle dimensioni;
++ *hyper.cc*: 1 test sulla generazione di ipercubi;
++ *hyperphull.cc*: 1 test sulla join di ipercubi;
++ *inters.cc*: 13 test sull'intersezione di poliedri;
++ *polyhull.cc*: 12 test sul join di poliedri;
++ *randphull.cc*: 2 test randomizzati sul join di poliedri;
++ *removehigherdims.cc, removespacedims.cc*: 18 test sulla rimozione di
+  dimensioni.
+
+Il test di efficienza, invece, si è basato su un esempio concreto preso da uno
+dei benchmark di /PHAVerLite/. Sono stati generati due poliedri di tipo ~Poly~ di dimensioni elevate,
+successivamente è stato applicato il join ($\bowtie$) tra questi due, in seguito
+sono stati costruiti due oggetti di tipo ~F_Poly~ passando ai costruttori i due
+poliedri di cui sopra e applicato il join, infine è stata applicata una funzione
+(resa disponibile dagli sviluppatori della PPLite) per convertire i poliedri
+fattorizzati in oggetti di tipo ~Poly~.
+
+I risultati sono stati questi:
 * Conclusione
+In questa tesi si è quindi parlato della fattorizzazione dei poliedri, ovvero la
+tecnica di suddividere un poliedri in poliedri più piccoli, ricudendo così il
+costo computazionale in tempo e memoria. Questo è reso possibile dal fatto che
+le variabili all'interno di un programma spesso non sono tutte legate tra loro e
+sono quindi suddivisibili in gruppo indipendenti dagli altri. Lo scopo è quindi
+quello di manipolare queste partizioni in maniera tale da renderle più piccole
+possibili.
+
+All'interno della PPLite la fattorizzazione cartesiana non sarà utilizzata come
+sostituivo della classe ~Poly~ bensì, verrà utilizzata laddove è
+computazionalmente conveniente farlo.
+
+Per gli sviluppi futuri ci si concentrerà nel terminare le operazioni mancanti
+in modo tale da rendere completa classe. Inoltre, in quanto non ci si è
+concentrati principalmente nell'efficienza del codice, sarà necessario rivederlo
+andando alla ricerca di punti critici per ottimizzare il codice e sfruttare al
+meglio le funzionalità offerde dal C++11.
 
 #+LATEX: \bibliographystyle{plain}
 #+LATEX: \renewcommand\bibname{Bibliografia}
 #+LATEX: \bibliography{mybib}
-

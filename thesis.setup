@@ -16,6 +16,7 @@
 #+LATEX_HEADER: \usepackage{amssymb}
 #+LATEX_HEADER: \let\emptyset\varnothing
 #+LATEX_HEADER: \usepackage{bm}
+#+LATEX_HEADER: \usepackage{longtable}
 
 #+LATEX_HEADER: \usepackage{listings}
 #+LATEX_HEADER: \usepackage{color}
