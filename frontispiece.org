@@ -1,8 +1,0 @@
-#+LATEX_HEADER: \usepackage{unipr}
-
-#+LATEX_HEADER:    \titolo{Fattorizzazione cartesiana \\ nella libreria PPLite}
-#+LATEX_HEADER:    \titoloIng{Cartesian Factoring in the PPLite Library}
-#+LATEX_HEADER:    \laureando{Luigi Zaccone}
-#+LATEX_HEADER:    \annoaccademico{2017-2018}
-#+LATEX_HEADER:    \corsodilaurea{Informatica}
-#+LATEX_HEADER:    \relatore[Prof.]{Enea Zaffanella}
