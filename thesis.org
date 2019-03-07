@@ -1548,9 +1548,12 @@ concentrati principalmente sull'efficienza del codice, sarà necessario rivederl
 andando alla ricerca di punti critici per ottimizzarlo e sfruttare al
 meglio le funzionalità offerte dal C++11.
 
+# #+INCLUDE: ./thanks.org :minlevel 1
+
 #+LATEX: \bibliographystyle{plain}
 #+LATEX: \renewcommand\bibname{Bibliografia}
 #+LATEX: \bibliography{mybib}
+
 
 * Footnotes
 
