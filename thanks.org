@@ -1,0 +1,26 @@
+#+TITLE:
+#+OPTIONS: title:nil toc:nil
+
+* Ringraziamenti
+Voglio ringraziare innanzitutto il Prof. Enea Zaffanella per avermi dato la
+possibilità di svolgere questo appassionante lavoro e per la pazienza portata durante questi
+mesi di tirocinio e stesura di questo elaborato.
+
+$\\$
+Ringrazio mia mamma per avermi su(o)pportato in questi tre anni e non solo, per
+avermi dato la forza di intraprendere questo percorso e per avermi dato la forza
+di portarlo a termine.
+
+Ringrazio mio papà per avermi trasmesso la passione che ho per questo campo di
+studio, senza di te non sarei mai potuto arrivare qui dove sono.
+
+Ringrazio Gabriele e Salvo per essermi stati vicini dal primo fino all'ultimo
+giorno. Non dimenticherò mai tutti i pomeriggi passati a studiare insieme e le
+difficoltà in cui ci siamo ritrovati ma dalle quali siamo sempre stati in grado
+di uscire. Senza di voi non avrei mai raggiunto questo traguardo.
+
+Ringrazio Eduard per essere stato un ottimo collega e amico con cui ho avuto la
+possibilità di condividere tutte le mie passioni.
+
+Infine, un grazie va al resto dei miei amici Giuseppe G., Marco, Luca, Matteo,
+Giuseppe P., Emilia, Cristina e Toti per essere stati presenti in questo giorno.
