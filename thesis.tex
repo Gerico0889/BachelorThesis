@@ -1,6 +1,6 @@
-% Created 2019-03-06 mer 18:42
+% Created 2019-03-07 gio 15:59
 % Intended LaTeX compiler: pdflatex
-\documentclass{mimosis}
+\documentclass[italian]{mimosis}
  \usepackage{listings}
 \usepackage{minted}
  \addto\captionsenglish{\renewcommand\contentsname{Indice}}
@@ -22,6 +22,12 @@
 \let\emptyset\varnothing
 \usepackage{bm}
 \usepackage{longtable}
+\hyphenation{rap-pre-se-nta-re}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\tcbset{tab2/.style={enhanced,fonttitle=\bfseries,fontupper=\normalsize\sffamily,
+colback=yellow!10!white,colframe=red!50!black,colbacktitle=Salmon!40!white,
+coltitle=black,center title}}
 \usepackage{listings}
 \usepackage{color}
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -64,7 +70,7 @@ tabsize=2
  pdfkeywords={},
  pdfsubject={},
  pdfcreator={Emacs 26.1 (Org mode 9.1.14)}, 
- pdflang={English}}
+ pdflang={It-It}}
 \begin{document}
 
 \begin{titlepage}
@@ -79,7 +85,7 @@ tabsize=2
 	\textsc{\Large Dipartimento di Scienze Matematiche,\\ Fisiche e Informatiche}\\[0.5cm]
 	\textsc{\large Corso di Laurea in Informatica}\\[0.5cm]
 
-	\HRule \\[0.4cm]
+	\HRule \\[0.2cm]
 	{\large \bfseries \begin{center}
 	    Fattorizzazione cartesiana nella libreria PPLite
 	\end{center}}
@@ -110,7 +116,7 @@ tabsize=2
 \tableofcontents
 
 \chapter{Introduzione}
-\label{sec:org08eaf9f}
+\label{sec:orge424c96}
 
 \newdimen\origiwspc%
   \newdimen\origiwstr%
@@ -122,52 +128,55 @@ intersezione di un insieme finito di semispazi. Hanno un'ottima capacità di
 rappresentare legami e proprietà tra \(n\) elementi con valori nel reale, trovando
 applicazione nell'analisi di sistemi complessi. In particolare,
 nell'\emph{interpretazione astratta} sono utilizzati in campo informatico per
-l'analisis statica di codice, ovvero riuscire a individuare a \emph{compile time}
+l'analisi statica di codice, ad esempio per individuare a \emph{compile time}
 errori di overflow o possibili accessi errati in memoria utilizzando strutture
 dati (come array o vettori). L'utilizzo di questi strumenti è però limitato da
 problemi di complessità computazionale, con caso pessimo di tipo esponenziale. I
 tentativi per diminuirne la complessità si sono concentrati nel trovare domini
 meno complessi e con un inferiore peso computazionale, ma che mantenessero
-comunque una buona precisione (e.g pentagons, octagons, bounded differences). È
+comunque una buona precisione (e.g., pentagons, octagons, bounded differences). È
 stata provata anche l'implementazione di nuovi algoritmi che permettessero una
 maggiore efficienza avendo però dei risultati approssimati.
 
 Le implementazioni di questo dominio sono comunque in continua evoluzione. Fino
-ad'ora se ne possono distinguere diverse in base al modo di rappresentare i
+ad ora se ne possono distinguere diverse in base al modo di rappresentare i
 poliedri. Un esempio è la rappresentazione \emph{singola} (che utilizza solamente vincoli) o la \emph{doppia
 rappresentazione} (descritta nella sezione successiva, che utilizza sia vincoli
 che generatori).
 
+Una tecnica euristica, indipendente dalla rappresentazione scelta, per diminuire
+la complessità computazionale del dominio dei poliedri è quella della
+fattorizzazione cartesiana.
 L'idea di base, proposta in \cite{HalbwachsMG06} e in seguito migliorata
 leggermente in \cite{SinghPV17} è quella di dividere i poliedri in una serie di sotto poliedri
 di dimensione inferiore in modo da eseguire più efficientemente le operazioni su
 di essi. I sotto poliedri saranno formati dai vincoli che hanno variabili in comune.
 
-La \emph{PPL}, in dettaglio descritta in \cite{BagnaraHZ08SCP}, è una libreria scritta un C++ utilizzata per la
-manipolazione numerica di informazioni. La \emph{PPLite}, esposta in
+La PPL, in dettaglio descritta in \cite{BagnaraHZ08SCP}, è una libreria scritta un C++ utilizzata per la
+manipolazione numerica di informazioni. La PPLite, esposta in
 \cite{BecchiZ18SAS} e in \cite{Becchi17th}, si ispira al lavoro della
-\emph{PPL} ma con obiettivi differenti: mettere a disposizione a ricercatori e
-studenti un framework \emph{leggero}, scritto in C++ \emph{moderno}, per la sperimentazioni di idee e algoritmi nel
+PPL ma con obiettivi differenti: mettere a disposizione a ricercatori e
+studenti un framework leggero, scritto in C++ moderno, per la sperimentazioni di idee e algoritmi nel
 contesto della computazione dei poliedri.
 
-Il lavoro svolto è stato quello di, inizialmente, effettuare un porting della
+Il lavoro svolto, inizialmente, è stato quello di effettuare un porting della
 \emph{fattorizzazione cartesiana} dalla PPL, descritta in \cite{Arioli17th}, alla
-PPLite. Una volta effettuato il porting si è provveduto a modernizzare il codice
+PPLite. In una seconda fase si è provveduto a modernizzare il codice
 e a implementare nuove operazioni.
 
 Il resto della tesi è organizzato nel modo seguente:
 \begin{itemize}
-\item nel capitolo 1 verranno introdotte, formalmente, le funzioni principali
+\item nel Capitolo 1 verranno introdotte, formalmente, le funzioni principali
 descritte in \cite{SinghPV17};
-\item nel capitolo 2 verranno descritte le implementazioni concrete di suddette
+\item nel Capitolo 2 verranno descritte le implementazioni concrete di suddette
 funzioni e anche di alcune funzioni helper e aggiuntive;
-\item nel capitolo 3 verranno mostrati alcuni test di correttezza e un test di
+\item nel Capitolo 3 verranno mostrati alcuni test di correttezza e un test di
 efficienza;
 \item nella conclusione verrà discusso il lavoro svolto e proposti sviluppi futuri.
 \end{itemize}
 
 \chapter{Fattorizzazione cartesiana}
-\label{sec:orgec7813a}
+\label{sec:org63978ae}
 I poliedri chiusi convessi che saranno utilizzati potranno essere rappresentati
 in due modi:
 
@@ -226,7 +235,7 @@ invece ne sono necessari solo \(2n\) di dimensione 1. La terminologia e gli esem
 ispirati al lavoro svolto in \cite{SinghPV17}.
 
 \section{Blocchi e fattori}
-\label{sec:org9f29831}
+\label{sec:org001c12d}
 Qui e nei successivi paragrafi verrano considerati esclusivamente poliedri \emph{non}
 vuoti.
 
@@ -285,10 +294,10 @@ più grossolana. È da notare che nel reticolo della
 partizione \(\top = \{\mathcal{X}\}\) e \(\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}\).
 
 \section{Partizione ammissibile}
-\label{sec:orgaef9f9f}
-Una partizione \(\pi\) è \emph{ammissibile} per un poliedro P se non esistono
+\label{sec:orgea3edb8}
+Una partizione \(\pi\) è \emph{ammissibile} per un poliedro \(\mathcal{P}\) se non esistono
 variabili \(x_i\) e \(x_j\) in diversi blocchi di \(\pi\) relazionati da un vincolo di
-P, ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
+\(\mathcal{P}\), ovvero \(\pi \sqsupseteq \pi_P\). Le partizioni ammissibili sono un
 sottoinsieme chiuso superiormente del reticolo, chiameremo questo sottoinsieme
 \(\mathcal{B}\). Se \(\pi \in \mathcal{B}\) allora lo saranno anche tutte
 le \(\pi'\) tali che \(\pi, \pi' \in \mathcal{L}\) e
@@ -300,7 +309,7 @@ partizione minima viene calcolata come spiegato nell'\textbf{esempio 2.1.1}.
 Il nostro obiettivo è quello di cercare di utilizzare sempre la partizione
 ammissibile minima.
 \section{Operazioni}
-\label{sec:org691b122}
+\label{sec:org0d01e0c}
 In questo paragrafo verrà spiegato l'effetto che alcune operazioni dei poliedri
 generano sui fattori. Occorre premettere che in quasi tutte le operazioni
 binarie, i poliedri hanno la stessa dimensione. Fa eccezione la concatenazione. Per descrivere
@@ -425,7 +434,7 @@ ri-mappare le dimensioni dei fattori di output in base a quelle descritte nel
 blocco di \(\pi_{\mathcal{P}}\).
 
 \subsection{Inclusion Test (\(\sqsubseteq\))}
-\label{sec:org90f58e7}
+\label{sec:orge5f457c}
 Operazione necessaria per controllare se un poliedro è incluso in un altro.
 Disponendo di una doppia rappresentazione è possibile controllarlo se, dati due
 poliedri \(\mathcal{P}\) e \(\mathcal{Q}\), tutti i generatori in
@@ -456,7 +465,7 @@ tutti i test ritornano \emph{True}.
 \end{algorithm}
 
 \subsection{Join (\(\sqcup\))}
-\label{sec:org1340d3c}
+\label{sec:org6ee738e}
 Tramite la doppia rappresentazione, i generatori \(\mathcal{G}_{\mathcal{O}}\)
 dove \(\mathcal{O}\) è il risultato del \emph{join}, sono semplicemente l'unione dei
 generatori dei poliedri presi in input dalla funzione, ovvero
@@ -530,7 +539,7 @@ ammissibile, in questo caso, sarà uguale a:
 \end{algorithm}
 
 \subsection{Meet (\(\sqcap\))}
-\label{sec:orgb857e3d}
+\label{sec:org5a39ee7}
 Per la doppia rappresentazione, \(\mathcal{P} \sqcap \mathcal{Q}\) genera un
 poliedro i cui vincoli \(\mathcal{C}_{\mathcal{P} \sqcap \mathcal{Q}}\) sono
 risultati dall'unione di \(\mathcal{C}_{\mathcal{P}}\) e
@@ -584,7 +593,7 @@ ammissibile.
 
 
 \subsection{Conditional}
-\label{sec:orgd9b08b7}
+\label{sec:org0751dec}
 Questa operazione viene utilizzata per aggiungere nuovi vincoli tra le variabili
 di un poliedro. Tramite la doppia rappresentazione è possibile aggiungendo un
 vincolo arbitrario \(c\) all'insieme \(\mathcal{C}_{\mathcal{P}}\). Se dopo
@@ -632,7 +641,7 @@ risultante dall'aggiunta di un vincolo, \(\pi_{\mathcal{O}} = \pi_{\mathcal{P}}
 \end{algorithm}
 
 \subsection{Assignment}
-\label{sec:org8f6fb10}
+\label{sec:orgb0a992a}
 Per quanto riguarda il dominio dei poliedri fattorizzati, l'operazione di
 \emph{assignment} è molto simile alla \emph{conditional}. Dopo aver estratto il blocco
 \(\mathcal{B}\) che indica le variabili utilizzate nell'espressione lineare, si
@@ -671,7 +680,7 @@ questa operazione è \(\pi_{\mathcal{P}} \uparrow \mathcal{B}\).
 \end{algorithm}
 
 \subsection{Widening (\(\nabla\))}
-\label{sec:org577b5ce}
+\label{sec:org12373ec}
 Per la doppia rappresentazione, l'operatore di \emph{widening} necessita come
 parametri i generatori e i vincoli di \(\mathcal{P}\) e i vincoli di
 \(\mathcal{Q}\). Il risultato dell'operazione \(\mathcal{P} \nabla
@@ -715,12 +724,12 @@ fattorizzati.
 \end{algorithm}
 
 \chapter{Implementazione}
-\label{sec:orgdba73a4}
+\label{sec:org7c0cb5b}
 Questo capitolo tratterà dell'implementazione effettiva dei poliedri
 fattorizzati e di alcune loro operazioni. La struttura è stata basata su di un
-\emph{wrapper} preesistente nella \emph{PPlite} mentre alcune delle implementazioni sono
-state attuate effettuando un porting dalla libreria \emph{PPL}. La maggior parte delle
-operazioni sono state sviluppate come un wrapper per la \emph{PPLite}, difatti le
+\emph{wrapper} preesistente nella PPLite mentre alcune delle implementazioni sono
+state attuate effettuando un porting dalla libreria PPL. La maggior parte delle
+operazioni sono state sviluppate come un wrapper per la PPLite, difatti le
 operazioni sui singoli poliedri sono gestite da essa. Lo scopo principale è
 quello di inserirsi all'interno dell'analisi statica e utilizzare i poliedri
 fattorizzati se e quando vengono generati poliedri che implicano un alto
@@ -734,8 +743,8 @@ sviluppo, dando importanza alla correttezza e alla leggibilità del codice.
 Durante l'implementazione è stata seguita una metodologia che è possibile suddividere in tre fasi:
 
 \begin{enumerate}
-\item inizialmente è stato effettuato un porting del codice dalla \emph{PPL} alla
-\emph{PPLite}, con adattamento alle strutture dati di quest'ultima;
+\item inizialmente è stato effettuato un porting del codice dalla PPL alla
+PPLite, con adattamento alle strutture dati di quest'ultima;
 \item successivamente è stato attuato un adeguamento incrementale agli standard di
 naming e codifica usati nella PPLite;
 \item infine si è rivisto il codice scritto e si ci è apprestati a semplificarlo
@@ -745,7 +754,7 @@ corto e più facile da leggere.
 \end{enumerate}
 
 \section{\texttt{F\_Poly}}
-\label{sec:org4122fa6}
+\label{sec:orgeb9ca00}
 La classe dove sono compresi gran parte dei metodi è \texttt{F\_Poly}. È stata
 definita nel file \texttt{F\_Poly.hh} dove sono presenti 92 metodi pubblici e 14 metodi
 privati.
@@ -793,7 +802,7 @@ Sono inoltre presenti tre variabili:
 \end{itemize}
 
 \subsection{\texttt{check\_inv}}
-\label{sec:org04923ae}
+\label{sec:orgddee3c7}
 Il metodo menzionato contiene tutti i controlli necessari per verificare che
 l'invariante di classe non sia stata violata, e che quindi il poliedro su cui si
 sta lavorando è ben formato. Le invarianti di classe che devono
@@ -913,7 +922,7 @@ if (std::find(dims.begin(), dims.end(), false) != dims.end()) {
 \end{itemize}
 
 \section{Operazioni di base}
-\label{sec:org0cf3022}
+\label{sec:orgfc76f4e}
 In questa sezione verranno descritte le funzione che più vengono utilizzate
 all'intendo di \texttt{F\_Poly.cc}:
 
@@ -926,10 +935,10 @@ static Blocks merge(const Blocks& b, const Block& added);
 \end{lstlisting}
 
 \subsection{\texttt{refactor}}
-\label{sec:org40553b3}
+\label{sec:org5b8d4dd}
 La semantica rimane invariata invariata rispetto a quanto descritto
 nell'Algoritmo \ref{refactor}. Per la \emph{join} \((\bowtie)\) tra i fattori è stata
-utilizzata la \texttt{concatenate\_assign()} della PPlite; una funzione omonima, per
+utilizzata la \texttt{concatenate\_assign()} della PPLite; una funzione omonima, per
 quanto riguarda il join dei blocchi, è stata implementata utilizzando
 \texttt{std::vector::insert}. E importante notare che questa operazione è
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
@@ -997,7 +1006,7 @@ Utilizza \texttt{std::find\_first\_of} e ritorna \texttt{true} se non trova alcu
 primo insieme nel secondo.
 
 \subsection{\texttt{least\_upper\_bound}}
-\label{sec:org8c5e82e}
+\label{sec:orgdb8b2c2}
 L'implementazione di questo metodo non è stata menzionata in \cite{SinghPV17} ma
 ne è stato solo descritto l'aspetto matematico. In termini più pratici questa
 operazione prende due parametri \texttt{const Blocks\& b1, const Blocks\& b2} e,
@@ -1066,7 +1075,7 @@ F_Poly::block_union(const Block& b1, const Block& b2) {
 \end{lstlisting}
 
 \subsection{\texttt{merge}}
-\label{sec:org43f66ea}
+\label{sec:org8810a95}
 La funzione \texttt{merge} prende due parametri, un \texttt{Blocks b} e un \texttt{Block added} e
 genera un \texttt{Blocks out} che consiste nell'unione di \texttt{b} e \texttt{added}. La funzione
 cicla sul primo parametro, e da qui può essere suddivisa in tre parti principali:
@@ -1109,12 +1118,12 @@ for (dim_type i = 0; i < num_rows(b); ++i) {
 
 Infine si ritorna \texttt{out}.
 \section{Operazioni sui poliedri}
-\label{sec:org1fd307d}
+\label{sec:org20930ab}
 Qui verranno mostrate le implementazioni delle operazioni discusse nella Sezione
 2.3.
 
 \subsection{\texttt{inclusion}}
-\label{sec:orgc2ed470}
+\label{sec:orgc2739e9}
 Come descritto nella Sezione 2.3.1, questa operazione è utile per controllare se
 un poliedro è incluso in un altro.
 
@@ -1124,7 +1133,7 @@ blocchi passati come parametri e i blocchi di \texttt{this}, il risultato è uti
 per rifattorizzare i fattori di \texttt{this} (in un nuovo insieme di
 fattori P) e i fattori passati come parametro (in un nuovo insieme di fattori
 Q). Una volta fatto ciò non si fa altro che scorrere i vari fattori e
-richiamare la funzione \texttt{contains} della \emph{PPLite}.
+richiamare la funzione \texttt{contains} della PPLite.
 
 \lstset{style=mystyle,language=C++,label= ,caption= ,captionpos=b,numbers=none}
 \begin{lstlisting}
@@ -1143,7 +1152,7 @@ F_Poly::inclusion(const Factors& f, const Blocks& b) const {
 }
 \end{lstlisting}
 \subsection{\texttt{join}}
-\label{sec:org0c7e31d}
+\label{sec:orgbdc9c3b}
 Questa operazione permette di unire due poliedri. La funzione prende due
 parametri: un insieme di fattori \texttt{fs} e i suoi blocchi \texttt{bs}. La sua implementazione può
 essere suddivisa in tre fasi:
@@ -1221,7 +1230,7 @@ dim = space_dim(blocks);
 \end{lstlisting}
 \end{enumerate}
 \subsection{\texttt{add\_con}}
-\label{sec:org578ccfa}
+\label{sec:org2e2d16d}
 Il metodo \texttt{add\_con} non è altro che l'implementazione dell'Algoritmo
 \ref{conditional}. Per poter sviluppare questa operazione sono necessaire due diverse
 funzioni helper oltre a \texttt{refactor} e \texttt{merge}:
@@ -1310,7 +1319,7 @@ risultasse vuoto, allora il poliedro viene settato a \texttt{empty}.
 \end{lstlisting}
 
 \subsection{\texttt{affine\_image} e \texttt{affine\_preimage}}
-\label{sec:org34d1769}
+\label{sec:org794b37e}
 La funzione \texttt{affine\_image} è l'implementazione dell'operazione \emph{assignment} vista
 nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
 coerenti con le definizioni della PPLite, la funzione prende in input:
@@ -1356,14 +1365,14 @@ La funzione \texttt{affine\_preimage} è identica a quella appena descritta, con
 differenza di chiamare la \texttt{affine\_preimage} della PPLite per ogni fattore.
 
 \section{Altre operazioni}
-\label{sec:orgc95d006}
+\label{sec:org66fdc2d}
 Oltre alle operazioni descritte in \cite{SinghPV17} ne sono state aggiunte altre
 per rendere più completa la classe. Tutte le operazioni descritte
 successivamente non sono altro che il corrispettivo sui poliedri fattorizzati di
 metodi omonimi presenti nella PPLite.
 
 \subsection{\texttt{add\_space\_dims} e \texttt{remove\_space\_dims}}
-\label{sec:orga6d76eb}
+\label{sec:org551d45c}
 Funzioni che permettono l'aggiunta e la rimozione di dimensioni del poliedro. Ne
 sono state implementate tre versioni:
 
@@ -1463,7 +1472,7 @@ F_Poly::remove_higher_space_dims(dim_type new_dim) {
 \end{itemize}
 
 \subsection{\texttt{add\_gen}}
-\label{sec:org02c6410}
+\label{sec:orgc1ea197}
 Il metodo \texttt{add\_gen} viene utilizzato per aggiungere un generatore al poliedro.
 Per ogni generatore che viene passato come parametro possono esserci tre casi:
 
@@ -1531,7 +1540,7 @@ nel generatore si richiama la \texttt{add\_gen()} della PPLite
 \end{itemize}
 
 \subsection{Predicati}
-\label{sec:orgba5a37e}
+\label{sec:org6a193d4}
 Sono presenti diversi predicati in \texttt{F\_Poly.hh} che permettono di controllare lo
 stato del poliedro, i principali sono:
 \begin{itemize}
@@ -1579,7 +1588,7 @@ F_Poly::equals(const F_Poly& y) const {
 \end{itemize}
 
 \subsection{Overload degli operatori}
-\label{sec:org17fc62e}
+\label{sec:org0b357e0}
 È stato anche fatto un overload negli operatori \texttt{=} e \texttt{!=}, l'implementazione è
 semplice e si basa sui predicati descritti nella sezione precedente:
 
@@ -1594,16 +1603,17 @@ operator!=(const F_Poly& x, const F_Poly& y) {
   return !(x == y); }
 \end{lstlisting}
 \chapter{Valutazione sperimentale}
-\label{sec:orgfcfdb29}
-In questa sezione verranno mostrati i diversi test di correttezza che sono stati
-effettuati e un test di efficienza per palesare l'effettivo guadagno che ci si
-aspettava.
+\label{sec:orgd6c641b}
+In questa sezione verranno elencati alcuni dei test che sono stati
+effettuati allo scopo di verificare la correttezza dell'implementazione delle
+varie operazioni sui poliedri fattorizzati. Verrà inoltre mostrato in maggiore
+dettaglio un test di efficienza, che rende evidente l'effettivo guadagno ottenibile.
 
 Per quanto riguarda i test di correttezza, sono stati utilizzati quelli già
 presenti nella PPLite. Per farlo, è stato necessario fare in modo che, ogni
-qualvolta viene costruito un oggetto di tipo \texttt{Poly} ne viene costruito, in
+qualvolta viene costruito un oggetto di tipo \texttt{Poly} ne venisse costruito, in
 realtà, uno di tipo \texttt{F\_Poly}. Per l'esattezza, sono stati completati con
-successo 143 test di correttezza, tra cui:
+successo 143 test di correttezza, i quali:
 
 \begin{itemize}
 \item \textbf{addcons1.cc, addcons2.cc, addcons3.cc}: 23 test sull'aggiunta di vincoli;
@@ -1625,34 +1635,57 @@ successo 143 test di correttezza, tra cui:
 dimensioni.
 \end{itemize}
 
-Il test di efficienza, invece, si è basato su un esempio concreto preso da uno
-dei benchmark di \emph{PHAVerLite}. Sono stati generati due poliedri di tipo \texttt{Poly} di dimensioni elevate,
-successivamente è stato applicato il join (\(\bowtie\)) tra questi due, in seguito
-sono stati costruiti due oggetti di tipo \texttt{F\_Poly} passando ai costruttori i due
-poliedri di cui sopra e applicato il join, infine è stata applicata una funzione
-(resa disponibile dagli sviluppatori della PPLite) per convertire i poliedri
-fattorizzati in oggetti di tipo \texttt{Poly}.
+Tra i test non effettuati sono da annoverare quelli aventi per oggetto poliedri
+NNC (non necessariamente topologicamente chiusi), in quanto al momento il
+wrapper \(\text{F\_Poly}\) supporta solo poliedri chiusi.
 
-I risultati sono stati questi:
+Il test di efficienza, invece, si è basato su un esempio concreto preso da uno
+dei benchmark di \emph{PHAVerLite}, uno strumento formale
+di verifica per calcolare la raggiungibilità di sistemi ibridi.
+Il test genera due poliedri di dimensioni relativamente elevate
+(17 per la precisione) e prevede di calcolare e confrontare il tempo impiegato ad effettuare
+il join (\(\bowtie\)) tra questi quando vengonocostruiti come oggetti di tipo \texttt{Poly} e
+come oggetti di tipo \texttt{F\_Poly}. Nell'ultimo caso, oltre al join, verrà effettuata
+anche l'unione dei vari fattori per ottenere un poliedro unico tramite una
+funzione resa disponibile dagli sviluppatori della PPLite.
+
+I risultati sono stati questi\footnote{Il test è stato eseguito su un laptop con un Intel Core i7 5500U
+@2.4GHz, 4 GB di RAM @1600MHz e GNU/Linux 4.14.102-1}:
+\begin{center}
+\begin{tabular}{cc} \toprule
+    \textbf{Tipo test} & \textbf{Tempo impiegato(s)}  \\ \midrule
+    {Join in Poly}  & 9.24  \\
+    {Join in F\_Poly}  & 0.003   \\
+    {Conversione da F\_Poly a Poly}  & 0.06   \\ \bottomrule
+\end{tabular}
+\end{center}
+
+Come è possibile notare si è riusciti ad ottenere un fattore di miglioramento
+del 100\%. Risulta essere un guadagno importante in quanto il numero di join in
+questo caso è solamente uno, mentre in contesti più reali si arriva a farne centinaia.
 \chapter{Conclusione}
-\label{sec:org63175ed}
-In questa tesi si è quindi parlato della fattorizzazione dei poliedri, ovvero la
-tecnica di suddividere un poliedri in poliedri più piccoli, ricudendo così il
+\label{sec:org7c31a34}
+In questo lavoro di tesi è stata fornita una implementazione della
+fattorizzazione cartesiana dei poliedri nel contesto della libreria PPLite.
+Questa tecnica consente di suddividere un poliedro in poliedri più piccoli, riducendo così il
 costo computazionale in tempo e memoria. Questo è reso possibile dal fatto che
 le variabili all'interno di un programma spesso non sono tutte legate tra loro e
 sono quindi suddivisibili in gruppo indipendenti dagli altri. Lo scopo è quindi
 quello di manipolare queste partizioni in maniera tale da renderle più piccole
 possibili.
 
-All'interno della PPLite la fattorizzazione cartesiana non sarà utilizzata come
-sostituivo della classe \texttt{Poly} bensì, verrà utilizzata laddove è
+Sebbene utile in molti casi, la fattorizzazione rimane una tecnica euristica
+e come tale potrebbe risultare inefficace, o addirittura dannosa per
+l'efficienza, quando applicata in contesti inappropriati. Per questo motivo
+all'interno della PPLite la fattorizzazione cartesiana non sarà utilizzata come
+sostituivo della classe \texttt{Poly}, bensì verrà utilizzata laddove è
 computazionalmente conveniente farlo.
 
 Per gli sviluppi futuri ci si concentrerà nel terminare le operazioni mancanti
-in modo tale da rendere completa classe. Inoltre, in quanto non ci si è
-concentrati principalmente nell'efficienza del codice, sarà necessario rivederlo
-andando alla ricerca di punti critici per ottimizzare il codice e sfruttare al
-meglio le funzionalità offerde dal C++11.
+in modo tale da rendere completo il wrapper. Inoltre, in quanto non ci si è
+concentrati principalmente sull'efficienza del codice, sarà necessario rivederlo
+andando alla ricerca di punti critici per ottimizzarlo e sfruttare al
+meglio le funzionalità offerte dal C++11.
 
 \bibliographystyle{plain}
 \renewcommand\bibname{Bibliografia}

@@ -1,5 +1,7 @@
 #+TITLE: a
+#+LANGUAGE: it-it
 #+LATEX_CLASS: mimosis
+#+LATEX_CLASS_OPTIONS: [italian]
 #+SETUPFILE: thesis.setup
 #+OPTIONS: title:nil toc:nil
 
@@ -16,7 +18,7 @@
 	\textsc{\Large Dipartimento di Scienze Matematiche,\\ Fisiche e Informatiche}\\[0.5cm]
 	\textsc{\large Corso di Laurea in Informatica}\\[0.5cm]
 
-	\HRule \\[0.4cm]
+	\HRule \\[0.2cm]
 	{\large \bfseries \begin{center}
 	    Fattorizzazione cartesiana nella libreria PPLite
 	\end{center}}
@@ -61,45 +63,48 @@ intersezione di un insieme finito di semispazi. Hanno un'ottima capacità di
 rappresentare legami e proprietà tra $n$ elementi con valori nel reale, trovando
 applicazione nell'analisi di sistemi complessi. In particolare,
 nell'/interpretazione astratta/ sono utilizzati in campo informatico per
-l'analisis statica di codice, ovvero riuscire a individuare a /compile time/
+l'analisi statica di codice, ad esempio per individuare a /compile time/
 errori di overflow o possibili accessi errati in memoria utilizzando strutture
 dati (come array o vettori). L'utilizzo di questi strumenti è però limitato da
 problemi di complessità computazionale, con caso pessimo di tipo esponenziale. I
 tentativi per diminuirne la complessità si sono concentrati nel trovare domini
 meno complessi e con un inferiore peso computazionale, ma che mantenessero
-comunque una buona precisione (e.g pentagons, octagons, bounded differences). È
+comunque una buona precisione (e.g., pentagons, octagons, bounded differences). È
 stata provata anche l'implementazione di nuovi algoritmi che permettessero una
 maggiore efficienza avendo però dei risultati approssimati.
 
 Le implementazioni di questo dominio sono comunque in continua evoluzione. Fino
-ad'ora se ne possono distinguere diverse in base al modo di rappresentare i
+ad ora se ne possono distinguere diverse in base al modo di rappresentare i
 poliedri. Un esempio è la rappresentazione /singola/ (che utilizza solamente vincoli) o la /doppia
 rappresentazione/ (descritta nella sezione successiva, che utilizza sia vincoli
 che generatori).
 
+Una tecnica euristica, indipendente dalla rappresentazione scelta, per diminuire
+la complessità computazionale del dominio dei poliedri è quella della
+fattorizzazione cartesiana.
 L'idea di base, proposta in \cite{HalbwachsMG06} e in seguito migliorata
 leggermente in \cite{SinghPV17} è quella di dividere i poliedri in una serie di sotto poliedri
 di dimensione inferiore in modo da eseguire più efficientemente le operazioni su
 di essi. I sotto poliedri saranno formati dai vincoli che hanno variabili in comune.
 
-La /PPL/, in dettaglio descritta in \cite{BagnaraHZ08SCP}, è una libreria scritta un C++ utilizzata per la
-manipolazione numerica di informazioni. La /PPLite/, esposta in
+La PPL, in dettaglio descritta in \cite{BagnaraHZ08SCP}, è una libreria scritta un C++ utilizzata per la
+manipolazione numerica di informazioni. La PPLite, esposta in
 \cite{BecchiZ18SAS} e in \cite{Becchi17th}, si ispira al lavoro della
-/PPL/ ma con obiettivi differenti: mettere a disposizione a ricercatori e
-studenti un framework /leggero/, scritto in C++ /moderno/, per la sperimentazioni di idee e algoritmi nel
+PPL ma con obiettivi differenti: mettere a disposizione a ricercatori e
+studenti un framework leggero, scritto in C++ moderno, per la sperimentazioni di idee e algoritmi nel
 contesto della computazione dei poliedri.
 
-Il lavoro svolto è stato quello di, inizialmente, effettuare un porting della
+Il lavoro svolto, inizialmente, è stato quello di effettuare un porting della
 /fattorizzazione cartesiana/ dalla PPL, descritta in \cite{Arioli17th}, alla
-PPLite. Una volta effettuato il porting si è provveduto a modernizzare il codice
+PPLite. In una seconda fase si è provveduto a modernizzare il codice
 e a implementare nuove operazioni.
 
 Il resto della tesi è organizzato nel modo seguente:
-+ nel capitolo 1 verranno introdotte, formalmente, le funzioni principali
++ nel Capitolo 1 verranno introdotte, formalmente, le funzioni principali
   descritte in \cite{SinghPV17};
-+ nel capitolo 2 verranno descritte le implementazioni concrete di suddette
++ nel Capitolo 2 verranno descritte le implementazioni concrete di suddette
   funzioni e anche di alcune funzioni helper e aggiuntive;
-+ nel capitolo 3 verranno mostrati alcuni test di correttezza e un test di
++ nel Capitolo 3 verranno mostrati alcuni test di correttezza e un test di
   efficienza;
 + nella conclusione verrà discusso il lavoro svolto e proposti sviluppi futuri.
 
@@ -226,9 +231,9 @@ più grossolana. È da notare che nel reticolo della
 partizione $\top = \{\mathcal{X}\}$ e $\bot = \{\{x_1\}, \{x_2\}, ..., \{x_n\}\}$.
 
 ** Partizione ammissibile
-Una partizione \pi è /ammissibile/ per un poliedro P se non esistono
+Una partizione \pi è /ammissibile/ per un poliedro $\mathcal{P}$ se non esistono
 variabili $x_i$ e $x_j$ in diversi blocchi di $\pi$ relazionati da un vincolo di
-P, ovvero $\pi \sqsupseteq \pi_P$. Le partizioni ammissibili sono un
+$\mathcal{P}$, ovvero $\pi \sqsupseteq \pi_P$. Le partizioni ammissibili sono un
 sottoinsieme chiuso superiormente del reticolo, chiameremo questo sottoinsieme
 $\mathcal{B}$. Se $\pi \in \mathcal{B}$ allora lo saranno anche tutte
 le $\pi'$ tali che $\pi, \pi' \in \mathcal{L}$ e
@@ -671,9 +676,9 @@ fattorizzati.
 * Implementazione
 Questo capitolo tratterà dell'implementazione effettiva dei poliedri
 fattorizzati e di alcune loro operazioni. La struttura è stata basata su di un
-/wrapper/ preesistente nella /PPlite/ mentre alcune delle implementazioni sono
-state attuate effettuando un porting dalla libreria /PPL/. La maggior parte delle
-operazioni sono state sviluppate come un wrapper per la /PPLite/, difatti le
+/wrapper/ preesistente nella PPLite mentre alcune delle implementazioni sono
+state attuate effettuando un porting dalla libreria PPL. La maggior parte delle
+operazioni sono state sviluppate come un wrapper per la PPLite, difatti le
 operazioni sui singoli poliedri sono gestite da essa. Lo scopo principale è
 quello di inserirsi all'interno dell'analisi statica e utilizzare i poliedri
 fattorizzati se e quando vengono generati poliedri che implicano un alto
@@ -686,8 +691,8 @@ sviluppo, dando importanza alla correttezza e alla leggibilità del codice.
 
 Durante l'implementazione è stata seguita una metodologia che è possibile suddividere in tre fasi:
 
-1. inizialmente è stato effettuato un porting del codice dalla /PPL/ alla
-   /PPLite/, con adattamento alle strutture dati di quest'ultima;
+1. inizialmente è stato effettuato un porting del codice dalla PPL alla
+   PPLite, con adattamento alle strutture dati di quest'ultima;
 2. successivamente è stato attuato un adeguamento incrementale agli standard di
    naming e codifica usati nella PPLite;
 3. infine si è rivisto il codice scritto e si ci è apprestati a semplificarlo
@@ -857,7 +862,7 @@ static Blocks merge(const Blocks& b, const Block& added);
 *** ~refactor~
 La semantica rimane invariata invariata rispetto a quanto descritto
 nell'Algoritmo \ref{refactor}. Per la /join/ $(\bowtie)$ tra i fattori è stata
-utilizzata la ~concatenate_assign()~ della PPlite; una funzione omonima, per
+utilizzata la ~concatenate_assign()~ della PPLite; una funzione omonima, per
 quanto riguarda il join dei blocchi, è stata implementata utilizzando
 ~std::vector::insert~. E importante notare che questa operazione è
 ammissibile in quanto non c'è alcuna possibilità di dimensioni doppie
@@ -1037,7 +1042,7 @@ blocchi passati come parametri e i blocchi di ~this~, il risultato è utilizzato
 per rifattorizzare i fattori di ~this~ (in un nuovo insieme di
 fattori P) e i fattori passati come parametro (in un nuovo insieme di fattori
 Q). Una volta fatto ciò non si fa altro che scorrere i vari fattori e
-richiamare la funzione ~contains~ della /PPLite/.
+richiamare la funzione ~contains~ della PPLite.
 
 #+BEGIN_SRC C++
 bool
@@ -1462,15 +1467,16 @@ operator!=(const F_Poly& x, const F_Poly& y) {
   return !(x == y); }
 #+END_SRC
 * Valutazione sperimentale
-In questa sezione verranno mostrati i diversi test di correttezza che sono stati
-effettuati e un test di efficienza per palesare l'effettivo guadagno che ci si
-aspettava.
+In questa sezione verranno elencati alcuni dei test che sono stati
+effettuati allo scopo di verificare la correttezza dell'implementazione delle
+varie operazioni sui poliedri fattorizzati. Verrà inoltre mostrato in maggiore
+dettaglio un test di efficienza, che rende evidente l'effettivo guadagno ottenibile.
 
 Per quanto riguarda i test di correttezza, sono stati utilizzati quelli già
 presenti nella PPLite. Per farlo, è stato necessario fare in modo che, ogni
-qualvolta viene costruito un oggetto di tipo ~Poly~ ne viene costruito, in
+qualvolta viene costruito un oggetto di tipo ~Poly~ ne venisse costruito, in
 realtà, uno di tipo ~F_Poly~. Per l'esattezza, sono stati completati con
-successo 143 test di correttezza, tra cui:
+successo 143 test di correttezza, i quali:
 
 + *addcons1.cc, addcons2.cc, addcons3.cc*: 23 test sull'aggiunta di vincoli;
 + *addspacedims.cc*: 7 test sull'aggiunta di dimensioni;
@@ -1490,34 +1496,63 @@ successo 143 test di correttezza, tra cui:
 + *removehigherdims.cc, removespacedims.cc*: 18 test sulla rimozione di
   dimensioni.
 
-Il test di efficienza, invece, si è basato su un esempio concreto preso da uno
-dei benchmark di /PHAVerLite/. Sono stati generati due poliedri di tipo ~Poly~ di dimensioni elevate,
-successivamente è stato applicato il join ($\bowtie$) tra questi due, in seguito
-sono stati costruiti due oggetti di tipo ~F_Poly~ passando ai costruttori i due
-poliedri di cui sopra e applicato il join, infine è stata applicata una funzione
-(resa disponibile dagli sviluppatori della PPLite) per convertire i poliedri
-fattorizzati in oggetti di tipo ~Poly~.
+Tra i test non effettuati sono da annoverare quelli aventi per oggetto poliedri
+NNC (non necessariamente topologicamente chiusi), in quanto al momento il
+wrapper $\text{F\_Poly}$ supporta solo poliedri chiusi.
 
-I risultati sono stati questi:
+Il test di efficienza, invece, si è basato su un esempio concreto preso da uno
+dei benchmark di /PHAVerLite/, uno strumento formale
+di verifica per calcolare la raggiungibilità di sistemi ibridi.
+Il test genera due poliedri di dimensioni relativamente elevate
+(17 per la precisione) e prevede di calcolare e confrontare il tempo impiegato ad effettuare
+il join ($\bowtie$) tra questi quando vengonocostruiti come oggetti di tipo ~Poly~ e
+come oggetti di tipo ~F_Poly~. Nell'ultimo caso, oltre al join, verrà effettuata
+anche l'unione dei vari fattori per ottenere un poliedro unico tramite una
+funzione resa disponibile dagli sviluppatori della PPLite.
+
+I risultati sono stati questi[fn:specs]:
+#+BEGIN_EXPORT latex
+\begin{center}
+\begin{tabular}{cc} \toprule
+    \textbf{Tipo test} & \textbf{Tempo impiegato(s)}  \\ \midrule
+    {Join in Poly}  & 9.24  \\
+    {Join in F\_Poly}  & 0.003   \\
+    {Conversione da F\_Poly a Poly}  & 0.06   \\ \bottomrule
+\end{tabular}
+\end{center}
+#+END_EXPORT
+
+Come è possibile notare si è riusciti ad ottenere un fattore di miglioramento
+del 100%. Risulta essere un guadagno importante in quanto il numero di join in
+questo caso è solamente uno, mentre in contesti più reali si arriva a farne centinaia.
 * Conclusione
-In questa tesi si è quindi parlato della fattorizzazione dei poliedri, ovvero la
-tecnica di suddividere un poliedri in poliedri più piccoli, ricudendo così il
+In questo lavoro di tesi è stata fornita una implementazione della
+fattorizzazione cartesiana dei poliedri nel contesto della libreria PPLite.
+Questa tecnica consente di suddividere un poliedro in poliedri più piccoli, riducendo così il
 costo computazionale in tempo e memoria. Questo è reso possibile dal fatto che
 le variabili all'interno di un programma spesso non sono tutte legate tra loro e
 sono quindi suddivisibili in gruppo indipendenti dagli altri. Lo scopo è quindi
 quello di manipolare queste partizioni in maniera tale da renderle più piccole
 possibili.
 
-All'interno della PPLite la fattorizzazione cartesiana non sarà utilizzata come
-sostituivo della classe ~Poly~ bensì, verrà utilizzata laddove è
+Sebbene utile in molti casi, la fattorizzazione rimane una tecnica euristica
+e come tale potrebbe risultare inefficace, o addirittura dannosa per
+l'efficienza, quando applicata in contesti inappropriati. Per questo motivo
+all'interno della PPLite la fattorizzazione cartesiana non sarà utilizzata come
+sostituivo della classe ~Poly~, bensì verrà utilizzata laddove è
 computazionalmente conveniente farlo.
 
 Per gli sviluppi futuri ci si concentrerà nel terminare le operazioni mancanti
-in modo tale da rendere completa classe. Inoltre, in quanto non ci si è
-concentrati principalmente nell'efficienza del codice, sarà necessario rivederlo
-andando alla ricerca di punti critici per ottimizzare il codice e sfruttare al
-meglio le funzionalità offerde dal C++11.
+in modo tale da rendere completo il wrapper. Inoltre, in quanto non ci si è
+concentrati principalmente sull'efficienza del codice, sarà necessario rivederlo
+andando alla ricerca di punti critici per ottimizzarlo e sfruttare al
+meglio le funzionalità offerte dal C++11.
 
 #+LATEX: \bibliographystyle{plain}
 #+LATEX: \renewcommand\bibname{Bibliografia}
 #+LATEX: \bibliography{mybib}
+
+* Footnotes
+
+[fn:specs]Il test è stato eseguito su un laptop con un Intel Core i7 5500U
+@2.4GHz, 4 GB di RAM @1600MHz e GNU/Linux 4.14.102-1

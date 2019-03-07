@@ -17,6 +17,12 @@
 #+LATEX_HEADER: \let\emptyset\varnothing
 #+LATEX_HEADER: \usepackage{bm}
 #+LATEX_HEADER: \usepackage{longtable}
+#+LATEX_HEADER: \hyphenation{rap-pre-se-nta-re}
+#+LATEX_HEADER: \usepackage{tcolorbox}
+#+LATEX_HEADER: \usepackage{tabularx}
+#+LATEX_HEADER: \tcbset{tab2/.style={enhanced,fonttitle=\bfseries,fontupper=\normalsize\sffamily,
+#+LATEX_HEADER: colback=yellow!10!white,colframe=red!50!black,colbacktitle=Salmon!40!white,
+#+LATEX_HEADER: coltitle=black,center title}}
 
 #+LATEX_HEADER: \usepackage{listings}
 #+LATEX_HEADER: \usepackage{color}
