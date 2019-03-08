@@ -8,17 +8,6 @@ To compile add this to your emacs init file:
 ``` emacs-lisp
 ;; Custom LaTeX classes
 (add-to-list 'org-latex-classes
-                 '("elsarticle"
-                   "\\documentclass{elsarticle}
- [NO-DEFAULT-PACKAGES]
- [PACKAGES]
- [EXTRA]"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-(add-to-list 'org-latex-classes
                  '("mimosis"
                    "\\documentclass{mimosis}
  [NO-DEFAULT-PACKAGES]
