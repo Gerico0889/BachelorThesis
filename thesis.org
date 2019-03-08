@@ -1502,12 +1502,13 @@ wrapper $\text{F\_Poly}$ supporta solo poliedri chiusi.
 
 Il test di efficienza, invece, si è basato su un esempio concreto preso da uno
 dei benchmark di /PHAVerLite/, uno strumento formale
-di verifica per calcolare la raggiungibilità di sistemi ibridi.
+di verifica per effettuare la /reachability analysis/ (analisi di
+raggiungibilità di stati particolari) per i sistemi ibridi.
 Il test genera due poliedri di dimensioni relativamente elevate
 (17 per la precisione) e prevede di calcolare e confrontare il tempo impiegato ad effettuare
-il join ($\bowtie$) tra questi quando vengonocostruiti come oggetti di tipo ~Poly~ e
+il join (cioè, l'inviluppo convesso) tra questi quando vengono costruiti come oggetti di tipo ~Poly~ e
 come oggetti di tipo ~F_Poly~. Nell'ultimo caso, oltre al join, verrà effettuata
-anche l'unione dei vari fattori per ottenere un poliedro unico tramite una
+anche la concatenazione dei vari fattori per ottenere un poliedro unico tramite una
 funzione resa disponibile dagli sviluppatori della PPLite.
 
 I risultati sono stati questi[fn:specs]:
@@ -1515,15 +1516,15 @@ I risultati sono stati questi[fn:specs]:
 \begin{center}
 \begin{tabular}{cc} \toprule
     \textbf{Tipo test} & \textbf{Tempo impiegato(s)}  \\ \midrule
-    {Join in Poly}  & 9.24  \\
+    {Join in Poly}  & 9.183  \\
     {Join in F\_Poly}  & 0.003   \\
-    {Conversione da F\_Poly a Poly}  & 0.06   \\ \bottomrule
+    {Conversione da F\_Poly a Poly}  & 0.065   \\ \bottomrule
 \end{tabular}
 \end{center}
 #+END_EXPORT
 
 Come è possibile notare si è riusciti ad ottenere un fattore di miglioramento
-del 100%. Risulta essere un guadagno importante in quanto il numero di join in
+di 135. Risulta essere un guadagno importante in quanto il numero di join in
 questo caso è solamente uno, mentre in contesti più reali si arriva a farne centinaia.
 * Conclusione
 In questo lavoro di tesi è stata fornita una implementazione della
