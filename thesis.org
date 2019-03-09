@@ -79,7 +79,7 @@ poliedri. Un esempio è la rappresentazione /singola/ (che utilizza solamente vi
 rappresentazione/ (descritta nella sezione successiva, che utilizza sia vincoli
 che generatori).
 
-Una tecnica euristica, indipendente dalla rappresentazione scelta, per diminuire
+Una tecnica euristica, indipendente dalla rappresentazione scelta, per $\\$ diminuire
 la complessità computazionale del dominio dei poliedri è quella della
 fattorizzazione cartesiana.
 L'idea di base, proposta in \cite{HalbwachsMG06} e in seguito migliorata
@@ -223,8 +223,8 @@ L'insieme $\mathcal{L}$ che consiste in tutte le partizioni possibili di $\mathc
 forma un /reticolo di partizioni/ $(\mathcal{L}, \sqsubseteq, \sqcup, \sqcap,
 \bot, \top)$. Gli elementi $\pi$ del reticolo sono ordinati come segue: $\pi
 \sqsubseteq \pi'$, se ogni blocco di $\pi$ è incluso in qualche blocco di
-$\pi'$, si dice quindi che \pi è "più fine" di \pi^' o, equivalentemente che
-\pi^' è più "grossolana" di \pi. Questo reticolo è dotato degli operatori di /least upper bound/
+$\pi'$, si dice quindi che $\pi$ è "più fine" di $\pi'$ o, equivalentemente che
+$\pi'$ è più "grossolana" di $\pi$. Questo reticolo è dotato degli operatori di /least upper bound/
 $(\sqcup)$ che permette di calcolare, dati due blocchi, la partizione più
 raffinata e /greatest upper bound/ $(\sqcap)$ che permette di calcolarne quella
 più grossolana. È da notare che nel reticolo della
@@ -270,11 +270,11 @@ successivamente la partizione corretta.
     \begin{algorithmic}[1]
       \Function{Least-Upper-Bound}{$\pi_{\mathcal{P}}, \pi_{\mathcal{Q}}$}
       \State $\pi := \emptyset$
-      \For{\textbf{each} $\mathcal{X}_{\mathcal{P}i}$ \textbf{in} $\pi_{\mathcal{P}}$}
+      \For{\textbf{each} $\mathcal{X}_{\mathcal{P}_i}$ \textbf{in} $\pi_{\mathcal{P}}$}
       \State$\mathcal{B}$:= $\emptyset$
-      \For{\textbf{each} $\mathcal{X}_{\mathcal{Q}k}$ \textbf{in} $\pi_{\mathcal{Q}}$}
-      \If{$\mathcal{X}_{\mathcal{P}i} \cap\mathcal{X}_{\mathcal{Q}k} \ne \emptyset$}
-      \State$\mathcal{B}:=\mathcal{B} \cup\mathcal{X}_{\mathcal{Q}k}$
+      \For{\textbf{each} $\mathcal{X}_{\mathcal{Q}_k}$ \textbf{in} $\pi_{\mathcal{Q}}$}
+      \If{$\mathcal{X}_{\mathcal{P}_i} \cap\mathcal{X}_{\mathcal{Q}_k} \ne \emptyset$}
+      \State$\mathcal{B}:=\mathcal{B} \cup\mathcal{X}_{\mathcal{Q}_k}$
       \EndIf
       \EndFor
       \State $\pi$.add($\mathcal{B}$)
@@ -347,15 +347,15 @@ altro che calcolare il /lub/ ($\pi = \pi_{\mathcal{P}}
 \Function{Refactor}{$\mathcal{P}, \pi, \pi_{\mathcal{P}}$}
 \State$\mathcal{O}, \pi_{\mathcal{O}} := \emptyset$
 \For{\textbf{each} $i$ \textbf{in} $\{1,..., r\}$} \Comment{r = numero blocchi di $\pi$}
-\State$\mathcal{O}_{i}, \pi_{\mathcal{O}i} := \emptyset$
+\State$\mathcal{O}_{i}, \pi_{\mathcal{O}_i} := \emptyset$
 \For{\textbf{each} $j$ \textbf{in} $\{1,...,m\}$} \Comment{m = numero blocchi di $\pi_{\mathcal{P}}$}
-\If{$\pi_{\mathcal{P}i} \cap \pi_{j} \ne \emptyset$}
+\If{$\pi_{\mathcal{P}_i} \cap \pi_{j} \ne \emptyset$}
 \State$\mathcal{O}_{i}$ := $\mathcal{O}_{j} \bowtie \mathcal{P}_{i}$
-\State$\pi_{\mathcal{O}i}$ := $\pi_{\mathcal{O}i} \bowtie \pi_{\mathcal{P}i}$
+\State$\pi_{\mathcal{O}_i}$ := $\pi_{\mathcal{O}_i} \bowtie \pi_{\mathcal{P}_i}$
 \EndIf
 \EndFor
 \State$\mathcal{O}$.add$(\mathcal{O}_{i})$
-\State$\pi_{\mathcal{O}}$.add$(\pi_{\mathcal{O}i})$
+\State$\pi_{\mathcal{O}}$.add$(\pi_{\mathcal{O}_i})$
 \EndFor
 \State\Call{Remap-Dimensions}{$\mathcal{O}, \pi_{\mathcal{O}}, \pi$}
 \State\Return$\mathcal{O}, \pi_{\mathcal{O}}$
@@ -574,11 +574,11 @@ $\pi_{\mathcal{O}} = \bot$.
 \State$con_{int}$ := \Call{convert\_con}{$\pi_i$, \textit{con}}
 \State$\mathcal{F}$ := \Call{add\_con}{$\mathcal{P}'_i, con_{int}$}
 \State$\mathcal{O}$.add$(\mathcal{F})$
-\If{\Call{is\_empty}{$\mathcal{O_{i}}$}}
+\If{\Call{is\_empty}{$\mathcal{O}_i$}}
 \State\Return$\bot, \bot$
 \EndIf
 \Else
-\State$\mathcal{O}$.add$(\mathcal{P'_i})$
+\State$\mathcal{O}$.add$(\mathcal{P}'_i)$
 \EndIf
 \EndFor
 \State$\pi_{\mathcal{O}}$ := $\pi$
@@ -652,7 +652,7 @@ fattorizzati.
 \begin{algorithm}[H]
 \caption{Widening}\label{widening}
 \begin{algorithmic}[1]
-\Function{Widenind}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{Q}, \pi_{\mathcal{Q}}$}
+\Function{Widening}{$\mathcal{P}, \pi_{\mathcal{P}}, \mathcal{Q}, \pi_{\mathcal{Q}}$}
 \State $\pi$ := $\pi_{\mathcal{P}} \sqcup \pi_{\mathcal{Q}}$
 \State $\mathcal{P}'$ := \Call{Refactor}{$\mathcal{P}, \pi_{\mathcal{P}}, \pi$}
 \State $\mathcal{O}$ := $\emptyset$
@@ -861,7 +861,7 @@ static Blocks merge(const Blocks& b, const Block& added);
 
 *** ~refactor~
 La semantica rimane invariata invariata rispetto a quanto descritto
-nell'Algoritmo \ref{refactor}. Per la /join/ $(\bowtie)$ tra i fattori è stata
+nell'Algorit\-mo \ref{refactor}. Per la /join/ $(\bowtie)$ tra i fattori è stata
 utilizzata la ~concatenate_assign()~ della PPLite; una funzione omonima, per
 quanto riguarda il join dei blocchi, è stata implementata utilizzando
 ~std::vector::insert~. E importante notare che questa operazione è
@@ -1209,7 +1209,7 @@ risultasse vuoto, allora il poliedro viene settato a ~empty~.
 #+END_SRC
 
 *** ~affine_image~ e ~affine_preimage~
-La funzione ~affine_image~ è l'implementazione dell'operazione /assignment/ vista
+La funzione ~affine_image~ è l'implementazione dell'operazione /assignment/ vis\-ta
 nell'Algoritmo \ref{assignment}. A differenza di quest'ultimo, per rimanere
 coerenti con le definizioni della PPLite, la funzione prende in input:
 
@@ -1292,7 +1292,7 @@ F_Poly::add_space_dims(dim_type m, bool project) {
 }
   #+END_SRC
 + ~remove_space_dim~: permette di rimuovere una dimensione dal poliedro. Il
-  problema principale è che, rimuovendo una dimensione, è necessario
+  problema principale è che, quando una dimensione viene rimossa, è necessario
   riorganizzare i blocchi in modo tale da essere uniformati all'insieme
   $\{1,...,dim\}$. Questa operazione è riservata a una funzione chiamata
   ~reduce_blocks~.
@@ -1327,7 +1327,7 @@ F_Poly::remove_space_dim(const dim_type v) {
       }
 }
   #+END_SRC
-  È presente anche la versione ~remove_space_dims(const Index_Set& vars)~ che
+  È presente anche ~remove_space_dims(const Index_Set& vars)~ che
   permette di rimuovere tutte le dimensioni presenti dentro ~vars~.
 + ~remove_higher_space_dims~: è una variante della funzione
   precedente, rimuove le $n$ dimensioni (con $n$ parametro
@@ -1358,9 +1358,10 @@ Per ogni generatore che viene passato come parametro possono esserci tre casi:
   #+BEGIN_SRC C++
 if (is_empty()) {
   assert(g.is_point());
-  *this = F_Poly(dim, Spec_Elem::UNIVERSE, topology());
+  ,*this = F_Poly(dim, Spec_Elem::UNIVERSE, topology());
   for (dim_type i = dim; i-- > 0; )
-    factors[i].add_con(g.divisor() * Var(0) == g.coeff(Var(i)));
+    factors[i].add_con(g.divisor() * Var(0) ==
+                       g.coeff(Var(i)));
   assert(check_inv());
   return;
 }
@@ -1377,10 +1378,12 @@ if (g.is_point()) {
   for (dim_type i = 0; i != nb; ++i) {
     const auto& bi = blocks[i];
     const auto nbi = num_rows(bi);
-    fs_g.emplace_back(nbi, Spec_Elem::UNIVERSE, topology());
+    fs_g.emplace_back(nbi, Spec_Elem::UNIVERSE,
+                      topology());
     auto& fi = fs_g.back();
     for (dim_type j = 0; j != nbi; ++j)
-      fi.add_con(g.divisor() * Var(j) == g.coeff(Var(bi[j])));
+      fi.add_con(g.divisor() * Var(j) ==
+                 g.coeff(Var(bi[j])));
   }
   join(fs_g, blocks);
   assert(check_inv());
@@ -1549,7 +1552,7 @@ concentrati principalmente sull'efficienza del codice, sarà necessario rivederl
 andando alla ricerca di punti critici per ottimizzarlo e sfruttare al
 meglio le funzionalità offerte dal C++11.
 
-# #+INCLUDE: ./thanks.org :minlevel 1
+#+INCLUDE: ./thanks.org :minlevel 1
 
 #+LATEX: \bibliographystyle{plain}
 #+LATEX: \renewcommand\bibname{Bibliografia}

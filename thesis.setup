@@ -23,6 +23,7 @@
 #+LATEX_HEADER: \hyphenation{o-pe-ra-zio-ne}
 #+LATEX_HEADER: \hyphenation{com-ples-si-ta}
 #+LATEX_HEADER: \hyphenation{i-ni-zial-men-te}
+#+LATEX_HEADER: \hyphenation{pa-ra-me-tri}
 
 #+LATEX_HEADER: \usepackage{listings}
 #+LATEX_HEADER: \usepackage{color}
