@@ -1,6 +1,11 @@
 Written entirely in org-mode using
 [Mimosis](https://github.com/Submanifold/latex-mimosis) class.
 
+## General info
+The (PPLite)[http://www.cs.unipr.it/~zaffanella/PPLite/] is an open-source C++ library implementing the abstract domain of convex polyhedra, to be used in tools for static analysis and verification.
+
+My work was to implement cartesian factory in order to improve performances.
+
 ## Compiling
 
 To compile add this to your emacs init file:
